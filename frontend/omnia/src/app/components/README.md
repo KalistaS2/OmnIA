@@ -1,0 +1,1 @@
+diretorio para os components (paginas da aplicação, ou partes de paginas)
