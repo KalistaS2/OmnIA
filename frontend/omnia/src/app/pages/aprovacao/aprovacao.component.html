@@ -1,0 +1,149 @@
+<app-shell
+  title="Aprovação e execução"
+  subtitle="Quais regras estão autorizadas e como serão executadas?"
+>
+  <!-- Ação no cabeçalho -->
+  <button
+    actions
+    type="button"
+    (click)="iniciar()"
+    class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+  >
+    Aprovar e iniciar correição
+    <lucide-icon [img]="ShieldCheckIcon" class="size-4"></lucide-icon>
+  </button>
+
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+    <div class="space-y-5">
+      <!-- Resumo da Correição -->
+      <app-panel title="Resumo da correição">
+        <div right>
+          <app-tag tone="accent">Checklist v1.0</app-tag>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          @for (item of resumoItems; track item[0]) {
+            <div class="rounded-md border border-border px-3 py-2.5">
+              <p class="eyebrow">{{ item[0] }}</p>
+              <p class="mt-0.5 text-sm font-medium">{{ item[1] }}</p>
+            </div>
+          }
+        </div>
+      </app-panel>
+
+      <!-- Processos da Correição -->
+      <app-panel
+        title="Processos da correição"
+        description="Visualize a correição feita pelo OMinIA e siga para a validação humana."
+      >
+        <ul class="space-y-2">
+          @for (p of processos; track p.numero) {
+            <li class="rounded-md border border-border">
+              <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                <div class="min-w-0">
+                  <p class="num text-sm font-medium">{{ p.numero }}</p>
+                  <p class="text-xs text-muted-foreground">
+                    {{ p.unidade }} · {{ p.classe }} · {{ p.situacao }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    (click)="toggleAberto(p.numero)"
+                    class="inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:bg-secondary"
+                  >
+                    Visualizar correção
+                    <lucide-icon
+                      [img]="ChevronDownIcon"
+                      [class]="'size-4 transition-transform ' + (aberto() === p.numero ? 'rotate-180' : '')"
+                    ></lucide-icon>
+                  </button>
+                  <a
+                    routerLink="/aprovacao-processo"
+                    [queryParams]="{ processo: p.numero }"
+                    class="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  >
+                    Aprovar
+                    <lucide-icon [img]="ArrowRightIcon" class="size-4"></lucide-icon>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Accordion de Regras do Processo -->
+              @if (aberto() === p.numero) {
+                <ul class="space-y-2 border-t border-border px-4 py-3 animate-in fade-in-0 duration-200">
+                  @for (l of linhasPadrao; track l.regra) {
+                    <li class="rounded-md bg-secondary/60 px-3 py-2.5">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <p class="text-sm font-medium">{{ l.regra }}</p>
+                        <span [class]="'inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ' + getVereditoClass(l.veredito)">
+                          {{ l.veredito }}
+                        </span>
+                      </div>
+                      <p class="mt-1 text-sm text-muted-foreground">{{ l.trecho }}</p>
+                    </li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+      </app-panel>
+
+      <!-- Painel de Processamento com Animação -->
+      <app-panel title="Processamento" description="Execução registrada com trilha de auditoria.">
+        @if (progresso() < 0) {
+          <p class="text-sm text-muted-foreground">
+            Aguardando aprovação para iniciar a execução em modo somente leitura.
+          </p>
+        } @else {
+          <ol class="space-y-2">
+            @for (e of etapas; track e; let i = $index) {
+              <li
+                [class]="
+                  'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ' +
+                  (progresso() > i
+                    ? 'bg-risk-low-soft'
+                    : progresso() === i
+                    ? 'bg-info-soft'
+                    : 'bg-secondary/60 text-muted-foreground')
+                "
+              >
+                @if (progresso() > i) {
+                  <lucide-icon [img]="CheckCircle2Icon" class="size-4 text-risk-low"></lucide-icon>
+                } @else if (progresso() === i) {
+                  <lucide-icon [img]="Loader2Icon" class="size-4 animate-spin text-info"></lucide-icon>
+                } @else {
+                  <span class="size-4 rounded-full border border-border"></span>
+                }
+                {{ e }}
+              </li>
+            }
+          </ol>
+        }
+
+        @if (progresso() >= etapas.length) {
+          <a
+            routerLink="/resultados"
+            class="mt-4 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+          >
+            Ver painel correicional
+            <lucide-icon [img]="ArrowRightIcon" class="size-4"></lucide-icon>
+          </a>
+        }
+      </app-panel>
+    </div>
+
+    <!-- Barra Lateral: Governança e Rastreabilidade -->
+    <app-panel title="Governança e rastreabilidade">
+      <ul class="space-y-2.5 text-sm">
+        @for (item of governancaItems; track item[0]) {
+          <li class="rounded-md border border-border px-3 py-2">
+            <p class="eyebrow">{{ item[0] }}</p>
+            <p class="mt-0.5">{{ item[1] }}</p>
+          </li>
+        }
+      </ul>
+    </app-panel>
+  </div>
+</app-shell>

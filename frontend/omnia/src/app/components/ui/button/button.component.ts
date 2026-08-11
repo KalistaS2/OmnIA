@@ -13,7 +13,8 @@ export type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
   `,
   host: {
     '[class]': 'computedClass()',
-    '[disabled]': 'disabled',
+    '[attr.disabled]': 'disabled ? "" : null',
+    '[attr.aria-disabled]': 'disabled',
     '[attr.type]': 'type',
   },
 })

@@ -1,0 +1,105 @@
+<app-shell
+  title="Resultado da correição — 1ª Vara Cível"
+  subtitle="Situação geral da unidade antes do detalhamento por regra"
+>
+  <!-- Ação no cabeçalho -->
+  <a
+    actions
+    routerLink="/aprovacao-processo"
+    [queryParams]="{ processo: '0801234-00.2026.8.23.0001' }"
+    class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+  >
+    Analisar achados críticos
+    <lucide-icon [img]="ArrowRightIcon" class="size-4"></lucide-icon>
+  </a>
+
+  <div class="space-y-5">
+    <!-- Grid de Métricas do Acervo -->
+    <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      @for (m of metricas; track m[0]) {
+        <div class="panel p-4">
+          <p class="eyebrow">{{ m[0] }}</p>
+          <p class="num mt-1.5 font-display text-2xl">{{ m[1] }}</p>
+        </div>
+      }
+    </div>
+
+    <!-- Divisão Principal: Regras e Distribuição -->
+    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <!-- Painel de Resultados por Regra -->
+      <app-panel
+        title="Resultado por regra"
+        description="Selecione uma regra para focar o painel nos seus achados."
+      >
+        @if (regraSel()) {
+          <div right>
+            <app-tag tone="accent">Filtrando: {{ regraSel() }}</app-tag>
+          </div>
+        }
+
+        <div class="space-y-2">
+          @for (r of resultadoPorRegra; track r.regra) {
+            <button
+              type="button"
+              (click)="toggleRegra(r.regra)"
+              [class]="
+                'w-full rounded-md border px-4 py-3 text-left transition-colors ' +
+                (regraSel() === r.regra
+                  ? 'border-primary/40 bg-info-soft'
+                  : 'border-border hover:bg-secondary/60')
+              "
+            >
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <span class="font-medium">{{ r.regra }}</span>
+                <span class="flex items-center gap-4 text-sm">
+                  <span class="num">{{ r.sinalizados }} sinalizados</span>
+                  <span class="num text-risk-high">{{ r.criticos }} críticos</span>
+                  <app-tag tone="info">Validar</app-tag>
+                </span>
+              </div>
+              <div class="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
+                <div
+                  class="h-full rounded-full bg-chart-1 transition-all duration-300"
+                  [style.width.%]="getPercentual(r.sinalizados)"
+                ></div>
+              </div>
+            </button>
+          }
+        </div>
+
+        <!-- Destaque para a regra 'Arquivamento com possível pendência' -->
+        @if (regraSel() === 'Arquivamento com possível pendência') {
+          <div class="mt-4 rounded-md border border-accent/40 bg-surface p-4 animate-in fade-in-0 duration-200">
+            <p class="eyebrow">RC-017 em foco</p>
+            <p class="mt-1 text-sm">
+              127 achados sinalizados, 38 críticos. Painel filtrado para a nova regra criada nesta correição.
+            </p>
+            <a
+              routerLink="/aprovacao-processo"
+              [queryParams]="{ processo: '0801234-00.2026.8.23.0001' }"
+              class="mt-3 inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-accent-foreground"
+            >
+              Abrir raio-X do primeiro achado
+              <lucide-icon [img]="ArrowRightIcon" class="size-4"></lucide-icon>
+            </a>
+          </div>
+        }
+      </app-panel>
+
+      <!-- Painel de Distribuição por Situação -->
+      <app-panel title="Distribuição por situação">
+        <ul class="space-y-2">
+          @for (d of distribuicaoSituacao; track d.situacao) {
+            <li class="flex items-center justify-between rounded-md bg-secondary px-3 py-2">
+              <span class="text-sm">{{ d.situacao }}</span>
+              <span class="num font-medium">{{ d.qtd }}</span>
+            </li>
+          }
+        </ul>
+        <p class="mt-3 text-xs text-muted-foreground">
+          Toda ocorrência permanece potencial até a validação humana.
+        </p>
+      </app-panel>
+    </div>
+  </div>
+</app-shell>

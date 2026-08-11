@@ -1,0 +1,161 @@
+<app-shell
+  [title]="'Processo ' + processo()"
+  subtitle="Aprovação da correição · validação de evidências e relatório"
+>
+  <!-- Ação no cabeçalho -->
+  <a
+    actions
+    routerLink="/aprovacao"
+    class="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm text-foreground transition-colors hover:bg-secondary"
+  >
+    <lucide-icon [img]="ArrowLeftIcon" class="size-4"></lucide-icon>
+    Voltar à aprovação
+  </a>
+
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+    <div class="space-y-5">
+      <!-- Linha do Tempo do Achado -->
+      <app-panel title="Linha do tempo do achado">
+        <div right>
+          <app-tag tone="accent">Risco alto</app-tag>
+        </div>
+
+        <ol class="space-y-3">
+          @for (t of timeline; track t.data) {
+            <li [class]="'rounded-md px-4 py-3 ' + t.tone">
+              <p class="num eyebrow">{{ t.data }}</p>
+              <p class="mt-0.5 text-sm">{{ t.texto }}</p>
+            </li>
+          }
+        </ol>
+      </app-panel>
+
+      <!-- Correição do OMinIA -->
+      <app-panel
+        title="Correição do OMinIA"
+        description="Resultado regra a regra com o trecho que justifica a decisão."
+      >
+        <ul class="space-y-2">
+          @for (l of linhas; track l.regra) {
+            <li class="rounded-md border border-border px-3 py-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="text-sm font-medium">{{ l.regra }}</p>
+                <span [class]="'inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ' + getVereditoClass(l.veredito)">
+                  {{ l.veredito }}
+                </span>
+              </div>
+              <p class="mt-1 text-sm text-muted-foreground">{{ l.trecho }}</p>
+            </li>
+          }
+        </ul>
+      </app-panel>
+
+      <!-- Por que o processo foi sinalizado -->
+      <app-panel title="Por que o processo foi sinalizado">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <p class="eyebrow">Condições atendidas</p>
+            <ul class="mt-1 space-y-1.5 text-sm">
+              @for (c of condicoes; track c) {
+                <li class="flex gap-2">
+                  <lucide-icon [img]="CheckCircle2Icon" class="mt-0.5 size-4 shrink-0 text-risk-high"></lucide-icon>
+                  <span>{{ c }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+
+          <div>
+            <p class="eyebrow">Documentos examinados</p>
+            <ul class="mt-1 space-y-1.5 text-sm">
+              @for (d of documentos; track d) {
+                <li class="flex gap-2">
+                  <lucide-icon [img]="FileTextIcon" class="mt-0.5 size-4 shrink-0 text-muted-foreground"></lucide-icon>
+                  <span>{{ d }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </app-panel>
+
+      <!-- Relatório Gerado -->
+      @if (relatorio(); as rel) {
+        <app-panel
+          title="Relatório gerado"
+          description="Baseado na correição do OMinIA e nas anotações da equipe."
+        >
+          <pre class="whitespace-pre-wrap rounded-md bg-secondary p-4 text-sm font-mono">{{ rel }}</pre>
+        </app-panel>
+      }
+    </div>
+
+    <!-- Barra Lateral: Decisão Humana e Anotações -->
+    <aside class="space-y-5">
+      <app-panel title="Decisão humana">
+        <div class="grid gap-2">
+          @for (d of decisoes; track d.label) {
+            <button
+              type="button"
+              (click)="decisao.set(d.label)"
+              [class]="
+                'flex items-center gap-2 rounded-md border px-3 py-2.5 text-sm transition-colors ' +
+                (decisao() === d.label
+                  ? 'border-primary/40 bg-primary text-primary-foreground'
+                  : 'border-border hover:bg-secondary')
+              "
+            >
+              <lucide-icon [img]="d.icon" class="size-4"></lucide-icon>
+              {{ d.label }}
+            </button>
+          }
+        </div>
+        @if (decisao()) {
+          <p class="mt-3 text-xs text-muted-foreground animate-in fade-in-0">
+            Registrado: {{ decisao() }} · Dra. Helena
+          </p>
+        }
+      </app-panel>
+
+      <app-panel title="Anotações">
+        <textarea
+          [ngModel]="anotacao()"
+          (ngModelChange)="anotacao.set($event)"
+          rows="3"
+          placeholder="Registrar observação sobre o achado"
+          class="w-full resize-none rounded-md border border-input bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+        ></textarea>
+        <button
+          type="button"
+          (click)="adicionarAnotacao()"
+          class="mt-2 inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:bg-secondary"
+        >
+          <lucide-icon [img]="NotebookPenIcon" class="size-4"></lucide-icon>
+          Gerar anotação
+        </button>
+
+        <ul class="mt-3 space-y-2 text-sm">
+          @for (a of anotacoes(); track $index) {
+            <li class="rounded-md bg-secondary px-3 py-2">
+              {{ a }}
+            </li>
+          }
+        </ul>
+      </app-panel>
+
+      <app-panel title="Relatório da correição">
+        <p class="text-sm text-muted-foreground">
+          O relatório reúne a correição automatizada, a decisão registrada e as anotações da equipe.
+        </p>
+        <button
+          type="button"
+          (click)="gerarRelatorio()"
+          class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+        >
+          <lucide-icon [img]="FileSignatureIcon" class="size-4"></lucide-icon>
+          Gerar relatório
+        </button>
+      </app-panel>
+    </aside>
+  </div>
+</app-shell>

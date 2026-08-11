@@ -1,0 +1,219 @@
+<app-shell
+  title="Nova Correição Ordinária"
+  subtitle="Qual unidade será correicionada e qual será o alcance da análise?"
+>
+  <!-- Ação no cabeçalho -->
+  <a
+    actions
+    routerLink="/aprovacao"
+    class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+  >
+    Seguir para aprovação
+    <lucide-icon [img]="ArrowRightIcon" class="size-4"></lucide-icon>
+  </a>
+
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="space-y-5">
+      <!-- Painel de Identificação e Filtros -->
+      <app-panel
+        title="Identificação e filtros"
+        description="Os campos abaixo definem a correição e filtram os processos do acervo."
+      >
+        <div right>
+          <app-tag tone="info">Rascunho</app-tag>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <label class="block">
+            <span class="eyebrow">Unidade judicial</span>
+            <div class="mt-1.5">
+              <select
+                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                [ngModel]="unidade()"
+                (ngModelChange)="unidade.set($event)"
+              >
+                @for (u of UNIDADES; track u) {
+                  <option [value]="u">{{ u }}</option>
+                }
+              </select>
+            </div>
+          </label>
+
+          <label class="block">
+            <span class="eyebrow">Situação do processo</span>
+            <div class="mt-1.5">
+              <select
+                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                [ngModel]="situacao()"
+                (ngModelChange)="situacao.set($event)"
+              >
+                @for (s of SITUACOES; track s) {
+                  <option [value]="s">{{ s }}</option>
+                }
+              </select>
+            </div>
+          </label>
+
+          <label class="block">
+            <span class="eyebrow">Classe processual</span>
+            <div class="mt-1.5">
+              <input
+                type="text"
+                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                [ngModel]="classe()"
+                (ngModelChange)="classe.set($event)"
+                placeholder="Buscar classe"
+              />
+            </div>
+          </label>
+
+          <label class="block">
+            <span class="eyebrow">Assunto</span>
+            <div class="mt-1.5">
+              <input
+                type="text"
+                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                [ngModel]="assunto()"
+                (ngModelChange)="assunto.set($event)"
+                placeholder="Buscar assunto"
+              />
+            </div>
+          </label>
+
+          <label class="block">
+            <span class="eyebrow">Período de referência</span>
+            <div class="mt-1.5">
+              <div class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-muted-foreground">
+                1º/1/2026 a 31/7/2026
+              </div>
+            </div>
+          </label>
+
+          <label class="block">
+            <span class="eyebrow">Responsável</span>
+            <div class="mt-1.5">
+              <div class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-muted-foreground">
+                Dra. Helena Moreira
+              </div>
+            </div>
+          </label>
+        </div>
+      </app-panel>
+
+      <!-- Painel de Processos Selecionados -->
+      <app-panel
+        title="Processos selecionados"
+        description="Resultado dos filtros aplicados ao acervo autorizado."
+      >
+        <div right>
+          <app-tag tone="info">{{ lista().length }} processos</app-tag>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[760px] text-sm">
+            <thead>
+              <tr class="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <th class="px-2 pb-2 font-semibold">Processo</th>
+                <th class="px-2 pb-2 font-semibold">Unidade</th>
+                <th class="px-2 pb-2 font-semibold">Classe</th>
+                <th class="px-2 pb-2 font-semibold">Assunto</th>
+                <th class="px-2 pb-2 font-semibold">Situação</th>
+                <th class="px-2 pb-2 font-semibold">Atenção</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of lista(); track p.numero) {
+                <tr class="border-b border-border/70 last:border-0">
+                  <td class="num px-2 py-3 font-medium">{{ p.numero }}</td>
+                  <td class="px-2 py-3">{{ p.unidade }}</td>
+                  <td class="px-2 py-3 text-muted-foreground">{{ p.classe }}</td>
+                  <td class="px-2 py-3 text-muted-foreground">{{ p.assunto }}</td>
+                  <td class="px-2 py-3">
+                    <app-tag tone="info">{{ p.situacao }}</app-tag>
+                  </td>
+                  <td class="px-2 py-3">
+                    <app-risk-badge [level]="p.atencao"></app-risk-badge>
+                  </td>
+                </tr>
+              }
+              @if (lista().length === 0) {
+                <tr>
+                  <td colspan="6" class="px-2 py-6 text-center text-sm text-muted-foreground">
+                    Nenhum processo corresponde aos filtros.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-panel>
+
+      <!-- Painel de Regras da Correição -->
+      <app-panel
+        title="Regras da correição"
+        description="Selecione as regras que serão aplicadas ao universo definido."
+      >
+        <div right>
+          <app-tag tone="accent">{{ regras().length }} selecionadas</app-tag>
+        </div>
+
+        <div class="flex items-center gap-2 rounded-md border border-input bg-card px-3 py-2">
+          <lucide-icon [img]="SearchIcon" class="size-4 text-muted-foreground"></lucide-icon>
+          <input
+            type="text"
+            [ngModel]="buscaRegra()"
+            (ngModelChange)="buscaRegra.set($event)"
+            placeholder="Buscar regra por nome"
+            class="w-full bg-transparent text-sm outline-none"
+          />
+        </div>
+
+        <ul class="mt-3 space-y-2">
+          @for (r of regrasFiltradas(); track r.id) {
+            <li class="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2.5">
+              <div class="min-w-0">
+                <p class="text-sm font-medium">
+                  <span class="num mr-2 text-xs text-muted-foreground">{{ r.id }}</span>
+                  {{ r.nome }}
+                </p>
+                <p class="text-xs text-muted-foreground">v{{ r.versao }} · {{ r.uso }}</p>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="regras().includes(r.id)"
+                (change)="toggleRegra(r.id)"
+                class="size-4 accent-[hsl(var(--primary))]"
+                [attr.aria-label]="'Selecionar ' + r.nome"
+              />
+            </li>
+          }
+          @if (regrasFiltradas().length === 0) {
+            <li class="py-4 text-center text-sm text-muted-foreground">
+              Nenhuma regra encontrada.
+            </li>
+          }
+        </ul>
+      </app-panel>
+    </div>
+
+    <!-- Barra Lateral: Fonte e Segurança -->
+    <aside class="space-y-5">
+      <app-panel title="Fonte e segurança">
+        <ul class="space-y-2.5 text-sm">
+          <li class="flex gap-2">
+            <lucide-icon [img]="DatabaseIcon" class="mt-0.5 size-4 text-muted-foreground shrink-0"></lucide-icon>
+            <span>Fonte: CodeX, DataJud ou réplica autorizada</span>
+          </li>
+          <li class="flex gap-2">
+            <lucide-icon [img]="ShieldCheckIcon" class="mt-0.5 size-4 text-muted-foreground shrink-0"></lucide-icon>
+            <span>Ambiente: controlado pela STI</span>
+          </li>
+          <li class="flex gap-2">
+            <lucide-icon [img]="ShieldCheckIcon" class="mt-0.5 size-4 text-muted-foreground shrink-0"></lucide-icon>
+            <span>Perfil de acesso: equipe correicional</span>
+          </li>
+        </ul>
+      </app-panel>
+    </aside>
+  </div>
+</app-shell>

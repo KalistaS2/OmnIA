@@ -1,0 +1,241 @@
+<app-shell
+  title="Central de Correições"
+  [subtitle]="'Visão geral · ' + referencePeriod"
+>
+  <!-- Ação no cabeçalho -->
+  <a
+    actions
+    routerLink="/planejamento"
+    class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+  >
+    <lucide-icon [img]="PlusIcon" class="size-4"></lucide-icon>
+    Nova correição
+  </a>
+
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="space-y-5">
+      <!-- Cards de KPIs -->
+      <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        @for (k of kpis; track k.label) {
+          <div class="panel p-4">
+            <p class="eyebrow">{{ k.label }}</p>
+            <p class="num mt-2 font-display text-3xl text-foreground">{{ k.value }}</p>
+            <p class="mt-1 text-xs text-muted-foreground">{{ k.hint }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Tabela de Processos -->
+      <app-panel
+        title="Processos e nível de atenção"
+        description="Priorização dos processos a partir das ocorrências potenciais identificadas."
+      >
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[980px] text-sm">
+            <thead>
+              <tr class="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Processo</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Unidade</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Classe</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Situação</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Último movimento</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Ocorrências</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Críticos</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Atenção</th>
+                <th class="whitespace-nowrap px-2 pb-2 font-semibold">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of processos; track p.numero) {
+                <tr
+                  class="border-b border-border/70 last:border-0"
+                  [ngClass]="{ 'bg-risk-high-soft/60': p.destaque }"
+                >
+                  <td class="num px-2 py-3 font-medium">
+                    {{ p.numero }}
+                    @if (p.destaque) {
+                      <span class="ml-2 align-middle">
+                        <app-tag tone="accent">foco da correição</app-tag>
+                      </span>
+                    }
+                  </td>
+                  <td class="px-2 py-3">{{ p.unidade }}</td>
+                  <td class="px-2 py-3 text-muted-foreground">{{ p.classe }}</td>
+                  <td class="px-2 py-3">
+                    <app-tag tone="info">{{ p.situacao }}</app-tag>
+                  </td>
+                  <td class="num px-2 py-3 text-muted-foreground">{{ p.ultimoMovimento }}</td>
+                  <td class="num px-2 py-3">{{ p.ocorrencias }}</td>
+                  <td class="num px-2 py-3">{{ p.criticos }}</td>
+                  <td class="px-2 py-3">
+                    <app-risk-badge [level]="p.atencao"></app-risk-badge>
+                  </td>
+                  <td class="px-2 py-3">
+                    <div class="flex gap-1.5">
+                      <button
+                        type="button"
+                        class="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                        title="Ver histórico"
+                        aria-label="Ver histórico"
+                      >
+                        <lucide-icon [img]="HistoryIcon" class="size-4"></lucide-icon>
+                      </button>
+                      <a
+                        routerLink="/planejamento"
+                        class="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                        title="Iniciar"
+                        aria-label="Iniciar"
+                      >
+                        <lucide-icon [img]="PlayIcon" class="size-4"></lucide-icon>
+                      </a>
+                      <a
+                        routerLink="/resultados"
+                        class="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                        title="Visualizar riscos"
+                        aria-label="Visualizar riscos"
+                      >
+                        <lucide-icon [img]="ShieldAlertIcon" class="size-4"></lucide-icon>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-panel>
+
+      <!-- Regras com maior recorrência -->
+      <app-panel
+        title="Regras com maior recorrência de ocorrências"
+        description="Ocorrências dependem de validação humana antes de qualquer conclusão."
+      >
+        <ul class="divide-y divide-border">
+          @for (r of regrasCriticas; track r.regra) {
+            <li class="flex flex-wrap items-center gap-4 py-3">
+              <div class="min-w-[220px] flex-1">
+                <p class="font-medium">{{ r.regra }}</p>
+                <p class="text-xs text-muted-foreground">{{ r.unidades }} unidades afetadas</p>
+              </div>
+              <div class="w-40">
+                <div class="h-2 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    class="h-full rounded-full bg-chart-2"
+                    [style.width.%]="(r.ocorrencias / 286) * 100"
+                  ></div>
+                </div>
+              </div>
+              <p class="num w-16 text-right font-display text-lg">{{ r.ocorrencias }}</p>
+              <div class="w-32 text-right">
+                <span [class]="'inline-flex items-center gap-1.5 text-sm ' + getTrendColor(r.tendencia)">
+                  <lucide-icon [img]="getTrendIcon(r.tendencia)" class="size-4"></lucide-icon>
+                  {{ r.tendencia }}
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+      </app-panel>
+
+      <!-- Universo da Auditoria -->
+      <app-panel title="Universo da auditoria" description="Escopo estimado a partir das bases autorizadas.">
+        <div class="grid gap-3 sm:grid-cols-2">
+          @for (item of universoAuditoria; track item[0]) {
+            <div class="flex items-center justify-between rounded-md border border-border px-3 py-2.5">
+              <span class="text-sm text-muted-foreground">{{ item[0] }}</span>
+              <span class="num text-sm font-medium">{{ item[1] }}</span>
+            </div>
+          }
+        </div>
+        <div class="mt-4 rounded-md bg-surface-strong px-4 py-3">
+          <span class="eyebrow">Total estimado</span>
+          <p class="num font-display text-3xl">12.480 processos</p>
+        </div>
+      </app-panel>
+
+      <!-- Evolução e Correições Recentes -->
+      <div class="grid gap-5 lg:grid-cols-2">
+        <app-panel title="Evolução da conformidade" description="Resultado acompanhado após as providências.">
+          <div class="flex h-48 items-end gap-6 px-2">
+            @for (e of evolucaoConformidade; track e.etapa) {
+              <div class="flex flex-1 flex-col items-center gap-2">
+                <span class="num font-display text-xl">{{ e.valor }}%</span>
+                <div
+                  class="w-full rounded-t-md bg-chart-1/85"
+                  [style.height.px]="e.valor * 1.4"
+                ></div>
+                <span class="text-center text-xs text-muted-foreground">{{ e.etapa }}</span>
+              </div>
+            }
+          </div>
+        </app-panel>
+
+        <app-panel title="Correições por unidade">
+          <div class="space-y-3">
+            @for (c of correicoesRecentes; track c.unidade) {
+              <div class="rounded-md border border-border p-3">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="font-medium">{{ c.unidade }}</p>
+                  <app-tag tone="info">{{ c.status }}</app-tag>
+                </div>
+                <ul class="mt-2 space-y-0.5 text-sm text-muted-foreground">
+                  @for (l of c.linhas; track l) {
+                    <li>· {{ l }}</li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </app-panel>
+      </div>
+    </div>
+
+    <!-- Barra Lateral de Alertas e Destaques -->
+    <aside class="space-y-5">
+      <app-panel title="Atenção necessária">
+        <ul class="space-y-2">
+          @for (a of alertasSemPrazo; track a) {
+            <li class="flex items-start gap-2 rounded-md bg-risk-medium-soft/70 p-3 text-sm">
+              <lucide-icon [img]="AlertTriangleIcon" class="mt-0.5 size-4 shrink-0 text-risk-medium"></lucide-icon>
+              {{ a }}
+            </li>
+          }
+        </ul>
+      </app-panel>
+
+      <div class="panel bg-primary p-5 text-primary-foreground">
+        <p class="eyebrow text-primary-foreground/70">Ação recomendada</p>
+        <h2 class="mt-2 text-xl">1ª Vara Cível demanda atenção</h2>
+        <p class="mt-2 text-sm text-primary-foreground/80">
+          Conformidade de 82%, 38 achados críticos e 21 providências pendentes desde 18/8/2025.
+        </p>
+        <a
+          routerLink="/planejamento"
+          class="mt-4 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+        >
+          Planejar nova correição
+          <lucide-icon [img]="ArrowUpRightIcon" class="size-4"></lucide-icon>
+        </a>
+      </div>
+
+      <app-panel title="Relatório da última correição">
+        <dl class="space-y-2 text-sm">
+          @for (item of relatorioUltimaCorreicao.resumo; track item[0]) {
+            <div class="flex justify-between border-b border-border/70 pb-2 last:border-0">
+              <dt class="text-muted-foreground">{{ item[0] }}</dt>
+              <dd class="num font-medium">{{ item[1] }}</dd>
+            </div>
+          }
+        </dl>
+        <p class="eyebrow mt-4">Regras com maior recorrência na unidade</p>
+        <ul class="mt-2 space-y-1.5 text-sm">
+          @for (r of relatorioUltimaCorreicao.regras; track r) {
+            <li class="rounded-md bg-secondary px-3 py-2">
+              {{ r }}
+            </li>
+          }
+        </ul>
+      </app-panel>
+    </aside>
+  </div>
+</app-shell>    
