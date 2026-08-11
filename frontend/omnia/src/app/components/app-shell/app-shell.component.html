@@ -1,0 +1,94 @@
+<div class="min-h-screen bg-background md:flex">
+  <!-- Sidebar lateral -->
+  <aside class="bg-sidebar text-sidebar-foreground md:sticky md:top-0 md:h-screen md:w-72 md:shrink-0">
+    <div class="border-b border-sidebar-border px-5 py-5">
+      <div class="flex items-center gap-3">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-white/30">
+          <img src="/favicon.png" alt="OMinIA" class="h-9 w-9 object-contain" />
+        </div>
+        <span class="text-xl font-semibold tracking-tight">
+          OMin<span class="text-accent">IA</span>
+        </span>
+      </div>
+
+      <p class="mt-2 text-[11px] tracking-widest uppercase opacity-70">
+        Corregedoria · Inteligência correicional
+      </p>
+    </div>
+
+    <nav class="flex gap-1 overflow-x-auto p-3 md:flex-col md:overflow-visible">
+      @for (item of nav; track item.to) {
+        <a
+          [routerLink]="item.to"
+          routerLinkActive="bg-sidebar-accent text-sidebar-accent-foreground"
+          [routerLinkActiveOptions]="{ exact: item.to === '/' }"
+          #rla="routerLinkActive"
+          class="flex min-w-max items-center gap-3 rounded-md px-3 py-2.5 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+        >
+          <lucide-icon
+            [img]="item.icon"
+            [class]="'size-4 ' + (rla.isActive ? 'text-sidebar-primary' : 'opacity-70')"
+          ></lucide-icon>
+          <span class="flex-1">{{ item.label }}</span>
+          <span class="num text-[11px] opacity-50">{{ item.step }}</span>
+        </a>
+      }
+    </nav>
+
+    <p class="hidden px-5 pt-4 text-[11px] leading-relaxed text-sidebar-foreground/50 md:block">
+      Protótipo demonstrativo. Todos os números são simulados e as bases são de leitura.
+    </p>
+  </aside>
+
+  <!-- Conteúdo Principal -->
+  <div class="min-w-0 flex-1">
+    <header class="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur">
+      <div class="flex flex-wrap items-center gap-4 px-6 py-4">
+        <div class="min-w-0 flex-1">
+          <p class="eyebrow">OMinIA · Central de Correições</p>
+          <h1 class="mt-1 truncate text-2xl text-foreground">{{ title }}</h1>
+          @if (subtitle) {
+            <p class="mt-1 text-sm text-muted-foreground">{{ subtitle }}</p>
+          }
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground lg:flex">
+            <lucide-icon [img]="SearchIcon" class="size-4"></lucide-icon>
+            <span>Buscar unidade, regra ou processo</span>
+          </div>
+
+          <button
+            class="relative rounded-md border border-border bg-card p-2 text-muted-foreground"
+            aria-label="Notificações"
+          >
+            <lucide-icon [img]="BellIcon" class="size-4"></lucide-icon>
+            <span class="absolute right-1 top-1 size-2 rounded-full bg-accent"></span>
+          </button>
+
+          <div class="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5">
+            <span class="grid size-7 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+              HM
+            </span>
+            <div class="hidden sm:block">
+              <p class="text-xs font-medium leading-tight">Dra. Helena Moreira</p>
+              <p class="text-[11px] leading-tight text-muted-foreground">Corregedoria · Titular</p>
+            </div>
+          </div>
+
+          <!-- Ponto de inserção para botões ou ações customizadas -->
+          <ng-content select="[actions]"></ng-content>
+        </div>
+      </div>
+
+      <div class="border-t border-border bg-surface px-6 py-1.5 text-[11px] text-muted-foreground">
+        Período de referência: {{ referencePeriod }} · Dados simulados para demonstração
+      </div>
+    </header>
+
+    <main class="px-6 py-6">
+      <!-- Ponto de inserção do conteúdo principal da página -->
+      <ng-content></ng-content>
+    </main>
+  </div>
+</div>
