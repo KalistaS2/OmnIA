@@ -1,1 +1,0 @@
-diretorio para as apis e serviçõs que a aplicação vai utilizar
