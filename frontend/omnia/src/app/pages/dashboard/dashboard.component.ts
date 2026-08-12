@@ -1,18 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import {
-  LucideAngularModule,
-  ArrowUpRight,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  AlertTriangle,
-  Plus,
-  History,
-  Play,
-  ShieldAlert,
-} from 'lucide-angular';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -38,7 +26,6 @@ import {
   imports: [
     CommonModule,
     RouterLink,
-    LucideAngularModule,
     AppShellComponent,
     PanelComponent,
     RiskBadgeComponent,
@@ -61,18 +48,10 @@ export class DashboardComponent {
     '3 correições com validação pendente',
   ];
 
-  // Ícones
-  readonly PlusIcon = Plus;
-  readonly ArrowUpRightIcon = ArrowUpRight;
-  readonly AlertTriangleIcon = AlertTriangle;
-  readonly HistoryIcon = History;
-  readonly PlayIcon = Play;
-  readonly ShieldAlertIcon = ShieldAlert;
-
-  getTrendIcon(tendencia: string) {
-    if (tendencia === 'Crescente') return TrendingUp;
-    if (tendencia === 'Decrescente') return TrendingDown;
-    return Minus;
+  getTrendIcon(tendencia: string): string {
+    if (tendencia === 'Crescente') return 'trending_up';
+    if (tendencia === 'Decrescente') return 'trending_down';
+    return 'trending_flat';
   }
 
   getTrendColor(tendencia: string): string {

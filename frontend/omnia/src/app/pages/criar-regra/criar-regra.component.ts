@@ -2,14 +2,6 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import {
-  LucideAngularModule,
-  ArrowLeft,
-  Bot,
-  Check,
-  Send,
-  User,
-} from 'lucide-angular';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -36,7 +28,6 @@ const PASSOS_SUGERIDOS = [
     CommonModule,
     RouterLink,
     FormsModule,
-    LucideAngularModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
@@ -67,13 +58,6 @@ export class CriarRegraComponent {
     'Sinaliza arquivamentos definitivos sem registro posterior de cumprimento de determinação judicial.'
   );
   salva = signal<boolean>(false);
-
-  // Ícones
-  readonly ArrowLeftIcon = ArrowLeft;
-  readonly BotIcon = Bot;
-  readonly CheckIcon = Check;
-  readonly SendIcon = Send;
-  readonly UserIcon = User;
 
   enviar(): void {
     const textoUsuario = `${this.instrucao()}\n\nAtende: ${this.atende()}\nNão atende: ${this.naoAtende()}\nNão se encaixa: ${this.naoEncaixa()}`;

@@ -1,14 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import {
-  LucideAngularModule,
-  ArrowRight,
-  CheckCircle2,
-  ChevronDown,
-  Loader2,
-  ShieldCheck,
-} from 'lucide-angular';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -28,7 +20,6 @@ import {
   imports: [
     CommonModule,
     RouterLink,
-    LucideAngularModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
@@ -72,13 +63,6 @@ export class AprovacaoComponent {
   // Estados reativos (Signals)
   progresso = signal<number>(-1);
   aberto = signal<string | null>(null);
-
-  // Ícones
-  readonly ArrowRightIcon = ArrowRight;
-  readonly CheckCircle2Icon = CheckCircle2;
-  readonly ChevronDownIcon = ChevronDown;
-  readonly Loader2Icon = Loader2;
-  readonly ShieldCheckIcon = ShieldCheck;
 
   iniciar(): void {
     this.progresso.set(0);
