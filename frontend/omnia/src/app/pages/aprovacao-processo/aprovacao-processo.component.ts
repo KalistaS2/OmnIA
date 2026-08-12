@@ -25,6 +25,7 @@ import {
     TagComponent,
   ],
   templateUrl: './aprovacao-processo.component.html',
+  styleUrl: './aprovacao-processo.component.scss',
 })
 export class AprovacaoProcessoComponent implements OnInit {
   private route = inject(ActivatedRoute);

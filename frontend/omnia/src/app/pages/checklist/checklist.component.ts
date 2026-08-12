@@ -24,6 +24,7 @@ import {
     TagComponent,
   ],
   templateUrl: './checklist.component.html',
+  styleUrl: './checklist.component.scss',
 })
 export class ChecklistComponent {
   readonly biblioteca: RegraBiblioteca[] = biblioteca;

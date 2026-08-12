@@ -7,22 +7,19 @@ export type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
   selector: 'app-badge',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <span [class]="computedClass()">
-      <ng-content></ng-content>
-    </span>
-  `,
+  templateUrl: './badge.component.html',
+  styleUrl: './badge.component.scss',
 })
 export class BadgeComponent {
   private _variant = signal<BadgeVariant>('default');
   private _class = signal<string>('');
 
-  @Input() 
+  @Input()
   set variant(value: BadgeVariant) {
     this._variant.set(value);
   }
 
-  @Input() 
+  @Input()
   set class(value: string) {
     this._class.set(value || '');
   }

@@ -25,6 +25,7 @@ import {
     TagComponent,
   ],
   templateUrl: './aprovacao.component.html',
+  styleUrl: './aprovacao.component.scss',
 })
 export class AprovacaoComponent {
   readonly processos: Processo[] = processos;

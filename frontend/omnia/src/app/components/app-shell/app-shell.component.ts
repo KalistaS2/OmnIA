@@ -8,6 +8,7 @@ import { REFERENCE_PERIOD } from '../../mock-data/prototype-data';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './app-shell.component.html',
+  styleUrl: './app-shell.component.scss',
 })
 export class AppShellComponent {
   @Input() title: string = '';

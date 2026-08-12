@@ -23,6 +23,7 @@ import { biblioteca, processos, Processo, RegraBiblioteca } from '../../mock-dat
     TagComponent,
   ],
   templateUrl: './planejamento.component.html',
+  styleUrl: './planejamento.component.scss',
 })
 export class PlanejamentoComponent {
   readonly UNIDADES = ['Todas', '1ª Vara Cível', '2ª Vara Cível', 'Vara da Fazenda Pública', '1ª Vara Criminal'];

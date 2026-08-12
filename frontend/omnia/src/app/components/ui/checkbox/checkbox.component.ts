@@ -13,23 +13,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       multi: true,
     },
   ],
-  template: `
-    <button
-      type="button"
-      role="checkbox"
-      [attr.aria-checked]="checked()"
-      [disabled]="disabled()"
-      (click)="toggle()"
-      [class]="computedClass()"
-    >
-      @if (checked()) {
-        <span class="material-symbols-outlined text-[14px] font-bold leading-none text-current">check</span>
-      }
-    </button>
-  `,
+  templateUrl: './checkbox.component.html',
+  styleUrl: './checkbox.component.scss',
 })
 export class CheckboxComponent implements ControlValueAccessor {
-
   checked = signal<boolean>(false);
   disabled = signal<boolean>(false);
   private _class = signal<string>('');
