@@ -2,13 +2,6 @@ import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import {
-  LucideAngularModule,
-  ArrowRight,
-  Database,
-  Search,
-  ShieldCheck,
-} from 'lucide-angular';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -24,7 +17,6 @@ import { biblioteca, processos, Processo, RegraBiblioteca } from '../../mock-dat
     CommonModule,
     RouterLink,
     FormsModule,
-    LucideAngularModule,
     AppShellComponent,
     PanelComponent,
     RiskBadgeComponent,
@@ -67,12 +59,6 @@ export class PlanejamentoComponent {
     const b = this.buscaRegra().toLowerCase();
     return biblioteca.filter((r) => r.nome.toLowerCase().includes(b));
   });
-
-  // Ícones
-  readonly ArrowRightIcon = ArrowRight;
-  readonly DatabaseIcon = Database;
-  readonly SearchIcon = Search;
-  readonly ShieldCheckIcon = ShieldCheck;
 
   toggleRegra(id: string): void {
     this.regras.update((current) =>

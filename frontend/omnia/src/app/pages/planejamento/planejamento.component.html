@@ -9,7 +9,7 @@
     class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
   >
     Seguir para aprovação
-    <lucide-icon [img]="ArrowRightIcon" class="size-4"></lucide-icon>
+    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
   </a>
 
   <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -158,7 +158,7 @@
         </div>
 
         <div class="flex items-center gap-2 rounded-md border border-input bg-card px-3 py-2">
-          <lucide-icon [img]="SearchIcon" class="size-4 text-muted-foreground"></lucide-icon>
+          <span class="material-symbols-outlined text-[18px] text-muted-foreground">search</span>
           <input
             type="text"
             [ngModel]="buscaRegra()"
@@ -201,15 +201,15 @@
       <app-panel title="Fonte e segurança">
         <ul class="space-y-2.5 text-sm">
           <li class="flex gap-2">
-            <lucide-icon [img]="DatabaseIcon" class="mt-0.5 size-4 text-muted-foreground shrink-0"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px] text-muted-foreground shrink-0">database</span>
             <span>Fonte: CodeX, DataJud ou réplica autorizada</span>
           </li>
           <li class="flex gap-2">
-            <lucide-icon [img]="ShieldCheckIcon" class="mt-0.5 size-4 text-muted-foreground shrink-0"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px] text-muted-foreground shrink-0">verified_user</span>
             <span>Ambiente: controlado pela STI</span>
           </li>
           <li class="flex gap-2">
-            <lucide-icon [img]="ShieldCheckIcon" class="mt-0.5 size-4 text-muted-foreground shrink-0"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px] text-muted-foreground shrink-0">verified_user</span>
             <span>Perfil de acesso: equipe correicional</span>
           </li>
         </ul>

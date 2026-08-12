@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { LucideAngularModule, ChevronDown, Check } from 'lucide-angular';
 
 export interface SelectOption {
   value: string | number;
@@ -22,7 +21,7 @@ export interface SelectOption {
 @Component({
   selector: 'app-select',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -42,7 +41,7 @@ export interface SelectOption {
         <span class="truncate">
           {{ selectedLabel() || placeholder }}
         </span>
-        <lucide-icon [img]="ChevronDownIcon" class="h-4 w-4 opacity-50 shrink-0"></lucide-icon>
+        <span class="material-symbols-outlined text-[18px] opacity-50 shrink-0">expand_more</span>
       </button>
 
       <!-- Dropdown Content -->
@@ -61,7 +60,7 @@ export interface SelectOption {
               <span class="truncate">{{ option.label }}</span>
               @if (selectedValue() === option.value) {
                 <span class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
-                  <lucide-icon [img]="CheckIcon" class="h-4 w-4"></lucide-icon>
+                  <span class="material-symbols-outlined text-[16px]">check</span>
                 </span>
               }
             </div>
@@ -72,9 +71,6 @@ export interface SelectOption {
   `,
 })
 export class SelectComponent implements ControlValueAccessor {
-  readonly ChevronDownIcon = ChevronDown;
-  readonly CheckIcon = Check;
-
   @Input() options: SelectOption[] = [];
   @Input() placeholder: string = 'Selecione uma opção...';
   @Input() customClass: string = '';

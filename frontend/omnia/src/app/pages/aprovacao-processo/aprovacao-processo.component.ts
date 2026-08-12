@@ -2,17 +2,6 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import {
-  LucideAngularModule,
-  ArrowLeft,
-  CheckCircle2,
-  FileText,
-  FileSignature,
-  NotebookPen,
-  RotateCcw,
-  Send,
-  XCircle,
-} from 'lucide-angular';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -31,7 +20,6 @@ import {
     CommonModule,
     RouterLink,
     FormsModule,
-    LucideAngularModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
@@ -68,10 +56,10 @@ export class AprovacaoProcessoComponent implements OnInit {
   ];
 
   readonly decisoes = [
-    { label: 'Aprovar correição', icon: CheckCircle2 },
-    { label: 'Descartar achado', icon: XCircle },
-    { label: 'Solicitar revisão', icon: RotateCcw },
-    { label: 'Encaminhar à unidade', icon: Send },
+    { label: 'Aprovar correição', icon: 'check_circle' },
+    { label: 'Descartar achado', icon: 'cancel' },
+    { label: 'Solicitar revisão', icon: 'replay' },
+    { label: 'Encaminhar à unidade', icon: 'send' },
   ];
 
   // Estados reativos (Signals)
@@ -79,13 +67,6 @@ export class AprovacaoProcessoComponent implements OnInit {
   anotacao = signal<string>('');
   anotacoes = signal<string[]>([]);
   relatorio = signal<string | null>(null);
-
-  // Ícones
-  readonly ArrowLeftIcon = ArrowLeft;
-  readonly CheckCircle2Icon = CheckCircle2;
-  readonly FileTextIcon = FileText;
-  readonly FileSignatureIcon = FileSignature;
-  readonly NotebookPenIcon = NotebookPen;
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {

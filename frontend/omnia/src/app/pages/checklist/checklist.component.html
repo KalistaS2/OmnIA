@@ -30,7 +30,7 @@
                 (click)="abrirDetalhes(r.id)"
                 class="inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-secondary"
               >
-                <lucide-icon [img]="EyeIcon" class="size-4"></lucide-icon>
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
                 Ver detalhes
               </button>
             </div>
@@ -55,14 +55,14 @@
         description="Identificar verificações que ainda não existem na biblioteca de regras."
       >
         <p class="flex items-center gap-2 text-sm text-muted-foreground">
-          <lucide-icon [img]="Wand2Icon" class="size-4 text-accent shrink-0"></lucide-icon>
+          <span class="material-symbols-outlined text-[18px] text-accent shrink-0">auto_fix_high</span>
           O Construtor Inteligente traduz a necessidade descrita em linguagem natural para uma sequência auditável de passos.
         </p>
         <a
           routerLink="/criar-regra"
           class="mt-4 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
         >
-          <lucide-icon [img]="PlusIcon" class="size-4"></lucide-icon>
+          <span class="material-symbols-outlined text-[18px]">add</span>
           Criar nova regra
         </a>
       </app-panel>
@@ -84,7 +84,7 @@
             aria-label="Fechar"
             class="rounded-md border border-border p-1.5 text-muted-foreground hover:bg-secondary"
           >
-            <lucide-icon [img]="XIcon" class="size-4"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
 

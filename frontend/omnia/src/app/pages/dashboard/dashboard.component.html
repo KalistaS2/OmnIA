@@ -8,7 +8,7 @@
     routerLink="/planejamento"
     class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
   >
-    <lucide-icon [img]="PlusIcon" class="size-4"></lucide-icon>
+    <span class="material-symbols-outlined text-[18px]">add</span>
     Nova correição
   </a>
 
@@ -78,7 +78,7 @@
                         title="Ver histórico"
                         aria-label="Ver histórico"
                       >
-                        <lucide-icon [img]="HistoryIcon" class="size-4"></lucide-icon>
+                        <span class="material-symbols-outlined text-[18px]">history</span>
                       </button>
                       <a
                         routerLink="/planejamento"
@@ -86,7 +86,7 @@
                         title="Iniciar"
                         aria-label="Iniciar"
                       >
-                        <lucide-icon [img]="PlayIcon" class="size-4"></lucide-icon>
+                        <span class="material-symbols-outlined text-[18px]">play_arrow</span>
                       </a>
                       <a
                         routerLink="/resultados"
@@ -94,7 +94,7 @@
                         title="Visualizar riscos"
                         aria-label="Visualizar riscos"
                       >
-                        <lucide-icon [img]="ShieldAlertIcon" class="size-4"></lucide-icon>
+                        <span class="material-symbols-outlined text-[18px]">gpp_maybe</span>
                       </a>
                     </div>
                   </td>
@@ -128,7 +128,7 @@
               <p class="num w-16 text-right font-display text-lg">{{ r.ocorrencias }}</p>
               <div class="w-32 text-right">
                 <span [class]="'inline-flex items-center gap-1.5 text-sm ' + getTrendColor(r.tendencia)">
-                  <lucide-icon [img]="getTrendIcon(r.tendencia)" class="size-4"></lucide-icon>
+                  <span class="material-symbols-outlined text-[18px]">{{ getTrendIcon(r.tendencia) }}</span>
                   {{ r.tendencia }}
                 </span>
               </div>
@@ -196,7 +196,7 @@
         <ul class="space-y-2">
           @for (a of alertasSemPrazo; track a) {
             <li class="flex items-start gap-2 rounded-md bg-risk-medium-soft/70 p-3 text-sm">
-              <lucide-icon [img]="AlertTriangleIcon" class="mt-0.5 size-4 shrink-0 text-risk-medium"></lucide-icon>
+              <span class="material-symbols-outlined text-[18px] text-risk-medium shrink-0">warning</span>
               {{ a }}
             </li>
           }
@@ -214,7 +214,7 @@
           class="mt-4 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
         >
           Planejar nova correição
-          <lucide-icon [img]="ArrowUpRightIcon" class="size-4"></lucide-icon>
+          <span class="material-symbols-outlined text-[18px]">arrow_outward</span>
         </a>
       </div>
 
@@ -238,4 +238,4 @@
       </app-panel>
     </aside>
   </div>
-</app-shell>    
+</app-shell>
