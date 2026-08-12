@@ -33,6 +33,7 @@ const PASSOS_SUGERIDOS = [
     TagComponent,
   ],
   templateUrl: './criar-regra.component.html',
+  styleUrl: './criar-regra.component.scss',
 })
 export class CriarRegraComponent {
   // Estados reativos (Signals)

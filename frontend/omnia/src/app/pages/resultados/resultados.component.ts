@@ -22,6 +22,7 @@ import {
     TagComponent,
   ],
   templateUrl: './resultados.component.html',
+  styleUrl: './resultados.component.scss',
 })
 export class ResultadosComponent {
   readonly resultadoPorRegra = resultadoPorRegra;

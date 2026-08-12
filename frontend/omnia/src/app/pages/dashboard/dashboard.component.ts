@@ -32,6 +32,7 @@ import {
     TagComponent,
   ],
   templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
   readonly referencePeriod = REFERENCE_PERIOD;

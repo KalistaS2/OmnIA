@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-card',
   standalone: true,
   imports: [CommonModule],
+  styleUrl: './card.component.scss',
   template: `<div [class]="'rounded-xl border bg-card text-card-foreground shadow ' + customClass"><ng-content></ng-content></div>`,
 })
 export class CardComponent {
@@ -15,6 +16,7 @@ export class CardComponent {
   selector: 'app-card-header',
   standalone: true,
   imports: [CommonModule],
+  styleUrl: './card.component.scss',
   template: `<div [class]="'flex flex-col space-y-1.5 p-6 ' + customClass"><ng-content></ng-content></div>`,
 })
 export class CardHeaderComponent {
@@ -25,6 +27,7 @@ export class CardHeaderComponent {
   selector: 'app-card-title',
   standalone: true,
   imports: [CommonModule],
+  styleUrl: './card.component.scss',
   template: `<h3 [class]="'font-semibold leading-none tracking-tight ' + customClass"><ng-content></ng-content></h3>`,
 })
 export class CardTitleComponent {
@@ -35,6 +38,7 @@ export class CardTitleComponent {
   selector: 'app-card-description',
   standalone: true,
   imports: [CommonModule],
+  styleUrl: './card.component.scss',
   template: `<p [class]="'text-sm text-muted-foreground ' + customClass"><ng-content></ng-content></p>`,
 })
 export class CardDescriptionComponent {
@@ -45,6 +49,7 @@ export class CardDescriptionComponent {
   selector: 'app-card-content',
   standalone: true,
   imports: [CommonModule],
+  styleUrl: './card.component.scss',
   template: `<div [class]="'p-6 pt-0 ' + customClass"><ng-content></ng-content></div>`,
 })
 export class CardContentComponent {
@@ -55,6 +60,7 @@ export class CardContentComponent {
   selector: 'app-card-footer',
   standalone: true,
   imports: [CommonModule],
+  styleUrl: './card.component.scss',
   template: `<div [class]="'flex items-center p-6 pt-0 ' + customClass"><ng-content></ng-content></div>`,
 })
 export class CardFooterComponent {
