@@ -1,219 +1,831 @@
 <app-shell
-  title="Nova Correição Ordinária"
-  subtitle="Qual unidade será correicionada e qual será o alcance da análise?"
+  title="Planejamento da Correição"
+  subtitle="Definição de escopo por unidade, percentual de amostragem e regras correicionais"
 >
-  <!-- Ação no cabeçalho -->
-  <a
-    actions
-    routerLink="/aprovacao"
-    class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-  >
-    Seguir para aprovação
-    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-  </a>
-
-  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
-    <div class="space-y-5">
-      <!-- Painel de Identificação e Filtros -->
-      <app-panel
-        title="Identificação e filtros"
-        description="Os campos abaixo definem a correição e filtram os processos do acervo."
+  <!-- Ações no cabeçalho -->
+  <div actions class="flex items-center gap-2">
+    @if (etapaAtual() === 3) {
+      <a
+        routerLink="/acompanhamento"
+        [queryParams]="{ unidade: unidadeSelecionada() }"
+        class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 shadow-sm"
       >
-        <div right>
-          <app-tag tone="info">Rascunho</app-tag>
-        </div>
+        <span>Iniciar correição</span>
+        <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+      </a>
+    } @else {
+      <span class="text-xs text-muted-foreground hidden sm:inline-block">
+        Etapa {{ etapaAtual() }} de 3 · {{ unidadeSelecionada() }}
+      </span>
+    }
+  </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <label class="block">
-            <span class="eyebrow">Unidade judicial</span>
-            <div class="mt-1.5">
-              <select
-                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                [ngModel]="unidade()"
-                (ngModelChange)="unidade.set($event)"
-              >
-                @for (u of UNIDADES; track u) {
-                  <option [value]="u">{{ u }}</option>
-                }
-              </select>
-            </div>
-          </label>
+  <div class="space-y-6">
+    <!-- ========================================== -->
+    <!-- BARRA DE PROGRESSÃO SUPERIOR (STEPPER) -->
+    <!-- ========================================== -->
+    <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        
+        <!-- Passo 1: Seleção da Unidade -->
+        <button
+          type="button"
+          (click)="irParaEtapa(1)"
+          [disabled]="!podeAcessarEtapa(1)"
+          class="flex items-center gap-3.5 rounded-lg p-2.5 text-left transition-all hover:bg-secondary/60 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+          [ngClass]="{
+            'bg-secondary/40': etapaAtual() === 1
+          }"
+        >
+          <!-- Ícone / Indicador de Status -->
+          <div
+            class="flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors"
+            [ngClass]="{
+              'bg-primary text-primary-foreground': isEtapaConcluida(1),
+              'bg-primary text-primary-foreground ring-4 ring-primary/20': etapaAtual() === 1 && !isEtapaConcluida(1),
+              'border border-border bg-secondary text-muted-foreground': etapaAtual() !== 1 && !isEtapaConcluida(1)
+            }"
+          >
+            @if (isEtapaConcluida(1)) {
+              <span class="material-symbols-outlined text-[20px]">check</span>
+            } @else {
+              <span>1</span>
+            }
+          </div>
 
-          <label class="block">
-            <span class="eyebrow">Situação do processo</span>
-            <div class="mt-1.5">
-              <select
-                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                [ngModel]="situacao()"
-                (ngModelChange)="situacao.set($event)"
-              >
-                @for (s of SITUACOES; track s) {
-                  <option [value]="s">{{ s }}</option>
-                }
-              </select>
-            </div>
-          </label>
-
-          <label class="block">
-            <span class="eyebrow">Classe processual</span>
-            <div class="mt-1.5">
-              <input
-                type="text"
-                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                [ngModel]="classe()"
-                (ngModelChange)="classe.set($event)"
-                placeholder="Buscar classe"
-              />
-            </div>
-          </label>
-
-          <label class="block">
-            <span class="eyebrow">Assunto</span>
-            <div class="mt-1.5">
-              <input
-                type="text"
-                class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                [ngModel]="assunto()"
-                (ngModelChange)="assunto.set($event)"
-                placeholder="Buscar assunto"
-              />
-            </div>
-          </label>
-
-          <label class="block">
-            <span class="eyebrow">Período de referência</span>
-            <div class="mt-1.5">
-              <div class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-muted-foreground">
-                1º/1/2026 a 31/7/2026
-              </div>
-            </div>
-          </label>
-
-          <label class="block">
-            <span class="eyebrow">Responsável</span>
-            <div class="mt-1.5">
-              <div class="w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-muted-foreground">
-                Dra. Helena Moreira
-              </div>
-            </div>
-          </label>
-        </div>
-      </app-panel>
-
-      <!-- Painel de Processos Selecionados -->
-      <app-panel
-        title="Processos selecionados"
-        description="Resultado dos filtros aplicados ao acervo autorizado."
-      >
-        <div right>
-          <app-tag tone="info">{{ lista().length }} processos</app-tag>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full min-w-[760px] text-sm">
-            <thead>
-              <tr class="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th class="px-2 pb-2 font-semibold">Processo</th>
-                <th class="px-2 pb-2 font-semibold">Unidade</th>
-                <th class="px-2 pb-2 font-semibold">Classe</th>
-                <th class="px-2 pb-2 font-semibold">Assunto</th>
-                <th class="px-2 pb-2 font-semibold">Situação</th>
-                <th class="px-2 pb-2 font-semibold">Atenção</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (p of lista(); track p.numero) {
-                <tr class="border-b border-border/70 last:border-0">
-                  <td class="num px-2 py-3 font-medium">{{ p.numero }}</td>
-                  <td class="px-2 py-3">{{ p.unidade }}</td>
-                  <td class="px-2 py-3 text-muted-foreground">{{ p.classe }}</td>
-                  <td class="px-2 py-3 text-muted-foreground">{{ p.assunto }}</td>
-                  <td class="px-2 py-3">
-                    <app-tag tone="info">{{ p.situacao }}</app-tag>
-                  </td>
-                  <td class="px-2 py-3">
-                    <app-risk-badge [level]="p.atencao"></app-risk-badge>
-                  </td>
-                </tr>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Etapa 1</span>
+              @if (isEtapaConcluida(1)) {
+                <span class="text-[11px] font-medium text-primary flex items-center gap-0.5">
+                  <span class="size-1.5 rounded-full bg-primary inline-block"></span> Concluída
+                </span>
               }
-              @if (lista().length === 0) {
-                <tr>
-                  <td colspan="6" class="px-2 py-6 text-center text-sm text-muted-foreground">
-                    Nenhum processo corresponde aos filtros.
-                  </td>
-                </tr>
+            </div>
+            <p
+              class="truncate text-sm font-medium transition-colors"
+              [ngClass]="{
+                'text-primary font-semibold': isEtapaConcluida(1),
+                'text-foreground font-bold': etapaAtual() === 1,
+                'text-muted-foreground': etapaAtual() !== 1 && !isEtapaConcluida(1)
+              }"
+            >
+              Unidade Judiciária
+            </p>
+            <p class="truncate text-xs text-muted-foreground">
+              {{ unidadeSelecionada() || 'Selecione uma unidade' }}
+            </p>
+          </div>
+        </button>
+
+        <!-- Passo 2: Seleção da Amostragem -->
+        <button
+          type="button"
+          (click)="irParaEtapa(2)"
+          [disabled]="!podeAcessarEtapa(2)"
+          class="flex items-center gap-3.5 rounded-lg p-2.5 text-left transition-all hover:bg-secondary/60 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+          [ngClass]="{
+            'bg-secondary/40': etapaAtual() === 2
+          }"
+        >
+          <!-- Ícone / Indicador de Status -->
+          <div
+            class="flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors"
+            [ngClass]="{
+              'bg-primary text-primary-foreground': isEtapaConcluida(2),
+              'bg-primary text-primary-foreground ring-4 ring-primary/20': etapaAtual() === 2 && !isEtapaConcluida(2),
+              'border border-border bg-secondary text-muted-foreground': etapaAtual() !== 2 && !isEtapaConcluida(2)
+            }"
+          >
+            @if (isEtapaConcluida(2)) {
+              <span class="material-symbols-outlined text-[20px]">check</span>
+            } @else {
+              <span>2</span>
+            }
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Etapa 2</span>
+              @if (isEtapaConcluida(2)) {
+                <span class="text-[11px] font-medium text-primary flex items-center gap-0.5">
+                  <span class="size-1.5 rounded-full bg-primary inline-block"></span> Concluída
+                </span>
               }
-            </tbody>
-          </table>
-        </div>
-      </app-panel>
+            </div>
+            <p
+              class="truncate text-sm font-medium transition-colors"
+              [ngClass]="{
+                'text-primary font-semibold': isEtapaConcluida(2),
+                'text-foreground font-bold': etapaAtual() === 2,
+                'text-muted-foreground': etapaAtual() !== 2 && !isEtapaConcluida(2)
+              }"
+            >
+              Amostragem (10%, 20%, 30%)
+            </p>
+            <p class="truncate text-xs text-muted-foreground">
+              @if (isEtapaConcluida(2) || etapaAtual() >= 2) {
+                {{ amostragem() }}% ({{ processosAmostradosQtd() | number:'1.0-0' }} processos)
+              } @else {
+                Definir percentual
+              }
+            </p>
+          </div>
+        </button>
 
-      <!-- Painel de Regras da Correição -->
-      <app-panel
-        title="Regras da correição"
-        description="Selecione as regras que serão aplicadas ao universo definido."
-      >
-        <div right>
-          <app-tag tone="accent">{{ regras().length }} selecionadas</app-tag>
-        </div>
+        <!-- Passo 3: Seleção de Regras -->
+        <button
+          type="button"
+          (click)="irParaEtapa(3)"
+          [disabled]="!podeAcessarEtapa(3)"
+          class="flex items-center gap-3.5 rounded-lg p-2.5 text-left transition-all hover:bg-secondary/60 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+          [ngClass]="{
+            'bg-secondary/40': etapaAtual() === 3
+          }"
+        >
+          <!-- Ícone / Indicador de Status -->
+          <div
+            class="flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors"
+            [ngClass]="{
+              'bg-primary text-primary-foreground': isEtapaConcluida(3),
+              'bg-primary text-primary-foreground ring-4 ring-primary/20': etapaAtual() === 3,
+              'border border-border bg-secondary text-muted-foreground': etapaAtual() !== 3 && !isEtapaConcluida(3)
+            }"
+          >
+            @if (isEtapaConcluida(3)) {
+              <span class="material-symbols-outlined text-[20px]">check</span>
+            } @else {
+              <span>3</span>
+            }
+          </div>
 
-        <div class="flex items-center gap-2 rounded-md border border-input bg-card px-3 py-2">
-          <span class="material-symbols-outlined text-[18px] text-muted-foreground">search</span>
-          <input
-            type="text"
-            [ngModel]="buscaRegra()"
-            (ngModelChange)="buscaRegra.set($event)"
-            placeholder="Buscar regra por nome"
-            class="w-full bg-transparent text-sm outline-none"
-          />
-        </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Etapa 3</span>
+              @if (isEtapaConcluida(3)) {
+                <span class="text-[11px] font-medium text-primary flex items-center gap-0.5">
+                  <span class="size-1.5 rounded-full bg-primary inline-block"></span> Concluída
+                </span>
+              }
+            </div>
+            <p
+              class="truncate text-sm font-medium transition-colors"
+              [ngClass]="{
+                'text-primary font-semibold': isEtapaConcluida(3),
+                'text-foreground font-bold': etapaAtual() === 3,
+                'text-muted-foreground': etapaAtual() !== 3 && !isEtapaConcluida(3)
+              }"
+            >
+              Seleção de Regras
+            </p>
+            <p class="truncate text-xs text-muted-foreground">
+              {{ regrasSelecionadas().length }} regras selecionadas
+            </p>
+          </div>
+        </button>
 
-        <ul class="mt-3 space-y-2">
-          @for (r of regrasFiltradas(); track r.id) {
-            <li class="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2.5">
-              <div class="min-w-0">
-                <p class="text-sm font-medium">
-                  <span class="num mr-2 text-xs text-muted-foreground">{{ r.id }}</span>
-                  {{ r.nome }}
-                </p>
-                <p class="text-xs text-muted-foreground">v{{ r.versao }} · {{ r.uso }}</p>
-              </div>
-              <input
-                type="checkbox"
-                [checked]="regras().includes(r.id)"
-                (change)="toggleRegra(r.id)"
-                class="size-4 accent-[hsl(var(--primary))]"
-                [attr.aria-label]="'Selecionar ' + r.nome"
-              />
-            </li>
-          }
-          @if (regrasFiltradas().length === 0) {
-            <li class="py-4 text-center text-sm text-muted-foreground">
-              Nenhuma regra encontrada.
-            </li>
-          }
-        </ul>
-      </app-panel>
+      </div>
     </div>
 
-    <!-- Barra Lateral: Fonte e Segurança -->
-    <aside class="space-y-5">
-      <app-panel title="Fonte e segurança">
-        <ul class="space-y-2.5 text-sm">
-          <li class="flex gap-2">
-            <span class="material-symbols-outlined text-[18px] text-muted-foreground shrink-0">database</span>
-            <span>Fonte: CodeX, DataJud ou réplica autorizada</span>
-          </li>
-          <li class="flex gap-2">
-            <span class="material-symbols-outlined text-[18px] text-muted-foreground shrink-0">verified_user</span>
-            <span>Ambiente: controlado pela STI</span>
-          </li>
-          <li class="flex gap-2">
-            <span class="material-symbols-outlined text-[18px] text-muted-foreground shrink-0">verified_user</span>
-            <span>Perfil de acesso: equipe correicional</span>
-          </li>
-        </ul>
-      </app-panel>
-    </aside>
+    <!-- ========================================== -->
+    <!-- ETAPA 1: SELEÇÃO DA UNIDADE JUDICIÁRIA -->
+    <!-- ========================================== -->
+    @if (etapaAtual() === 1) {
+      <div class="space-y-6 animate-in fade-in-0 duration-200">
+        <app-panel
+          title="Etapa 1: Selecionar a unidade judiciária"
+          description="Escolha a vara ou tribunal que será submetido à nova correição ordinária do OMinIA."
+        >
+          <!-- Filtro / Barra de Busca no Topo da Etapa 1 -->
+          <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
+            <div class="relative flex-1 max-w-md">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-muted-foreground">search</span>
+              <input
+                type="text"
+                [ngModel]="buscaUnidade()"
+                (ngModelChange)="buscaUnidade.set($event)"
+                placeholder="Filtrar unidade por nome, comarca ou competência..."
+                class="w-full rounded-md border border-border bg-background py-2 pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              @if (buscaUnidade()) {
+                <button
+                  type="button"
+                  (click)="buscaUnidade.set('')"
+                  class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  title="Limpar busca"
+                  aria-label="Limpar busca"
+                >
+                  <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              }
+            </div>
+
+            <span class="text-xs text-muted-foreground">
+              Exibindo {{ unidadesFiltradas().length }} de {{ unidadesLista.length }} unidades judiciárias
+            </span>
+          </div>
+
+          <!-- Grade de Unidades Judiciárias -->
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            @for (u of unidadesFiltradas(); track u.nome) {
+              <div
+                (click)="selecionarUnidade(u.nome)"
+                class="relative flex flex-col justify-between rounded-xl border p-4 cursor-pointer transition-all duration-200 hover:shadow-md"
+                [ngClass]="{
+                  'border-primary bg-primary/5 ring-2 ring-primary shadow-sm': unidadeSelecionada() === u.nome,
+                  'border-border bg-card hover:border-primary/50 hover:bg-secondary/40': unidadeSelecionada() !== u.nome
+                }"
+              >
+                <!-- Cabeçalho do Card da Unidade -->
+                <div>
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[22px]"
+                        [ngClass]="unidadeSelecionada() === u.nome ? 'text-primary' : 'text-muted-foreground'">
+                        account_balance
+                      </span>
+                      <div>
+                        <h3 class="font-semibold text-foreground text-sm">{{ u.nome }}</h3>
+                        <p class="text-xs text-muted-foreground">{{ u.competencia }} · {{ u.comarca }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Indicador de Seleção -->
+                    <div
+                      class="flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors"
+                      [ngClass]="{
+                        'border-primary bg-primary text-primary-foreground': unidadeSelecionada() === u.nome,
+                        'border-border bg-secondary': unidadeSelecionada() !== u.nome
+                      }"
+                    >
+                      @if (unidadeSelecionada() === u.nome) {
+                        <span class="material-symbols-outlined text-[14px]">check</span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Métricas da Vara -->
+                  <div class="mt-4 grid grid-cols-2 gap-2.5 rounded-lg bg-secondary/50 p-2.5 text-xs">
+                    <div>
+                      <p class="text-muted-foreground text-[11px]">Acervo total</p>
+                      <p class="num font-bold text-foreground text-sm mt-0.5">{{ u.totalProcessos | number:'1.0-0' }}</p>
+                    </div>
+                    <div>
+                      <p class="text-muted-foreground text-[11px]">Pendências</p>
+                      <p class="num font-bold text-foreground text-sm mt-0.5">{{ u.processosPendentes | number:'1.0-0' }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Rodapé do Card -->
+                <div class="mt-4 flex items-center justify-between border-t border-border/70 pt-2.5 text-xs text-muted-foreground">
+                  <span>Última correição:</span>
+                  @if (u.statusCorreicao === 'Em andamento' || u.statusCorreicao === 'Em validação') {
+                    <app-tag tone="info">Em andamento</app-tag>
+                  } @else {
+                    <span class="font-medium text-foreground">{{ u.ultimaCorreicao }}</span>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="col-span-full py-8 text-center text-muted-foreground">
+                <span class="material-symbols-outlined text-[36px] text-muted-foreground/60 mb-2">search_off</span>
+                <p class="font-medium text-foreground">Nenhuma unidade encontrada para "{{ buscaUnidade() }}"</p>
+                <button
+                  type="button"
+                  (click)="buscaUnidade.set('')"
+                  class="mt-2 text-xs text-primary underline"
+                >
+                  Limpar filtro de busca
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- Barra de Ação Inferior da Etapa 1 -->
+          <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-muted-foreground">Unidade escolhida:</span>
+              <span class="text-sm font-bold text-foreground">{{ unidadeSelecionada() }}</span>
+              <span class="rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
+                {{ unidadeAtual()?.totalProcessos | number:'1.0-0' }} processos no acervo
+              </span>
+            </div>
+
+            <button
+              type="button"
+              (click)="avancarParaEtapa2()"
+              [disabled]="!unidadeSelecionada()"
+              class="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 disabled:opacity-50"
+            >
+              <span>Avançar para Amostragem</span>
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          </div>
+        </app-panel>
+      </div>
+    }
+
+    <!-- ========================================== -->
+    <!-- ETAPA 2: SELEÇÃO DA AMOSTRAGEM -->
+    <!-- ========================================== -->
+    @if (etapaAtual() === 2) {
+      <div class="space-y-6 animate-in fade-in-0 duration-200">
+        <app-panel
+          title="Etapa 2: Definir percentual de amostragem"
+          description="Selecione o percentual amostral de processos que serão auditados pelo OMinIA."
+        >
+          <!-- Resumo da Unidade Selecionada -->
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3.5">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-[22px] text-primary">account_balance</span>
+              <div>
+                <p class="text-xs text-muted-foreground">Unidade em Planejamento:</p>
+                <h3 class="font-bold text-foreground text-sm">{{ unidadeSelecionada() }}</h3>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs">
+              <div>
+                <span class="text-muted-foreground">Acervo Total:</span>
+                <span class="num font-bold text-foreground ml-1">{{ unidadeAtual()?.totalProcessos | number:'1.0-0' }}</span>
+              </div>
+              <button
+                type="button"
+                (click)="irParaEtapa(1)"
+                class="text-xs font-medium text-primary hover:underline"
+              >
+                Trocar unidade
+              </button>
+            </div>
+          </div>
+
+          <!-- Seletores Visuais de Amostragem (10%, 20%, 30%) -->
+          <div class="mb-6">
+            <label class="eyebrow text-muted-foreground mb-3 block">
+              Escolha a Amostragem da Correição
+            </label>
+            <div class="grid gap-4 sm:grid-cols-3">
+              
+              <!-- Opção 10% -->
+              <div
+                (click)="selecionarAmostragem(10)"
+                class="relative flex flex-col justify-between rounded-xl border p-4 cursor-pointer transition-all duration-200 hover:shadow-md"
+                [ngClass]="{
+                  'border-primary bg-primary/5 ring-2 ring-primary shadow-sm': amostragem() === 10,
+                  'border-border bg-card hover:border-primary/50 hover:bg-secondary/40': amostragem() !== 10
+                }"
+              >
+                <div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-display text-2xl font-bold text-foreground">10%</span>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Preliminar</span>
+                  </div>
+                  <h4 class="mt-2 text-sm font-semibold text-foreground">Amostra Rápida</h4>
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    Triagem inicial recomendada para diagnósticos prévios e rotinas básicas.
+                  </p>
+                </div>
+
+                <div class="mt-4 border-t border-border/70 pt-2.5">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-muted-foreground">Processos calculados:</span>
+                    <span class="num font-bold text-foreground text-sm">
+                      {{ (unidadeAtual()?.totalProcessos || 3000) * 0.1 | number:'1.0-0' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Opção 20% (Recomendada) -->
+              <div
+                (click)="selecionarAmostragem(20)"
+                class="relative flex flex-col justify-between rounded-xl border p-4 cursor-pointer transition-all duration-200 hover:shadow-md"
+                [ngClass]="{
+                  'border-primary bg-primary/5 ring-2 ring-primary shadow-sm': amostragem() === 20,
+                  'border-border bg-card hover:border-primary/50 hover:bg-secondary/40': amostragem() !== 20
+                }"
+              >
+                <div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-display text-2xl font-bold text-foreground">20%</span>
+                    <app-tag tone="accent">Recomendado</app-tag>
+                  </div>
+                  <h4 class="mt-2 text-sm font-semibold text-foreground">Amostragem Padrão</h4>
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    Equilíbrio ideal entre representatividade estatística e agilidade de validação.
+                  </p>
+                </div>
+
+                <div class="mt-4 border-t border-border/70 pt-2.5">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-muted-foreground">Processos calculados:</span>
+                    <span class="num font-bold text-foreground text-sm">
+                      {{ (unidadeAtual()?.totalProcessos || 3000) * 0.2 | number:'1.0-0' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Opção 30% -->
+              <div
+                (click)="selecionarAmostragem(30)"
+                class="relative flex flex-col justify-between rounded-xl border p-4 cursor-pointer transition-all duration-200 hover:shadow-md"
+                [ngClass]="{
+                  'border-primary bg-primary/5 ring-2 ring-primary shadow-sm': amostragem() === 30,
+                  'border-border bg-card hover:border-primary/50 hover:bg-secondary/40': amostragem() !== 30
+                }"
+              >
+                <div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-display text-2xl font-bold text-foreground">30%</span>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Aprofundada</span>
+                  </div>
+                  <h4 class="mt-2 text-sm font-semibold text-foreground">Auditoria Ampliada</h4>
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    Varredura intensiva de processos, indicada para unidades com alto volume de achados.
+                  </p>
+                </div>
+
+                <div class="mt-4 border-t border-border/70 pt-2.5">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-muted-foreground">Processos calculados:</span>
+                    <span class="num font-bold text-foreground text-sm">
+                      {{ (unidadeAtual()?.totalProcessos || 3000) * 0.3 | number:'1.0-0' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Filtros de Estratificação da Amostra -->
+          <div class="mb-6 rounded-lg border border-border bg-card p-4">
+            <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Filtros e critérios de amostragem
+            </h4>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <label class="block">
+                <span class="eyebrow">Situação processual</span>
+                <div class="mt-1">
+                  <select
+                    class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    [ngModel]="situacaoFiltro()"
+                    (ngModelChange)="situacaoFiltro.set($event)"
+                  >
+                    @for (s of SITUACOES; track s) {
+                      <option [value]="s">{{ s }}</option>
+                    }
+                  </select>
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="eyebrow">Classe processual</span>
+                <div class="mt-1">
+                  <input
+                    type="text"
+                    class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    [ngModel]="classeFiltro()"
+                    (ngModelChange)="classeFiltro.set($event)"
+                    placeholder="Todas as classes"
+                  />
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="eyebrow">Assunto</span>
+                <div class="mt-1">
+                  <input
+                    type="text"
+                    class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    [ngModel]="assuntoFiltro()"
+                    (ngModelChange)="assuntoFiltro.set($event)"
+                    placeholder="Todos os assuntos"
+                  />
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="eyebrow">Período de referência</span>
+                <div class="mt-1">
+                  <div class="w-full rounded-md border border-input bg-secondary/50 px-3 py-2 text-sm text-muted-foreground">
+                    1º/1/2026 a 31/7/2026
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Prévia da Amostra de Processos -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Amostra representativa ({{ listaProcessosAmostra().length }} processos no lote preliminar)
+              </h4>
+              <span class="text-xs text-muted-foreground">
+                Total a examinar na execução: <strong class="text-foreground">{{ processosAmostradosQtd() | number:'1.0-0' }} processos</strong>
+              </span>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-border">
+              <table class="w-full min-w-[720px] text-sm">
+                <thead>
+                  <tr class="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <th class="px-3 py-2.5 font-semibold">Processo</th>
+                    <th class="px-3 py-2.5 font-semibold">Unidade</th>
+                    <th class="px-3 py-2.5 font-semibold">Classe</th>
+                    <th class="px-3 py-2.5 font-semibold">Assunto</th>
+                    <th class="px-3 py-2.5 font-semibold">Situação</th>
+                    <th class="px-3 py-2.5 font-semibold">Atenção</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of listaProcessosAmostra(); track p.numero) {
+                    <tr class="border-b border-border/70 last:border-0 hover:bg-secondary/30 transition-colors">
+                      <td class="num px-3 py-2.5 font-medium">{{ p.numero }}</td>
+                      <td class="px-3 py-2.5 text-muted-foreground">{{ p.unidade }}</td>
+                      <td class="px-3 py-2.5 text-muted-foreground">{{ p.classe }}</td>
+                      <td class="px-3 py-2.5 text-muted-foreground">{{ p.assunto }}</td>
+                      <td class="px-3 py-2.5">
+                        <app-tag tone="neutral">{{ p.situacao }}</app-tag>
+                      </td>
+                      <td class="px-3 py-2.5">
+                        <app-risk-badge [level]="p.atencao"></app-risk-badge>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Barra de Ação Inferior da Etapa 2 -->
+          <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+            <button
+              type="button"
+              (click)="voltarEtapa()"
+              class="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+            >
+              <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+              <span>Voltar para Unidade</span>
+            </button>
+
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-muted-foreground hidden sm:inline">
+                Amostragem: <strong>{{ amostragem() }}% ({{ processosAmostradosQtd() | number:'1.0-0' }} processos)</strong>
+              </span>
+              <button
+                type="button"
+                (click)="avancarParaEtapa3()"
+                class="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+              >
+                <span>Avançar para Regras</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </app-panel>
+      </div>
+    }
+
+    <!-- ========================================== -->
+    <!-- ETAPA 3: SELEÇÃO DE REGRAS -->
+    <!-- ========================================== -->
+    @if (etapaAtual() === 3) {
+      <div class="space-y-6 animate-in fade-in-0 duration-200">
+        <app-panel
+          title="Etapa 3: Seleção de regras da correição"
+          description="Selecione um pacote temático pré-configurado ou personalize as regras independentes da biblioteca."
+        >
+          <!-- Resumo das Etapas Anteriores -->
+          <div class="mb-6 grid gap-3 sm:grid-cols-2 rounded-lg border border-border bg-card p-3.5 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-primary">account_balance</span>
+              <div>
+                <span class="text-muted-foreground">Unidade:</span>
+                <span class="font-bold text-foreground ml-1">{{ unidadeSelecionada() }}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-primary">pie_chart</span>
+              <div>
+                <span class="text-muted-foreground">Amostragem:</span>
+                <span class="font-bold text-foreground ml-1">
+                  {{ amostragem() }}% ({{ processosAmostradosQtd() | number:'1.0-0' }} processos de {{ unidadeAtual()?.totalProcessos | number:'1.0-0' }})
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alternador de Modo: Pacotes vs Regras Independentes -->
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+            <div class="inline-flex rounded-lg bg-secondary p-1">
+              <button
+                type="button"
+                (click)="selecionarModoRegras('pacotes')"
+                class="inline-flex items-center gap-2 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-all"
+                [ngClass]="{
+                  'bg-card text-foreground shadow-sm': modoRegras() === 'pacotes',
+                  'text-muted-foreground hover:text-foreground': modoRegras() !== 'pacotes'
+                }"
+              >
+                <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+                <span>Pacotes de Regras</span>
+              </button>
+              <button
+                type="button"
+                (click)="selecionarModoRegras('individual')"
+                class="inline-flex items-center gap-2 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-all"
+                [ngClass]="{
+                  'bg-card text-foreground shadow-sm': modoRegras() === 'individual',
+                  'text-muted-foreground hover:text-foreground': modoRegras() !== 'individual'
+                }"
+              >
+                <span class="material-symbols-outlined text-[16px]">checklist</span>
+                <span>Regras Independentes ({{ regrasSelecionadas().length }})</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <app-tag tone="accent">{{ regrasSelecionadas().length }} regras selecionadas</app-tag>
+            </div>
+          </div>
+
+          <!-- Modo 1: Pacotes Pré-configurados -->
+          @if (modoRegras() === 'pacotes') {
+            <div class="grid gap-4 sm:grid-cols-2">
+              @for (pkg of pacotesRegras; track pkg.id) {
+                <div
+                  (click)="selecionarPacote(pkg)"
+                  class="relative flex flex-col justify-between rounded-xl border p-4 cursor-pointer transition-all duration-200 hover:shadow-md"
+                  [ngClass]="{
+                    'border-primary bg-primary/5 ring-2 ring-primary shadow-sm': pacoteSelecionado() === pkg.id,
+                    'border-border bg-card hover:border-primary/50 hover:bg-secondary/40': pacoteSelecionado() !== pkg.id
+                  }"
+                >
+                  <div>
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[22px]"
+                          [ngClass]="pacoteSelecionado() === pkg.id ? 'text-primary' : 'text-muted-foreground'">
+                          {{ pkg.icone }}
+                        </span>
+                        <div>
+                          <h4 class="font-semibold text-foreground text-sm">{{ pkg.nome }}</h4>
+                          @if (pkg.destaque) {
+                            <app-tag tone="accent">Recomendado</app-tag>
+                          }
+                        </div>
+                      </div>
+
+                      <div
+                        class="flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors"
+                        [ngClass]="{
+                          'border-primary bg-primary text-primary-foreground': pacoteSelecionado() === pkg.id,
+                          'border-border bg-secondary': pacoteSelecionado() !== pkg.id
+                        }"
+                      >
+                        @if (pacoteSelecionado() === pkg.id) {
+                          <span class="material-symbols-outlined text-[14px]">check</span>
+                        }
+                      </div>
+                    </div>
+
+                    <p class="mt-2.5 text-xs text-muted-foreground">
+                      {{ pkg.descricao }}
+                    </p>
+                  </div>
+
+                  <!-- Tags das Regras Inclusas no Pacote -->
+                  <div class="mt-4 border-t border-border/70 pt-3">
+                    <p class="text-[11px] font-medium text-muted-foreground mb-1.5">
+                      {{ pkg.regras.length }} regras inclusas:
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                      @for (rId of pkg.regras; track rId) {
+                        <span class="rounded bg-secondary px-2 py-0.5 text-[11px] font-mono text-secondary-foreground">
+                          {{ rId }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Modo 2: Seleção de Regras Independentes -->
+          @if (modoRegras() === 'individual') {
+            <div class="space-y-4">
+              <!-- Barra de Busca de Regras -->
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="relative flex-1 max-w-md">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-muted-foreground">search</span>
+                  <input
+                    type="text"
+                    [ngModel]="buscaRegra()"
+                    (ngModelChange)="buscaRegra.set($event)"
+                    placeholder="Buscar regra por código ou nome..."
+                    class="w-full rounded-md border border-border bg-background py-1.5 pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                  @if (buscaRegra()) {
+                    <button
+                      type="button"
+                      (click)="buscaRegra.set('')"
+                      class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <span class="material-symbols-outlined text-[16px]">close</span>
+                    </button>
+                  }
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    (click)="selecionarTodasRegras()"
+                    class="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground hover:bg-secondary"
+                  >
+                    Selecionar todas
+                  </button>
+                  <button
+                    type="button"
+                    (click)="desmarcarTodasRegras()"
+                    class="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground hover:bg-secondary"
+                  >
+                    Desmarcar todas
+                  </button>
+                </div>
+              </div>
+
+              <!-- Lista de Regras com Checkboxes -->
+              <ul class="space-y-2.5">
+                @for (r of regrasFiltradas(); track r.id) {
+                  <li
+                    (click)="toggleRegra(r.id)"
+                    class="flex items-center justify-between gap-3 rounded-lg border p-3 cursor-pointer transition-all"
+                    [ngClass]="{
+                      'border-primary/60 bg-primary/5': regrasSelecionadas().includes(r.id),
+                      'border-border bg-card hover:bg-secondary/40': !regrasSelecionadas().includes(r.id)
+                    }"
+                  >
+                    <div class="flex items-center gap-3 min-w-0">
+                      <input
+                        type="checkbox"
+                        [checked]="regrasSelecionadas().includes(r.id)"
+                        (click)="$event.stopPropagation()"
+                        (change)="toggleRegra(r.id)"
+                        class="size-4 rounded accent-[hsl(var(--primary))] cursor-pointer"
+                        [attr.aria-label]="'Selecionar ' + r.nome"
+                      />
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="font-mono text-xs font-bold text-primary">{{ r.id }}</span>
+                          <p class="text-sm font-semibold text-foreground truncate">{{ r.nome }}</p>
+                          @if (r.recomendada) {
+                            <app-tag tone="accent">Recomendada</app-tag>
+                          }
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-0.5">{{ r.descricao }}</p>
+                        <p class="text-[11px] text-muted-foreground mt-1">
+                          Fontes: {{ r.fontes }} · Confirmação histórica: <strong>{{ r.confirmacao }}</strong>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="text-right text-xs shrink-0 hidden sm:block">
+                      <span class="text-muted-foreground">v{{ r.versao }}</span>
+                    </div>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          <!-- Barra de Ação Inferior da Etapa 3 -->
+          <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+            <button
+              type="button"
+              (click)="voltarEtapa()"
+              class="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+            >
+              <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+              <span>Voltar para Amostragem</span>
+            </button>
+
+            <a
+              routerLink="/acompanhamento"
+              [queryParams]="{ unidade: unidadeSelecionada() }"
+              class="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+            >
+              <span>Concluir e Iniciar Correição</span>
+              <span class="material-symbols-outlined text-[18px]">monitoring</span>
+            </a>
+          </div>
+        </app-panel>
+      </div>
+    }
+
   </div>
 </app-shell>

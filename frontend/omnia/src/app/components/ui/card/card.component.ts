@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   styleUrl: './card.component.scss',
+  host: { class: 'block' },
   template: `<div [class]="'rounded-xl border bg-card text-card-foreground shadow ' + customClass"><ng-content></ng-content></div>`,
 })
 export class CardComponent {

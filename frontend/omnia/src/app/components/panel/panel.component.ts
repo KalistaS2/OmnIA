@@ -7,6 +7,9 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './panel.component.html',
   styleUrl: './panel.component.scss',
+  host: {
+    class: 'block',
+  },
 })
 export class PanelComponent {
   @Input() title?: string;

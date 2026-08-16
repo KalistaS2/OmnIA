@@ -1,0 +1,446 @@
+<app-shell title="Acompanhamento Correicional"
+  subtitle="Monitoramento em tempo real do processamento de regras pelo OMinIA e fila de auditoria">
+  <!-- Ações no cabeçalho -->
+  <div actions class="flex items-center gap-2">
+    <div
+      class="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
+      <span class="size-2 rounded-full bg-accent animate-pulse"></span>
+      <span class="text-foreground font-semibold">Motor OMinIA Ativo</span>
+      <span class="text-muted-foreground hidden sm:inline">· Modo somente leitura</span>
+    </div>
+
+    <a routerLink="/planejamento"
+      class="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
+      <span class="material-symbols-outlined text-[16px]">add</span>
+      <span>Nova correição</span>
+    </a>
+  </div>
+
+  <div class="space-y-6">
+
+    <!-- Notificação de Conclusão / Transição -->
+    @if (notificacaoConclusao()) {
+    <div
+      class="flex items-center justify-between gap-3 rounded-lg border border-risk-low/40 bg-risk-low-soft p-4 animate-in fade-in-0 duration-200">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-[22px] text-risk-low">check_circle</span>
+        <div>
+          <p class="text-sm font-semibold text-foreground">{{ notificacaoConclusao() }}</p>
+          <p class="text-xs text-muted-foreground mt-0.5">
+            Unidade finalizada e removida do monitoramento ativo.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a routerLink="/aprovacao"
+          class="rounded-md bg-card border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors">
+          Ir para Aprovação
+        </a>
+        <button type="button" (click)="fecharNotificacao()" class="text-muted-foreground hover:text-foreground p-1"
+          title="Fechar aviso">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- ======================================================== -->
+    <!-- SEÇÃO 1: UNIDADE EM CORREIÇÃO NO MOMENTO (EXECUÇÃO ATIVA) -->
+    <!-- ======================================================== -->
+    @if (correicaoAtiva(); as ativa) {
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-accent animate-spin">sync</span>
+          <h2 class="text-base font-bold text-foreground">Unidade em Correição no Momento</h2>
+        </div>
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent-foreground">
+          <span class="size-1.5 rounded-full bg-accent animate-ping"></span>
+          Processando ao vivo
+        </span>
+      </div>
+
+      <app-panel [title]="ativa.unidade + ' · ' + ativa.competencia + ' (' + ativa.comarca + ')'"
+        description="Auditoria automatizada do acervo amostral com rastreabilidade completa e validação de regras.">
+        <!-- Cabeçalho do Card da Unidade Ativa -->
+        <div class="space-y-4">
+
+          <!-- Barra de Progresso Geral da Correição -->
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center justify-between text-xs">
+              <span class="font-medium text-foreground flex items-center gap-1.5">
+                <span>Progresso da correição:</span>
+                <strong>{{ ativa.processosProcessados }} de {{ ativa.amostraProcessos }} processos analisados</strong>
+                <span class="text-muted-foreground">({{ ativa.totalProcessos | number:'1.0-0' }} no acervo total)</span>
+              </span>
+              <span class="num font-bold text-sm text-primary">{{ ativa.percentualConcluido }}%</span>
+            </div>
+
+            <div class="h-3 w-full overflow-hidden rounded-full bg-secondary">
+              <div class="h-full rounded-full bg-primary transition-all duration-500 relative overflow-hidden"
+                [style.width.%]="ativa.percentualConcluido">
+                <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid de Métricas de Execução -->
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-lg bg-secondary/40 p-3 text-xs">
+            <div class="space-y-0.5">
+              <p class="text-muted-foreground text-[11px]">Tempo decorrido</p>
+              <p class="num font-semibold text-foreground text-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px] text-muted-foreground">timer</span>
+                {{ ativa.tempoDecorrido }}
+              </p>
+            </div>
+
+            <div class="space-y-0.5">
+              <p class="text-muted-foreground text-[11px]">Término estimado</p>
+              <p class="num font-semibold text-foreground text-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px] text-muted-foreground">hourglass_bottom</span>
+                {{ ativa.tempoEstimadoRestante }}
+              </p>
+            </div>
+
+            <div class="space-y-0.5">
+              <p class="text-muted-foreground text-[11px]">Velocidade de análise</p>
+              <p class="num font-semibold text-foreground text-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px] text-muted-foreground">speed</span>
+                {{ ativa.velocidade }}
+              </p>
+            </div>
+
+            <div class="space-y-0.5">
+              <p class="text-muted-foreground text-[11px]">Achados preliminares</p>
+              <p class="num font-bold text-risk-high text-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px]">flag</span>
+                {{ ativa.achadosApurados }} sinalizados
+              </p>
+            </div>
+          </div>
+
+          <!-- ======================================================== -->
+          <!-- DROPDOWN / ACCORDION DO PROCESSO EM ANÁLISE -->
+          <!-- ======================================================== -->
+          <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+
+            <!-- Botão do Cabeçalho do Dropdown -->
+            <button type="button" (click)="toggleDetalhesProcesso()"
+              class="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-secondary/40">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <span class="material-symbols-outlined text-[20px]">description</span>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Processo em análise agora ({{ ativa.processoAtual.posicao }} de {{
+                      ativa.processoAtual.totalAmostra }})
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1 rounded bg-info-soft px-2 py-0.5 text-[11px] font-semibold text-info">
+                      <span class="size-1.5 rounded-full bg-info animate-pulse"></span>
+                      Avaliando regras
+                    </span>
+                  </div>
+                  <p class="num font-bold text-foreground text-sm truncate mt-0.5">
+                    {{ ativa.processoAtual.numero }}
+                  </p>
+                  <p class="text-xs text-muted-foreground truncate">
+                    {{ ativa.processoAtual.classe }} · {{ ativa.processoAtual.assunto }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-xs font-medium text-muted-foreground hidden sm:inline">
+                  {{ detalhesProcessoAberto() ? 'Ocultar detalhes do processo' : 'Ver regras e etapas' }}
+                </span>
+                <span
+                  class="material-symbols-outlined text-[20px] text-muted-foreground transition-transform duration-200"
+                  [class.rotate-180]="detalhesProcessoAberto()">
+                  expand_more
+                </span>
+              </div>
+            </button>
+
+            <!-- Conteúdo Expandido do Dropdown -->
+            @if (detalhesProcessoAberto()) {
+            <div class="border-t border-border/80 bg-background/50 p-4 space-y-5 animate-in fade-in-0 duration-200">
+
+              <!-- 1. Regras Já Avaliadas Neste Processo -->
+              <div>
+                <h4
+                  class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px] text-risk-low">task_alt</span>
+                  <span>Regras já avaliadas neste processo ({{ ativa.processoAtual.regrasAvaliadas.length }})</span>
+                </h4>
+
+                @if (ativa.processoAtual.regrasAvaliadas.length > 0) {
+                <div class="space-y-2">
+                  @for (ra of ativa.processoAtual.regrasAvaliadas; track ra.id) {
+                  <div
+                    class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/80 bg-card p-3 text-xs">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                      <span class="font-mono text-xs font-bold text-primary">{{ ra.id }}</span>
+                      <div>
+                        <p class="font-medium text-foreground">{{ ra.nome }}</p>
+                        <p class="text-muted-foreground text-[11px]">{{ ra.detalhes }}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                      <span class="text-muted-foreground font-mono text-[11px]">{{ ra.duracao }}</span>
+                      <span
+                        class="inline-flex items-center gap-1 rounded-full bg-risk-low-soft px-2.5 py-0.5 font-medium text-risk-low">
+                        <span class="material-symbols-outlined text-[14px]">check</span>
+                        {{ ra.status }}
+                      </span>
+                    </div>
+                  </div>
+                  }
+                </div>
+                } @else {
+                <p class="text-xs text-muted-foreground italic py-1">
+                  Iniciando primeira regra do processo...
+                </p>
+                }
+              </div>
+
+              <!-- 2. Regra em Avaliação no Momento (Ativa com Etapas Detalhadas) -->
+              <div class="rounded-xl border border-accent/40 bg-accent/5 p-4 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
+                  <div class="flex items-center gap-2.5">
+                    <span
+                      class="material-symbols-outlined text-[20px] text-accent animate-spin">progress_activity</span>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono text-xs font-bold text-accent">{{ ativa.processoAtual.regraAtual.id
+                          }}</span>
+                        <h4 class="font-bold text-foreground text-sm">{{ ativa.processoAtual.regraAtual.nome }}</h4>
+                      </div>
+                      <p class="text-xs text-muted-foreground mt-0.5">
+                        {{ ativa.processoAtual.regraAtual.descricao }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span
+                    class="inline-flex items-center gap-1 rounded-full bg-accent/20 px-2.5 py-1 text-xs font-semibold text-accent-foreground">
+                    Regra sendo avaliada agora
+                  </span>
+                </div>
+
+                <!-- Stepper Vertical de Etapas da Regra -->
+                <div class="space-y-1">
+                  <p class="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                    Fases de execução desta regra:
+                  </p>
+
+                  <ol class="space-y-2.5">
+                    @for (etapa of ativa.processoAtual.regraAtual.etapas; track etapa.numero) {
+                    <li class="flex items-start gap-3 rounded-lg p-2.5 text-xs transition-colors" [ngClass]="{
+                              'bg-risk-low-soft/70 border border-risk-low/30': etapa.status === 'Concluída',
+                              'bg-accent/15 border border-accent/40 font-medium': etapa.status === 'Em execução',
+                              'bg-secondary/40 text-muted-foreground': etapa.status === 'Pendente'
+                            }">
+                      <!-- Ícone da Etapa -->
+                      <div class="mt-0.5 shrink-0">
+                        @if (etapa.status === 'Concluída') {
+                        <span class="material-symbols-outlined text-[16px] text-risk-low">check_circle</span>
+                        } @else if (etapa.status === 'Em execução') {
+                        <span
+                          class="material-symbols-outlined text-[16px] text-accent animate-spin">progress_activity</span>
+                        } @else {
+                        <span class="size-3.5 rounded-full border border-border inline-block"></span>
+                        }
+                      </div>
+
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-2">
+                          <p class="font-semibold text-foreground">{{ etapa.nome }}</p>
+                          <span class="text-[11px]" [ngClass]="{
+                                    'text-risk-low font-medium': etapa.status === 'Concluída',
+                                    'text-accent font-bold': etapa.status === 'Em execução',
+                                    'text-muted-foreground': etapa.status === 'Pendente'
+                                  }">
+                            {{ etapa.status }}
+                          </span>
+                        </div>
+                        @if (etapa.detalhe) {
+                        <p class="text-muted-foreground text-[11px] mt-0.5">{{ etapa.detalhe }}</p>
+                        }
+                      </div>
+                    </li>
+                    }
+                  </ol>
+                </div>
+              </div>
+
+              <!-- 3. Etapas e Regras Pendentes para este Processo -->
+              <div>
+                <h4
+                  class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px]">pending</span>
+                  <span>Regras pendentes na fila deste processo ({{ ativa.processoAtual.regrasPendentes.length
+                    }})</span>
+                </h4>
+
+                <div class="grid gap-2 sm:grid-cols-2">
+                  @for (rp of ativa.processoAtual.regrasPendentes; track rp.id) {
+                  <div
+                    class="flex items-start gap-2.5 rounded-lg border border-border bg-card p-2.5 text-xs text-muted-foreground">
+                    <span class="font-mono text-xs font-semibold text-muted-foreground mt-0.5">{{ rp.id }}</span>
+                    <div class="min-w-0">
+                      <p class="font-medium text-foreground truncate">{{ rp.nome }}</p>
+                      <p class="text-[11px] text-muted-foreground truncate">{{ rp.descricao }}</p>
+                    </div>
+                  </div>
+                  }
+                </div>
+              </div>
+
+            </div>
+            }
+          </div>
+
+          <!-- Rodapé com Ação de Simulação e Atalho -->
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-xs">
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <span class="material-symbols-outlined text-[16px] text-primary">security</span>
+              <span>Audit trail ativado · Registrado em log imutável</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button type="button" (click)="finalizarCorreicaoAtiva()"
+                class="inline-flex items-center gap-1.5 rounded-md bg-secondary border border-border px-3 py-1.5 font-medium text-foreground hover:bg-secondary/80 transition-colors"
+                title="Simular a conclusão da análise para transferir para a próxima unidade">
+                <span class="material-symbols-outlined text-[16px] text-risk-low">check_circle</span>
+                <span>Concluir correição desta unidade</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </app-panel>
+    </div>
+    }
+
+    <!-- ======================================================== -->
+    <!-- BARRA DE FILTRO DE BUSCA DE UNIDADES NA FILA -->
+    <!-- ======================================================== -->
+    <div
+      class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-card p-4 shadow-sm">
+      <div class="relative flex-1 max-w-md">
+        <span
+          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-muted-foreground">search</span>
+        <input type="text" [ngModel]="busca()" (ngModelChange)="busca.set($event)"
+          placeholder="Buscar unidades na fila por nome, vara ou competência..."
+          class="w-full rounded-md border border-border bg-background py-1.5 pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+        @if (busca()) {
+        <button type="button" (click)="limparFiltros()"
+          class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          title="Limpar busca">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+        }
+      </div>
+
+      <div class="flex items-center gap-2 text-xs text-muted-foreground">
+        <span>Exibindo <strong>{{ filaFiltrada().length }}</strong> de <strong>{{ filaAguardando().length }}</strong>
+          unidades na fila</span>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SEÇÃO 2: FILA DE UNIDADES "AGUARDANDO CORREIÇÃO" -->
+    <!-- ======================================================== -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-muted-foreground">queue</span>
+          <h2 class="text-base font-bold text-foreground">Fila de Unidades — Aguardando Correição</h2>
+        </div>
+        <span class="text-xs text-muted-foreground">
+          {{ filaFiltrada().length }} unidade(s) programada(s)
+        </span>
+      </div>
+
+      <app-panel title="Fila de espera de auditoria"
+        description="Unidades judiciárias planejadas que aguardam o término da correição anterior para início automático.">
+        <div class="space-y-3">
+          @for (u of filaFiltrada(); track u.id) {
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:bg-secondary/20">
+
+            <!-- Posição e Identificação da Unidade -->
+            <div class="flex items-start gap-3.5 min-w-0">
+              <div
+                class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary font-display text-sm font-bold text-foreground border border-border">
+                #{{ u.posicao }}
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-bold text-foreground text-sm">{{ u.unidade }}</h3>
+                  <app-tag tone="neutral">Aguardando correição</app-tag>
+                </div>
+                <p class="text-xs text-muted-foreground mt-0.5">
+                  {{ u.competencia }} · {{ u.comarca }}
+                </p>
+                <p class="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">schedule</span>
+                  <span>{{ u.previsaoInicio }}</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Métricas e Ações da Fila -->
+            <div
+              class="flex flex-wrap items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 border-border/70 pt-2.5 sm:pt-0">
+              <div class="text-right text-xs">
+                <p class="font-semibold text-foreground">
+                  {{ u.amostraProcessos | number:'1.0-0' }} processos na amostra
+                </p>
+                <p class="text-muted-foreground text-[11px]">
+                  {{ u.percentualAmostra }}% do acervo ({{ u.totalProcessos | number:'1.0-0' }}) · {{
+                  u.regrasSelecionadas }} regras
+                </p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                @if (u.posicao > 1) {
+                <button type="button" (click)="priorizarNaFila(u.id)"
+                  class="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                  title="Mover para a primeira posição da fila">
+                  <span class="material-symbols-outlined text-[14px]">vertical_align_top</span>
+                  <span>Priorizar</span>
+                </button>
+                }
+              </div>
+            </div>
+
+          </div>
+          } @empty {
+          <div class="py-8 text-center text-muted-foreground">
+            <span class="material-symbols-outlined text-[36px] text-muted-foreground/60 mb-2">inbox</span>
+            <p class="font-medium text-foreground">Nenhuma unidade aguardando na fila.</p>
+            @if (busca()) {
+            <p class="text-xs mt-1">Nenhum resultado para "{{ busca() }}".</p>
+            <button type="button" (click)="limparFiltros()" class="mt-2 text-xs text-primary underline">
+              Limpar busca
+            </button>
+            } @else {
+            <p class="text-xs mt-1">Planeje uma nova correição para adicionar unidades à fila.</p>
+            <a routerLink="/planejamento"
+              class="mt-3 inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90">
+              Planejar nova correição
+            </a>
+            }
+          </div>
+          }
+        </div>
+      </app-panel>
+    </div>
+
+  </div>
+</app-shell>
