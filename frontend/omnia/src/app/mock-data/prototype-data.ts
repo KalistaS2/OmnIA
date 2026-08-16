@@ -7,45 +7,257 @@ export interface KPI {
 }
 
 export const kpis: KPI[] = [
-  { label: 'Correições realizadas', value: '12', hint: 'concluídas em 2026' },
-  { label: 'Correições em andamento', value: '3', hint: 'com auditoria ou validação ativa' },
-  { label: 'Processos examinados', value: '84.620', hint: 'nas bases analíticas autorizadas' },
-  { label: 'Ocorrências potenciais', value: '1.438', hint: 'submetidas à validação' },
-  { label: 'Providências pendentes', value: '96', hint: 'aguardando unidade ou equipe' },
+  { label: 'Unidades monitoradas', value: '6', hint: 'com acompanhamento ativo' },
+  { label: 'Processos no acervo', value: '17.710', hint: 'nas bases analíticas autorizadas' },
+  { label: 'Processos pendentes', value: '412', hint: 'com providências da unidade' },
+  { label: 'Correicionados em validação', value: '124', hint: 'aguardando homologação da equipe' },
+  { label: 'Conformidade média', value: '89.8%', hint: 'índice geral apurado' },
 ];
 
 export type Atencao = 'Alta' | 'Média' | 'Baixa';
 
+export interface ProcessoResumoValidacao {
+  numero: string;
+  classe: string;
+  assunto: string;
+  situacao: string;
+  ocorrencias: number;
+  criticos: number;
+  atencao: Atencao;
+  pendenciasValidacao: string[];
+}
+
 export interface Unidade {
   nome: string;
-  ultima: string;
+  comarca: string;
+  competencia: string;
+  totalProcessos: number;
+  processosPendentes: number;
+  processosCorreicionados: number;
+  pendentesValidacao: number;
+  achadosCriticos: number;
   conformidade: number;
-  criticos: number;
-  pendentes: number;
+  ultimaCorreicao: string;
+  statusCorreicao: 'Em validação' | 'Em andamento' | 'Concluída' | 'Planejada';
   atencao: Atencao;
   destaque?: boolean;
+  principaisRegras: string[];
+  processosEmValidacao: ProcessoResumoValidacao[];
 }
 
 export const unidades: Unidade[] = [
   {
     nome: '1ª Vara Cível',
-    ultima: '18/8/2025',
+    comarca: 'Boa Vista',
+    competencia: 'Cível Geral',
+    totalProcessos: 3420,
+    processosPendentes: 142,
+    processosCorreicionados: 840,
+    pendentesValidacao: 48,
+    achadosCriticos: 18,
     conformidade: 82,
-    criticos: 38,
-    pendentes: 21,
+    ultimaCorreicao: '18/08/2025',
+    statusCorreicao: 'Em andamento',
     atencao: 'Alta',
     destaque: true,
+    principaisRegras: [
+      'Processos paralisados além do prazo',
+      'Ordem judicial sem cumprimento localizado',
+      'Arquivamento com possível pendência',
+    ],
+    processosEmValidacao: [
+      {
+        numero: '0801234-00.2026.8.23.0001',
+        classe: 'Procedimento Comum',
+        assunto: 'Obrigação de fazer',
+        situacao: 'Arquivado',
+        ocorrencias: 3,
+        criticos: 2,
+        atencao: 'Alta',
+        pendenciasValidacao: [
+          'RC-017 — Arquivamento com possível pendência',
+          'RC-009 — Ordem judicial sem cumprimento localizado',
+        ],
+      },
+      {
+        numero: '0802987-11.2026.8.23.0001',
+        classe: 'Execução de Título Extrajudicial',
+        assunto: 'Cobrança',
+        situacao: 'Ativo',
+        ocorrencias: 2,
+        criticos: 1,
+        atencao: 'Alta',
+        pendenciasValidacao: ['RC-004 — Processos paralisados além do prazo'],
+      },
+      {
+        numero: '0805120-77.2025.8.23.0001',
+        classe: 'Cumprimento de Sentença',
+        assunto: 'Alimentos',
+        situacao: 'Arquivado',
+        ocorrencias: 4,
+        criticos: 2,
+        atencao: 'Alta',
+        pendenciasValidacao: [
+          'RC-017 — Arquivamento com possível pendência',
+          'RC-012 — Classe ou assunto incompatível',
+        ],
+      },
+    ],
   },
-  { nome: '2ª Vara Cível', ultima: '10/3/2026', conformidade: 94, criticos: 7, pendentes: 4, atencao: 'Baixa' },
   {
     nome: 'Vara da Fazenda Pública',
-    ultima: '22/11/2025',
+    comarca: 'Boa Vista',
+    competencia: 'Fazenda Pública',
+    totalProcessos: 4110,
+    processosPendentes: 89,
+    processosCorreicionados: 920,
+    pendentesValidacao: 29,
+    achadosCriticos: 9,
     conformidade: 87,
-    criticos: 19,
-    pendentes: 13,
-    atencao: 'Média',
+    ultimaCorreicao: '22/11/2025',
+    statusCorreicao: 'Em andamento',
+    atencao: 'Alta',
+    principaisRegras: [
+      'Processos paralisados além do prazo',
+      'Classe ou assunto incompatível',
+    ],
+    processosEmValidacao: [
+      {
+        numero: '0808219-05.2025.8.23.0003',
+        classe: 'Execução Fiscal',
+        assunto: 'IPTU',
+        situacao: 'Suspenso',
+        ocorrencias: 3,
+        criticos: 1,
+        atencao: 'Alta',
+        pendenciasValidacao: ['RC-004 — Processos paralisados além do prazo'],
+      },
+      {
+        numero: '0804410-08.2026.8.23.0003',
+        classe: 'Mandado de Segurança',
+        assunto: 'Servidor público',
+        situacao: 'Ativo',
+        ocorrencias: 1,
+        criticos: 1,
+        atencao: 'Média',
+        pendenciasValidacao: ['RC-009 — Ordem judicial sem cumprimento localizado'],
+      },
+    ],
   },
-  { nome: '1ª Vara Criminal', ultima: '4/2/2026', conformidade: 91, criticos: 11, pendentes: 6, atencao: 'Média' },
+  {
+    nome: '1ª Vara Criminal',
+    comarca: 'Boa Vista',
+    competencia: 'Criminal',
+    totalProcessos: 2150,
+    processosPendentes: 54,
+    processosCorreicionados: 580,
+    pendentesValidacao: 15,
+    achadosCriticos: 4,
+    conformidade: 91,
+    ultimaCorreicao: '04/02/2026',
+    statusCorreicao: 'Em andamento',
+    atencao: 'Média',
+    principaisRegras: [
+      'Movimentações potencialmente redundantes',
+      'Processos paralisados além do prazo',
+    ],
+    processosEmValidacao: [
+      {
+        numero: '0806733-19.2026.8.23.0004',
+        classe: 'Ação Penal',
+        assunto: 'Furto',
+        situacao: 'Ativo',
+        ocorrencias: 1,
+        criticos: 0,
+        atencao: 'Baixa',
+        pendenciasValidacao: ['RC-015 — Movimentação potencialmente redundante'],
+      },
+    ],
+  },
+  {
+    nome: 'Vara de Família e Sucessões',
+    comarca: 'Boa Vista',
+    competencia: 'Família',
+    totalProcessos: 1980,
+    processosPendentes: 62,
+    processosCorreicionados: 490,
+    pendentesValidacao: 19,
+    achadosCriticos: 7,
+    conformidade: 89,
+    ultimaCorreicao: '15/01/2026',
+    statusCorreicao: 'Em andamento',
+    atencao: 'Média',
+    principaisRegras: [
+      'Ordem judicial sem cumprimento localizado',
+      'Processos paralisados além do prazo',
+    ],
+    processosEmValidacao: [
+      {
+        numero: '0809112-30.2026.8.23.0005',
+        classe: 'Inventário',
+        assunto: 'Sucessões',
+        situacao: 'Ativo',
+        ocorrencias: 2,
+        criticos: 1,
+        atencao: 'Média',
+        pendenciasValidacao: ['RC-009 — Ordem judicial sem cumprimento localizado'],
+      },
+    ],
+  },
+  {
+    nome: '2ª Vara Cível',
+    comarca: 'Boa Vista',
+    competencia: 'Cível Geral',
+    totalProcessos: 2850,
+    processosPendentes: 38,
+    processosCorreicionados: 750,
+    pendentesValidacao: 8,
+    achadosCriticos: 2,
+    conformidade: 94,
+    ultimaCorreicao: '10/03/2026',
+    statusCorreicao: 'Concluída',
+    atencao: 'Baixa',
+    principaisRegras: ['Classe ou assunto incompatível'],
+    processosEmValidacao: [
+      {
+        numero: '0803551-42.2025.8.23.0002',
+        classe: 'Procedimento Comum',
+        assunto: 'Indenização por dano moral',
+        situacao: 'Suspenso',
+        ocorrencias: 2,
+        criticos: 0,
+        atencao: 'Média',
+        pendenciasValidacao: ['RC-012 — Classe ou assunto incompatível'],
+      },
+    ],
+  },
+  {
+    nome: 'Juizado Especial Cível',
+    comarca: 'Boa Vista',
+    competencia: 'Juizados Especiais',
+    totalProcessos: 3200,
+    processosPendentes: 27,
+    processosCorreicionados: 610,
+    pendentesValidacao: 5,
+    achadosCriticos: 1,
+    conformidade: 96,
+    ultimaCorreicao: '28/04/2026',
+    statusCorreicao: 'Concluída',
+    atencao: 'Baixa',
+    principaisRegras: ['Movimentações potencialmente redundantes'],
+    processosEmValidacao: [
+      {
+        numero: '0801889-14.2026.8.23.0006',
+        classe: 'Procedimento do Juizado Especial Cível',
+        assunto: 'Consumidor',
+        situacao: 'Ativo',
+        ocorrencias: 1,
+        criticos: 0,
+        atencao: 'Baixa',
+        pendenciasValidacao: ['RC-015 — Movimentação potencialmente redundante'],
+      },
+    ],
+  },
 ];
 
 export interface RegraCritica {

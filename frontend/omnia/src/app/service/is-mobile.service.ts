@@ -15,7 +15,7 @@ export class IsMobileService implements OnDestroy {
   private listener?: () => void;
 
   constructor(private ngZone: NgZone) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
       this.mediaQueryList = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
       this.isMobileSignal.set(this.mediaQueryList.matches);
 
