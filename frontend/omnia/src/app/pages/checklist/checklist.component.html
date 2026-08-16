@@ -48,6 +48,33 @@
       </div>
     </app-panel>
 
+    <app-panel 
+      title="Grupos de regras" 
+      description="Pacotes de regras frequentemente utilizadas em conjunto para contextos específicos."
+    >
+      <div class="grid gap-4 sm:grid-cols-2">
+        @for (grupo of gruposDeRegras(); track grupo.id) {
+          <article class="flex flex-col justify-between rounded-md border border-border p-4 hover:border-accent transition-colors">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <h3 class="text-base font-medium leading-tight">{{ grupo.nome }}</h3>
+                <app-tag tone="info" class="shrink-0">{{ grupo.regras }} regras</app-tag>
+              </div>
+              <p class="mt-2 text-sm text-muted-foreground">{{ grupo.descricao }}</p>
+            </div>
+            
+            <button
+              type="button"
+              class="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline self-start"
+            >
+              <span class="material-symbols-outlined text-[18px]">folder_open</span>
+              Ver regras do pacote
+            </button>
+          </article>
+        }
+      </div>
+    </app-panel>
+
     <!-- Barra Lateral: Nova Necessidade -->
     <aside class="space-y-5">
       <app-panel
@@ -65,6 +92,31 @@
           <span class="material-symbols-outlined text-[18px]">add</span>
           Criar nova regra
         </a>
+      </app-panel>
+
+      <!-- Aguardando Autorização (NOVA ABA) -->
+      <app-panel
+        title="Aguardando autorização"
+        description="Regras submetidas que precisam da sua análise e aprovação."
+      >
+        <p class="flex items-center gap-2 text-sm text-muted-foreground">
+          <span class="material-symbols-outlined text-[18px] text-amber-500 shrink-0">pending_actions</span>
+          @if (regrasPendentes() > 0) {
+            Você tem <strong>{{ regrasPendentes() }}</strong> regra(s) para analisar.
+          } @else {
+            Nenhuma regra pendente no momento.
+          }
+        </p>
+        
+        @if (regrasPendentes() > 0) {
+          <a
+            routerLink="/regras-pendentes"
+            class="mt-4 inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-secondary"
+          >
+            <span class="material-symbols-outlined text-[18px]">fact_check</span>
+            Analisar pendências
+          </a>
+        }
       </app-panel>
     </aside>
   </div>

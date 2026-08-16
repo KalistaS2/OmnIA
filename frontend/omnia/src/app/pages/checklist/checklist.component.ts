@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
-import { TagComponent } from '../../components/tag/tag.component';
+import { TagComponent } from '../../components/tag/tag.component';  
 
 import {
   biblioteca,
@@ -29,6 +29,14 @@ import {
 export class ChecklistComponent {
   readonly biblioteca: RegraBiblioteca[] = biblioteca;
 
+  regrasPendentes = signal(3);
+
+  gruposDeRegras = signal([
+    { id: 'GR-01', nome: 'Pacote Execução Fiscal', regras: 8, descricao: 'Conjunto padrão de verificações recomendadas para varas de execução fiscal.' },
+    { id: 'GR-02', nome: 'Pacote Família e Sucessões', regras: 5, descricao: 'Regras essenciais para auditoria em processos de família.' },
+    { id: 'GR-03', nome: 'Gabinete Criminal', regras: 12, descricao: 'Verificações de prazos e prescrições criminais.' }
+  ]);
+  
   // Estado do modal de detalhes (Signal)
   detalheId = signal<string | null>(null);
 
