@@ -1,13 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import {
-  LucideAngularModule,
-  Eye,
-  Plus,
-  Wand2,
-  X,
-} from 'lucide-angular';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -26,12 +19,12 @@ import {
   imports: [
     CommonModule,
     RouterLink,
-    LucideAngularModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
   ],
   templateUrl: './checklist.component.html',
+  styleUrl: './checklist.component.scss',
 })
 export class ChecklistComponent {
   readonly biblioteca: RegraBiblioteca[] = biblioteca;
@@ -49,12 +42,6 @@ export class ChecklistComponent {
     const id = this.detalheId();
     return id ? detalhesRegra[id] : undefined;
   });
-
-  // Ícones
-  readonly EyeIcon = Eye;
-  readonly PlusIcon = Plus;
-  readonly Wand2Icon = Wand2;
-  readonly XIcon = X;
 
   abrirDetalhes(id: string): void {
     this.detalheId.set(id);

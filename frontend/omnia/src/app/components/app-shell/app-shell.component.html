@@ -25,10 +25,9 @@
           #rla="routerLinkActive"
           class="flex min-w-max items-center gap-3 rounded-md px-3 py-2.5 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
         >
-          <lucide-icon
-            [img]="item.icon"
-            [class]="'size-4 ' + (rla.isActive ? 'text-sidebar-primary' : 'opacity-70')"
-          ></lucide-icon>
+          <span
+            [class]="'material-symbols-outlined text-[18px] ' + (rla.isActive ? 'text-sidebar-primary' : 'opacity-70')"
+          >{{ item.icon }}</span>
           <span class="flex-1">{{ item.label }}</span>
           <span class="num text-[11px] opacity-50">{{ item.step }}</span>
         </a>
@@ -54,7 +53,7 @@
 
         <div class="flex items-center gap-2">
           <div class="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground lg:flex">
-            <lucide-icon [img]="SearchIcon" class="size-4"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px]">search</span>
             <span>Buscar unidade, regra ou processo</span>
           </div>
 
@@ -62,7 +61,7 @@
             class="relative rounded-md border border-border bg-card p-2 text-muted-foreground"
             aria-label="Notificações"
           >
-            <lucide-icon [img]="BellIcon" class="size-4"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px]">notifications</span>
             <span class="absolute right-1 top-1 size-2 rounded-full bg-accent"></span>
           </button>
 

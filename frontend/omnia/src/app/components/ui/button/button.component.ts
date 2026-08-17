@@ -8,9 +8,8 @@ export type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
   selector: 'button[app-button], a[app-button], app-button',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <ng-content></ng-content>
-  `,
+  templateUrl: './button.component.html',
+  styleUrl: './button.component.scss',
   host: {
     '[class]': 'computedClass()',
     '[attr.disabled]': 'disabled ? "" : null',

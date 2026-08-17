@@ -98,6 +98,25 @@
     font-family: 'Newsreader', Georgia, serif;
     letter-spacing: -0.015em;
   }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'liga';
+  }
 }
 
 @layer utilities {

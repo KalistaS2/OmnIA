@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { LucideAngularModule, ChevronDown, Check } from 'lucide-angular';
 
 export interface SelectOption {
   value: string | number;
@@ -22,7 +21,7 @@ export interface SelectOption {
 @Component({
   selector: 'app-select',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -30,51 +29,10 @@ export interface SelectOption {
       multi: true,
     },
   ],
-  template: `
-    <div class="relative w-full">
-      <!-- Trigger (Botão seletor) -->
-      <button
-        type="button"
-        [disabled]="disabled()"
-        (click)="toggleOpen()"
-        [class]="triggerClass()"
-      >
-        <span class="truncate">
-          {{ selectedLabel() || placeholder }}
-        </span>
-        <lucide-icon [img]="ChevronDownIcon" class="h-4 w-4 opacity-50 shrink-0"></lucide-icon>
-      </button>
-
-      <!-- Dropdown Content -->
-      @if (isOpen()) {
-        <div
-          class="absolute z-50 mt-1 max-h-60 w-full min-w-[8rem] overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95"
-        >
-          @for (option of options; track option.value) {
-            <div
-              (click)="selectOption(option)"
-              [class]="
-                'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground ' +
-                (option.disabled ? 'pointer-events-none opacity-50' : '')
-              "
-            >
-              <span class="truncate">{{ option.label }}</span>
-              @if (selectedValue() === option.value) {
-                <span class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
-                  <lucide-icon [img]="CheckIcon" class="h-4 w-4"></lucide-icon>
-                </span>
-              }
-            </div>
-          }
-        </div>
-      }
-    </div>
-  `,
+  templateUrl: './select.component.html',
+  styleUrl: './select.component.scss',
 })
 export class SelectComponent implements ControlValueAccessor {
-  readonly ChevronDownIcon = ChevronDown;
-  readonly CheckIcon = Check;
-
   @Input() options: SelectOption[] = [];
   @Input() placeholder: string = 'Selecione uma opção...';
   @Input() customClass: string = '';

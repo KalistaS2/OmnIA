@@ -1,7 +1,6 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, ArrowRight } from 'lucide-angular';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -18,12 +17,12 @@ import {
   imports: [
     CommonModule,
     RouterLink,
-    LucideAngularModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
   ],
   templateUrl: './resultados.component.html',
+  styleUrl: './resultados.component.scss',
 })
 export class ResultadosComponent {
   readonly resultadoPorRegra = resultadoPorRegra;
@@ -45,9 +44,6 @@ export class ResultadosComponent {
     ['Conformidade preliminar', '86%'],
     ['Modo de execução', 'Somente leitura'],
   ];
-
-  // Ícone
-  readonly ArrowRightIcon = ArrowRight;
 
   toggleRegra(regraNome: string): void {
     this.regraSel.update((curr) => (curr === regraNome ? null : regraNome));

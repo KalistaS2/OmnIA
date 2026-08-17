@@ -1,20 +1,23 @@
 <app-shell [title]="'Processo ' + processo()" subtitle="Aprovação da correição · validação de evidências e relatório">
   <!-- Ação no cabeçalho -->
-  <a actions routerLink="/aprovacao"
-    class="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm text-foreground transition-colors hover:bg-secondary">
-    <lucide-icon [img]="ArrowLeftIcon" class="size-4"></lucide-icon>
+  <a
+    actions
+    routerLink="/aprovacao"
+    class="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm text-foreground transition-colors hover:bg-secondary"
+  >
+    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
     Voltar à aprovação
   </a>
 
-  <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
-    <div class="space-y-5">
+  <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+    <div class="space-y-6">
       <!-- Linha do Tempo do Achado -->
       <app-panel title="Linha do tempo do achado">
         <div right>
           <app-tag tone="accent">Risco alto</app-tag>
         </div>
 
-        <ol class="space-y-3">
+        <ol class="space-y-3.5">
           @for (t of timeline; track t.data) {
           <li [class]="'rounded-md px-4 py-3 ' + t.tone">
             <p class="num eyebrow">{{ t.data }}</p>
@@ -25,9 +28,11 @@
       </app-panel>
 
       <!-- Correição do OMinIA -->
-      <app-panel title="Correição do OMinIA"
-        description="Resultado regra a regra com o trecho que justifica a decisão.">
-        <ul class="space-y-2">
+      <app-panel
+        title="Correição do OMinIA"
+        description="Resultado regra a regra com o trecho que justifica a decisão."
+      >
+        <ul class="space-y-2.5">
           @for (l of linhas; track l.regra) {
           <li class="rounded-md border border-border px-3 py-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
@@ -45,27 +50,27 @@
 
       <!-- Por que o processo foi sinalizado -->
       <app-panel title="Por que o processo foi sinalizado">
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div class="grid gap-5 sm:grid-cols-2">
           <div>
             <p class="eyebrow">Condições atendidas</p>
-            <ul class="mt-1 space-y-1.5 text-sm">
+            <ul class="mt-2 space-y-2 text-sm">
               @for (c of condicoes; track c) {
-              <li class="flex gap-2">
-                <lucide-icon [img]="CheckCircle2Icon" class="mt-0.5 size-4 shrink-0 text-risk-high"></lucide-icon>
-                <span>{{ c }}</span>
-              </li>
+                <li class="flex gap-2">
+                  <span class="material-symbols-outlined text-[18px] text-risk-high shrink-0">check_circle</span>
+                  <span>{{ c }}</span>
+                </li>
               }
             </ul>
           </div>
 
           <div>
             <p class="eyebrow">Documentos examinados</p>
-            <ul class="mt-1 space-y-1.5 text-sm">
+            <ul class="mt-2 space-y-2 text-sm">
               @for (d of documentos; track d) {
-              <li class="flex gap-2">
-                <lucide-icon [img]="FileTextIcon" class="mt-0.5 size-4 shrink-0 text-muted-foreground"></lucide-icon>
-                <span>{{ d }}</span>
-              </li>
+                <li class="flex gap-2">
+                  <span class="material-symbols-outlined text-[18px] text-muted-foreground shrink-0">description</span>
+                  <span>{{ d }}</span>
+                </li>
               }
             </ul>
           </div>
@@ -74,19 +79,19 @@
     </div>
 
     <!-- Barra Lateral: Decisão Humana e Anotações -->
-    <aside class="space-y-5">
+    <aside class="space-y-6">
       <app-panel title="Decisão humana">
-        <div class="grid gap-2">
+        <div class="grid gap-2.5">
           @for (d of decisoes; track d.label) {
           <button type="button" (click)="decisao.set(d.label)" [class]="
                 'flex items-center gap-2 rounded-md border px-3 py-2.5 text-sm transition-colors ' +
                 (decisao() === d.label
                   ? 'border-primary/40 bg-primary text-primary-foreground'
-                  : 'border-border hover:bg-secondary')
-              ">
-            <lucide-icon [img]="d.icon" class="size-4"></lucide-icon>
-            {{ d.label }}
-          </button>
+                  : 'border-border hover:bg-secondary')"
+            >
+              <span class="material-symbols-outlined text-[18px]">{{ d.icon }}</span>
+              {{ d.label }}
+            </button>
           }
         </div>
         @if (decisao()) {
@@ -99,14 +104,18 @@
       <app-panel title="Anotações">
         <textarea [ngModel]="anotacao()" (ngModelChange)="anotacao.set($event)" rows="3"
           placeholder="Registrar observação sobre o achado"
-          class="w-full resize-none rounded-md border border-input bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-ring"></textarea>
-        <button type="button" (click)="adicionarAnotacao()"
-          class="mt-2 inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:bg-secondary">
-          <lucide-icon [img]="NotebookPenIcon" class="size-4"></lucide-icon>
+          class="w-full resize-none rounded-md border border-input bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+        ></textarea>
+        <button
+          type="button"
+          (click)="adicionarAnotacao()"
+          class="mt-3 inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm hover:bg-secondary"
+        >
+          <span class="material-symbols-outlined text-[18px]">edit_note</span>
           Gerar anotação
         </button>
 
-        <ul class="mt-3 space-y-2 text-sm">
+        <ul class="mt-4 space-y-2.5 text-sm">
           @for (a of anotacoes(); track $index) {
           <li class="anotacao-item rounded-md bg-secondary px-3 py-2.5">
             <div class="flex items-start justify-between gap-2">
@@ -144,9 +153,13 @@
         <p class="text-sm text-muted-foreground">
           O parecer reúne a correição automatizada, a decisão registrada e as anotações da equipe.
         </p>
-        <button type="button" (click)="gerarRelatorio()" id="btn-emitir-parecer"
-          class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90">
-          <lucide-icon [img]="FileSignatureIcon" class="size-4"></lucide-icon>
+        <button
+          type="button"
+          (click)="gerarRelatorio()"
+          id="btn-emitir-parecer"
+          class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+        >
+          <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
           Emitir Parecer
         </button>
 
@@ -167,7 +180,7 @@
         @if (parecer() && !parecerGerado()) {
         <button type="button" (click)="parecerAberto.set(true)" id="btn-reabrir-parecer"
           class="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary">
-          <lucide-icon [img]="FileSignatureIcon" class="size-3.5"></lucide-icon>
+          <span class="material-symbols-outlined text-[16px]">preview</span>
           Ver parecer gerado
         </button>
         }

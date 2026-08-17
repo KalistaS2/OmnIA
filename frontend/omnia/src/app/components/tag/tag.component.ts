@@ -7,11 +7,8 @@ export type TagTone = 'neutral' | 'info' | 'accent';
   selector: 'app-tag',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <span [class]="'inline-flex rounded-md px-2 py-0.5 text-xs font-medium ' + toneClass">
-      <ng-content></ng-content>
-    </span>
-  `,
+  templateUrl: './tag.component.html',
+  styleUrl: './tag.component.scss',
 })
 export class TagComponent {
   @Input() tone: TagTone = 'neutral';

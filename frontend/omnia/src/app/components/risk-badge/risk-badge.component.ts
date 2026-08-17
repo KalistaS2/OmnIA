@@ -7,11 +7,8 @@ export type RiskLevel = 'Alta' | 'Média' | 'Baixa';
   selector: 'app-risk-badge',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <span [class]="'inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ' + badgeClass">
-      {{ level }}
-    </span>
-  `,
+  templateUrl: './risk-badge.component.html',
+  styleUrl: './risk-badge.component.scss',
 })
 export class RiskBadgeComponent {
   @Input({ required: true }) level!: RiskLevel;

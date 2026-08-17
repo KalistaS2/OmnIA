@@ -1,12 +1,11 @@
 import { Component, Input, Output, EventEmitter, forwardRef, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { LucideAngularModule, Check } from 'lucide-angular';
 
 @Component({
   selector: 'app-checkbox',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -14,24 +13,10 @@ import { LucideAngularModule, Check } from 'lucide-angular';
       multi: true,
     },
   ],
-  template: `
-    <button
-      type="button"
-      role="checkbox"
-      [attr.aria-checked]="checked()"
-      [disabled]="disabled()"
-      (click)="toggle()"
-      [class]="computedClass()"
-    >
-      @if (checked()) {
-        <lucide-icon [img]="CheckIcon" class="h-3.5 w-3.5 stroke-[3] text-current"></lucide-icon>
-      }
-    </button>
-  `,
+  templateUrl: './checkbox.component.html',
+  styleUrl: './checkbox.component.scss',
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  readonly CheckIcon = Check;
-
   checked = signal<boolean>(false);
   disabled = signal<boolean>(false);
   private _class = signal<string>('');
