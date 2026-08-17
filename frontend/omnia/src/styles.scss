@@ -120,3 +120,564 @@
     font-weight: 600;
   }
 }
+
+/* ================================================================
+   MODAL DO PARECER
+   ================================================================ */
+.parecer-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: oklch(0 0 0 / 60%);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.parecer-modal-container {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 24px 64px oklch(0 0 0 / 40%);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.parecer-modal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--sidebar);
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+}
+
+.parecer-modal-toolbar-left,
+.parecer-modal-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.parecer-modal-titulo-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--sidebar-foreground);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+.parecer-modal-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: oklch(1 0 0 / 12%);
+  color: oklch(0.85 0.1 205);
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+}
+
+.parecer-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.45rem 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+.parecer-modal-btn--primary {
+  background: oklch(0.62 0.095 205);
+  color: oklch(0.98 0.008 200);
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.parecer-modal-btn--ghost {
+  background: transparent;
+  color: var(--sidebar-foreground);
+  border-color: var(--sidebar-border);
+  padding: 0.45rem 0.5rem;
+
+  &:hover {
+    background: oklch(1 0 0 / 10%);
+  }
+}
+
+.parecer-modal-btn--projudi {
+  background: oklch(1 0 0 / 8%);
+  color: oklch(0.82 0.1 175);
+  border-color: oklch(0.82 0.1 175 / 35%);
+
+  &:hover:not(:disabled) {
+    background: oklch(0.82 0.1 175 / 15%);
+    border-color: oklch(0.82 0.1 175 / 60%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.parecer-modal-btn--success {
+  background: oklch(0.82 0.1 160 / 20%);
+  color: oklch(0.75 0.12 160);
+  border-color: oklch(0.75 0.12 160 / 45%);
+  cursor: default;
+}
+
+
+.parecer-modal-body {
+  background: oklch(0.93 0.008 240);
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 8rem);
+}
+
+.parecer-modal-sheet {
+  background: #ffffff;
+  border-radius: 0.375rem;
+  box-shadow: 0 2px 16px oklch(0 0 0 / 12%);
+  overflow: hidden;
+}
+
+/* ================================================================
+   DOCUMENTO DO PARECER
+   ================================================================ */
+.parecer-doc {
+  font-family: 'Newsreader', Georgia, serif;
+  color: #1a1a2e;
+  line-height: 1.8;
+  padding: 3rem 3.5rem;
+  font-size: 0.9375rem;
+}
+
+.parecer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.parecer-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.parecer-logo-svg {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.parecer-logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.parecer-tribunal {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.parecer-sistema {
+  font-size: 0.6875rem;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  color: #5a6a80;
+  letter-spacing: 0.04em;
+}
+
+.parecer-id-block {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.parecer-tipo {
+  font-size: 0.65rem;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #5a6a80;
+}
+
+.parecer-numero {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.parecer-divider {
+  border: none;
+  border-top: 2px solid #1e3a5f;
+  margin: 1.25rem 0;
+  opacity: 0.15;
+}
+
+/* Tabela de identificação */
+.parecer-identificacao {
+  margin-bottom: 2rem;
+}
+
+.parecer-id-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.85rem;
+}
+
+.parecer-id-table th {
+  text-align: left;
+  width: 180px;
+  font-weight: 600;
+  color: #5a6a80;
+  padding: 0.3rem 1rem 0.3rem 0;
+  vertical-align: top;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.parecer-id-table td {
+  color: #1a1a2e;
+  padding: 0.3rem 0;
+}
+
+.parecer-processo-num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Ementa */
+.parecer-ementa-box {
+  background: #f0f4f9;
+  border-left: 3px solid #1e3a5f;
+  padding: 1rem 1.25rem !important;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.parecer-secao-label {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #1e3a5f;
+  margin-bottom: 0.5rem;
+}
+
+.parecer-ementa-texto {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #2c3e55;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Seções numeradas */
+.parecer-secao {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #dde3ee;
+}
+
+.parecer-secao-titulo {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #1e3a5f;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.parecer-numeral {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: #1e3a5f;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.parecer-paragrafo {
+  margin: 0 0 0.875rem;
+  text-align: justify;
+  hyphens: auto;
+  color: #1a1a2e;
+}
+
+.parecer-paragrafo--indent {
+  text-indent: 2em;
+}
+
+/* Lista de regras */
+.parecer-regras-lista {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.parecer-regra-item {
+  border: 1px solid #dde3ee;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1rem;
+  background: #fafbfd;
+}
+
+.parecer-regra-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.parecer-regra-nome {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.parecer-veredito {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.parecer-veredito--atende {
+  background: #d6f5e8;
+  color: #1a6641;
+}
+
+.parecer-veredito--nao-atende {
+  background: #fde8e4;
+  color: #8c2914;
+}
+
+.parecer-veredito--neutro {
+  background: #eaecf0;
+  color: #4a5568;
+}
+
+.parecer-regra-trecho {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #4a5568;
+  border-left: 2px solid #c8d0df;
+  margin: 0;
+  padding-left: 0.75rem;
+  line-height: 1.65;
+}
+
+.parecer-sumario-regras {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: #5a6a80;
+  margin-top: 0.5rem;
+}
+
+/* Decisão */
+.parecer-decisao-box {
+  background: #f0f4f9;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Anotações */
+.parecer-anotacoes {
+  margin-top: 0.5rem;
+}
+
+.parecer-anotacoes-titulo {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5a6a80;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.parecer-anotacoes-lista {
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  color: #2c3e55;
+  line-height: 1.7;
+}
+
+/* Assinatura */
+.parecer-assinatura {
+  margin-top: 2.5rem;
+  text-align: right;
+}
+
+.parecer-assinatura-linha {
+  width: 200px;
+  height: 1px;
+  background: #1a1a2e;
+  margin-left: auto;
+  margin-bottom: 0.5rem;
+  opacity: 0.3;
+}
+
+.parecer-assinatura-nome {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: #1e3a5f;
+  margin: 0;
+}
+
+.parecer-assinatura-cargo,
+.parecer-assinatura-data {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: #5a6a80;
+  margin: 0.125rem 0 0;
+}
+
+/* ================================================================
+   BADGES DE CATEGORIA DE ANOTAÇÃO
+   ================================================================ */
+@layer components {
+  .anotacao-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.18em 0.55em;
+    border-radius: 999px;
+    white-space: nowrap;
+    line-height: 1.6;
+  }
+
+  /* Contexto — azul info */
+  .badge-contexto {
+    background: oklch(0.95 0.025 240);
+    color: oklch(0.38 0.09 240);
+  }
+
+  /* Justificativa — violeta */
+  .badge-justificativa {
+    background: oklch(0.94 0.03 285);
+    color: oklch(0.38 0.1 285);
+  }
+
+  /* Atenuante — verde */
+  .badge-atenuante {
+    background: oklch(0.95 0.04 160);
+    color: oklch(0.38 0.1 160);
+  }
+
+  /* Agravante — vermelho */
+  .badge-agravante {
+    background: oklch(0.945 0.04 30);
+    color: oklch(0.42 0.18 25);
+  }
+
+  /* Providência — âmbar */
+  .badge-providencia {
+    background: oklch(0.955 0.045 80);
+    color: oklch(0.42 0.13 68);
+  }
+
+  /* Livre — cinza neutro */
+  .badge-livre {
+    background: oklch(0.935 0.012 240);
+    color: oklch(0.48 0.023 250);
+  }
+
+  /* Hover do botão remover visível ao passar o mouse no item */
+  .anotacao-item:hover .anotacao-remove {
+    opacity: 1;
+  }
+}
+
+/* Linha de anotação no documento do parecer */
+.parecer-anotacao-linha {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Ocultar badges na impressão (somente visual na tela) */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+

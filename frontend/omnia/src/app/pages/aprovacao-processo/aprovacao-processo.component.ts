@@ -17,12 +17,16 @@ import {
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
 import { TagComponent } from '../../components/tag/tag.component';
+import { ParecerModalComponent } from '../../components/parecer-modal/parecer-modal.component';
 
 import {
   correicaoPorProcesso,
   ItemVeredito,
   Veredito,
 } from '../../mock-data/prototype-data';
+
+import { ParecerService } from '../../services/parecer.service';
+import { Parecer, AnotacaoClassificada, AnotacaoCategoria } from '../../models/parecer.model';
 
 @Component({
   selector: 'app-aprovacao-processo',
@@ -35,11 +39,13 @@ import {
     AppShellComponent,
     PanelComponent,
     TagComponent,
+    ParecerModalComponent,
   ],
   templateUrl: './aprovacao-processo.component.html',
 })
 export class AprovacaoProcessoComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private parecerService = inject(ParecerService);
 
   processo = signal<string>('0801234-00.2026.8.23.0001');
   readonly linhas: ItemVeredito[] = correicaoPorProcesso['padrao'] ?? [];
@@ -77,8 +83,12 @@ export class AprovacaoProcessoComponent implements OnInit {
   // Estados reativos (Signals)
   decisao = signal<string | null>(null);
   anotacao = signal<string>('');
-  anotacoes = signal<string[]>([]);
-  relatorio = signal<string | null>(null);
+  anotacoes = signal<AnotacaoClassificada[]>([]);
+
+  // Parecer
+  parecer = signal<Parecer | null>(null);
+  parecerAberto = signal<boolean>(false);
+  parecerGerado = signal<boolean>(false);
 
   // Ícones
   readonly ArrowLeftIcon = ArrowLeft;
@@ -98,28 +108,53 @@ export class AprovacaoProcessoComponent implements OnInit {
   adicionarAnotacao(): void {
     const texto = this.anotacao().trim();
     if (!texto) return;
-    this.anotacoes.update((a) => [...a, texto]);
+    const categoria = this.parecerService.classificarAnotacao(texto);
+    this.anotacoes.update((a) => [...a, { texto, categoria }]);
     this.anotacao.set('');
   }
 
-  gerarRelatorio(): void {
-    const naoAtende = this.linhas.filter((l) => l.veredito === 'Não atende');
-    const relatorioTexto = [
-      `Relatório correicional — Processo ${this.processo()}`,
-      `Decisão da equipe: ${this.decisao() ?? 'pendente de registro'}.`,
-      '',
-      'Achados da correição automatizada:',
-      ...this.linhas.map((l) => `· ${l.regra} — ${l.veredito}: ${l.trecho}`),
-      '',
-      `Regras não atendidas: ${naoAtende.length}.`,
-      '',
-      this.anotacoes().length ? 'Anotações da equipe:' : 'Sem anotações registradas.',
-      ...this.anotacoes().map((a, i) => `${i + 1}. ${a}`),
-      '',
-      'Conclusão provisória: há indício de arquivamento sem confirmação do cumprimento da determinação judicial; a conclusão depende de validação humana.',
-    ].join('\n');
+  /**
+   * Retorna o label e a classe CSS do badge para cada categoria de anotação.
+   * PONTO DE EXTENSÃO FUTURA: quando a classificação migrar para LLM,
+   * este método permanece inalterado — apenas o retorno de `classificarAnotacao()`
+   * passará a vir de uma chamada assíncrona.
+   */
+  badgeCategoria(cat: AnotacaoCategoria): { label: string; css: string } {
+    const map: Record<AnotacaoCategoria, { label: string; css: string }> = {
+      contexto:      { label: 'Contexto',      css: 'badge-contexto' },
+      justificativa: { label: 'Justificativa', css: 'badge-justificativa' },
+      atenuante:     { label: 'Atenuante',     css: 'badge-atenuante' },
+      agravante:     { label: 'Agravante',     css: 'badge-agravante' },
+      providencia:   { label: 'Providência',   css: 'badge-providencia' },
+      livre:         { label: 'Livre',         css: 'badge-livre' },
+    };
+    return map[cat];
+  }
 
-    this.relatorio.set(relatorioTexto);
+  gerarRelatorio(): void {
+    const novoParecer = this.parecerService.gerarParecer({
+      processo: this.processo(),
+      linhas: this.linhas,
+      decisaoHumana: this.decisao(),
+      anotacoes: this.anotacoes(),
+      timeline: this.timeline,
+      relator: 'Dra. Helena',
+    });
+
+    this.parecer.set(novoParecer);
+    this.parecerGerado.set(true);
+    this.parecerAberto.set(true);
+
+    // Remove a mensagem de sucesso após 5 segundos
+    setTimeout(() => this.parecerGerado.set(false), 5000);
+  }
+
+  removerAnotacao(index: number): void {
+    this.anotacoes.update((a) => a.filter((_, i) => i !== index));
+  }
+
+  fecharParecer(): void {
+    this.parecerAberto.set(false);
   }
 
   getVereditoClass(v: Veredito): string {
