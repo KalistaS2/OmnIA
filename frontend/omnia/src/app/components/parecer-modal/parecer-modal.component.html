@@ -1,0 +1,78 @@
+@if (aberto && parecer) {
+  <!-- Backdrop -->
+  <div
+    class="parecer-modal-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="parecer-modal-titulo"
+    (click)="onBackdropClick($event)">
+
+    <!-- Container do modal -->
+    <div class="parecer-modal-container">
+
+      <!-- ── Barra de controle ──────────────────────────────── -->
+      <div class="parecer-modal-toolbar">
+        <div class="parecer-modal-toolbar-left">
+          <lucide-icon [img]="FileSignatureIcon" class="size-4 text-accent"></lucide-icon>
+          <span id="parecer-modal-titulo" class="parecer-modal-titulo-text">
+            Parecer Nº {{ parecer.numero }}
+          </span>
+          <span class="parecer-modal-badge">Pré-visualização</span>
+        </div>
+        <div class="parecer-modal-toolbar-right">
+          <!-- Botão Projudi -->
+          <button
+            type="button"
+            id="btn-projudi-parecer"
+            (click)="onAdicionarProjudi()"
+            [disabled]="projudiEnviando() || projudiEnviado()"
+            [class]="'parecer-modal-btn ' + (projudiEnviado() ? 'parecer-modal-btn--success' : 'parecer-modal-btn--projudi')">
+            @if (projudiEnviando()) {
+              <!-- Spinner -->
+              <svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+              </svg>
+              Enviando…
+            } @else if (projudiEnviado()) {
+              <!-- Sucesso -->
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Adicionado ao Projudi
+            } @else {
+              <lucide-icon [img]="UploadIcon" class="size-4"></lucide-icon>
+              Adicionar ao Projudi
+            }
+          </button>
+
+          <!-- Botão Imprimir -->
+          <button
+            type="button"
+            id="btn-imprimir-parecer"
+            (click)="onImprimir()"
+            class="parecer-modal-btn parecer-modal-btn--primary">
+            <lucide-icon [img]="PrinterIcon" class="size-4"></lucide-icon>
+            Imprimir / Salvar PDF
+          </button>
+          <button
+            type="button"
+            id="btn-fechar-parecer"
+            (click)="onFechar()"
+            class="parecer-modal-btn parecer-modal-btn--ghost"
+            aria-label="Fechar parecer">
+            <lucide-icon [img]="XIcon" class="size-4"></lucide-icon>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ── Área de documento ─────────────────────────────── -->
+      <div class="parecer-modal-body">
+        <div class="parecer-modal-sheet">
+          <app-parecer-documento [parecer]="parecer"></app-parecer-documento>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

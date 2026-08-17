@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
-import { TagComponent } from '../../components/tag/tag.component';
 
 import {
   correicaoPorProcesso,
@@ -22,7 +21,6 @@ import {
     RouterLink,
     AppShellComponent,
     PanelComponent,
-    TagComponent,
   ],
   templateUrl: './aprovacao.component.html',
   styleUrl: './aprovacao.component.scss',
