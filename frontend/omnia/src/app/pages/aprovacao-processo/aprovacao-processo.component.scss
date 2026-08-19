@@ -1,1 +1,156 @@
+// Linha de Tramitação — Stepper vertical
 
+.tramitacao-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+// Cada evento ocupa duas colunas: [ícone | conteúdo]
+.tramitacao-evento {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 0 12px;
+  padding-bottom: 4px;
+
+  // Animação de entrada
+  opacity: 0;
+  animation: tramitacao-fade-in 0.35s ease forwards;
+}
+
+@keyframes tramitacao-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Coluna esquerda: ícone + conector
+
+.tramitacao-icon-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// Círculo do ícone — paleta neutra por padrão
+.tramitacao-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background-color: var(--color-secondary, #f1f5f9);
+  border: 1.5px solid var(--color-border, #e2e8f0);
+  color: var(--color-muted-foreground, #64748b);
+  transition: background-color 0.2s, border-color 0.2s;
+
+  // Variantes por tipo de ato
+  &--decisao {
+    background-color: hsl(213 95% 95%);
+    border-color: hsl(213 80% 75%);
+    color: hsl(213 80% 40%);
+  }
+
+  &--movimento {
+    background-color: hsl(250 60% 95%);
+    border-color: hsl(250 50% 75%);
+    color: hsl(250 50% 45%);
+  }
+
+  &--documento {
+    background-color: hsl(160 60% 94%);
+    border-color: hsl(160 45% 65%);
+    color: hsl(160 45% 35%);
+  }
+
+  &--despacho {
+    background-color: hsl(35 90% 95%);
+    border-color: hsl(35 70% 70%);
+    color: hsl(35 70% 40%);
+  }
+
+  &--achado {
+    background-color: hsl(4 80% 95%);
+    border-color: hsl(4 70% 65%);
+    color: hsl(4 70% 45%);
+  }
+}
+
+.tramitacao-icon-symbol {
+  font-size: 18px;
+  line-height: 1;
+}
+
+// Linha vertical que conecta eventos consecutivos
+.tramitacao-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: var(--color-border, #e2e8f0);
+  border-radius: 1px;
+  margin: 4px 0;
+}
+
+// ── Coluna direita: conteúdo
+
+.tramitacao-content {
+  padding-bottom: 20px;
+  padding-top: 6px;
+}
+
+.tramitacao-data {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground, #64748b);
+  margin: 0 0 2px;
+}
+
+.tramitacao-texto {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-foreground, #1e293b);
+  margin: 0;
+}
+
+// Chip do código da regra violada
+.tramitacao-achado-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  background-color: hsl(4 80% 95%);
+  border: 1px solid hsl(4 70% 75%);
+  color: hsl(4 65% 40%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+// ── Modificador: evento com destaque (relacionado ao achado)
+
+.tramitacao-evento--destaque {
+  .tramitacao-content {
+    border-left: 3px solid hsl(4 70% 60%);
+    padding-left: 10px;
+    border-radius: 0 4px 4px 0;
+  }
+}
+
+// Destaque mais suave para o evento do tipo 'decisao' relacionado ao achado
+.tramitacao-evento--destaque:not(.tramitacao-evento--achado) {
+  .tramitacao-content {
+    border-left-color: hsl(213 75% 55%);
+  }
+}

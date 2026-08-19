@@ -8,6 +8,7 @@ import { AprovacaoProcessoComponent } from './pages/aprovacao-processo/aprovacao
 import { ResultadosComponent } from './pages/resultados/resultados.component';
 import { CriarRegraComponent } from './pages/criar-regra/criar-regra.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { ParecerEdicaoComponent } from './pages/parecer-edicao/parecer-edicao.component';
 
 export const routes: Routes = [
   { path: '', component: DashboardComponent },
@@ -18,5 +19,6 @@ export const routes: Routes = [
   { path: 'aprovacao-processo', component: AprovacaoProcessoComponent },
   { path: 'resultados', component: ResultadosComponent },
   { path: 'criar-regra', component: CriarRegraComponent },
+  { path: 'parecer-edicao', component: ParecerEdicaoComponent },
   { path: '**', component: NotFoundComponent },
 ];

@@ -10,8 +10,11 @@ import { ParecerModalComponent } from '../../components/parecer-modal/parecer-mo
 
 import {
   correicaoPorProcesso,
+  detalhesRegra,
   ItemVeredito,
   Veredito,
+  DetalheRegraInfo,
+  EventoTramitacao,
 } from '../../mock-data/prototype-data';
 
 import { ParecerService } from '../../services/parecer.service';
@@ -39,14 +42,48 @@ export class AprovacaoProcessoComponent implements OnInit {
   processo = signal<string>('0801234-00.2026.8.23.0001');
   readonly linhas: ItemVeredito[] = correicaoPorProcesso['padrao'] ?? [];
 
-  readonly timeline = [
-    { data: '8/7/2026', texto: 'Decisão determinou a expedição de ofício', tone: 'bg-info-soft' },
+  readonly timeline: EventoTramitacao[] = [
+    {
+      data: '3/6/2026',
+      texto: 'Petição inicial distribuída para a 1ª Vara Cível',
+      tipo: 'movimento',
+      tone: 'bg-secondary',
+    },
+    {
+      data: '15/6/2026',
+      texto: 'Citação do réu realizada por oficial de justiça',
+      tipo: 'documento',
+      tone: 'bg-secondary',
+    },
+    {
+      data: '1/7/2026',
+      texto: 'Contestação juntada pelo réu',
+      tipo: 'movimento',
+      tone: 'bg-secondary',
+    },
+    {
+      data: '8/7/2026',
+      texto: 'Decisão determinou a expedição de ofício ao órgão requisitado',
+      tipo: 'decisao',
+      tone: 'bg-info-soft',
+      destaque: true,
+    },
     {
       data: '9 a 13/7/2026',
-      texto: 'Cumprimento não localizado nos movimentos e documentos',
+      texto: 'Cumprimento não localizado nos movimentos e documentos do período',
+      tipo: 'achado',
       tone: 'bg-risk-medium-soft',
+      destaque: true,
+      achado: 'RC-009 — Ordem judicial sem cumprimento localizado',
     },
-    { data: '14/7/2026', texto: 'Arquivamento definitivo', tone: 'bg-risk-high-soft' },
+    {
+      data: '14/7/2026',
+      texto: 'Arquivamento definitivo sem registro de cumprimento da determinação',
+      tipo: 'achado',
+      tone: 'bg-risk-high-soft',
+      destaque: true,
+      achado: 'RC-017 — Arquivamento com possível pendência',
+    },
   ];
 
   readonly condicoes = [
@@ -62,15 +99,10 @@ export class AprovacaoProcessoComponent implements OnInit {
     'Termo de arquivamento',
   ];
 
-  readonly decisoes = [
-    { label: 'Aprovar correição', icon: 'check_circle' },
-    { label: 'Descartar achado', icon: 'cancel' },
-    { label: 'Solicitar revisão', icon: 'replay' },
-    { label: 'Encaminhar à unidade', icon: 'send' },
-  ];
+  // Regra expandida no accordion inline
+  regraExpandida = signal<string | null>(null);
 
   // Estados reativos (Signals)
-  decisao = signal<string | null>(null);
   anotacao = signal<string>('');
   anotacoes = signal<AnotacaoClassificada[]>([]);
 
@@ -84,7 +116,35 @@ export class AprovacaoProcessoComponent implements OnInit {
       if (params['processo']) {
         this.processo.set(params['processo']);
       }
+      // Ao retornar da página de edição, reabre o modal com o parecer atualizado
+      if (params['abrirParecer'] === '1') {
+        const parecerAtualizado = this.parecerService.parecerAtivo();
+        if (parecerAtualizado) {
+          this.parecer.set(parecerAtualizado);
+          this.parecerAberto.set(true);
+        }
+      }
     });
+  }
+
+  /** Alterna a regra expandida no accordion de detalhes */
+  toggleRegraDetalhe(regraId: string): void {
+    this.regraExpandida.update((curr) => (curr === regraId ? null : regraId));
+  }
+
+  /**
+   * Extrai o código RC-XXX do nome completo da regra.
+   * Ex.: "RC-017 — Arquivamento com possível pendência" → "RC-017"
+   */
+  extrairIdRegra(nomeRegra: string): string {
+    const match = nomeRegra.match(/RC-\d+/);
+    return match ? match[0] : '';
+  }
+
+  /** Retorna os detalhes de análise de uma regra a partir do seu nome completo */
+  obterDetalhesRegra(nomeRegra: string): DetalheRegraInfo | null {
+    const id = this.extrairIdRegra(nomeRegra);
+    return id ? (detalhesRegra[id] ?? null) : null;
   }
 
   adicionarAnotacao(): void {
@@ -117,10 +177,10 @@ export class AprovacaoProcessoComponent implements OnInit {
     const novoParecer = this.parecerService.gerarParecer({
       processo: this.processo(),
       linhas: this.linhas,
-      decisaoHumana: this.decisao(),
+      decisaoHumana: null,
       anotacoes: this.anotacoes(),
       timeline: this.timeline,
-      relator: 'Dra. Helena',
+      relator: 'Dra. Helena Moreira',
     });
 
     this.parecer.set(novoParecer);

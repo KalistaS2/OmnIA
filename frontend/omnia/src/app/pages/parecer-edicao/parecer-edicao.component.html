@@ -1,0 +1,137 @@
+<app-shell [title]="'Editar Parecer' + (parecer() ? ' Nº ' + parecer()!.numero : '')"
+  subtitle="Edite as seções do parecer antes de finalizar e enviar ao Projudi.">
+
+  <!-- Ações no cabeçalho -->
+  <div actions class="edicao-header-actions">
+    <button type="button" (click)="cancelar()" id="btn-cancelar-edicao" class="edicao-btn edicao-btn--ghost">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      Voltar ao Parecer
+    </button>
+    <button type="button" (click)="salvar()" id="btn-salvar-edicao" class="edicao-btn edicao-btn--primary"
+      [class.edicao-btn--saved]="salvo()">
+      @if (salvo()) {
+      <span class="material-symbols-outlined text-[18px]">check_circle</span>
+      Salvo!
+      } @else {
+      <span class="material-symbols-outlined text-[18px]">save</span>
+      Salvar Alterações
+      }
+    </button>
+  </div>
+
+  @if (parecer()) {
+  <div class="edicao-layout">
+
+    <!-- ── Aviso informativo  -->
+    <div class="edicao-aviso">
+      <span class="material-symbols-outlined text-[16px]">info</span>
+      <p>
+        Somente as seções <strong>Relatório (I)</strong>, <strong>Fundamentação (II)</strong>,
+        <strong>Conclusão (III)</strong> e <strong>Decisão (IV)</strong> são editáveis.
+        A identificação do processo e a análise de regras são geradas automaticamente pelo OMinIA.
+      </p>
+    </div>
+
+    <!-- ── I — RELATÓRIO -->
+    <app-panel title="I — Relatório"
+      description="Narrativa dos fatos processuais. Cada parágrafo pode ser editado individualmente.">
+
+      <div class="edicao-paragrafos">
+        @for (paragrafo of relatoFatos(); track $index; let i = $index) {
+        <div class="edicao-paragrafo-row">
+          <span class="edicao-paragrafo-num">{{ i + 1 }}</span>
+          <textarea [id]="'relato-fato-' + i" [value]="paragrafo"
+            (input)="atualizarRelatoFato(i, $any($event.target).value)" rows="3" placeholder="Parágrafo do relatório…"
+            class="edicao-textarea">
+              </textarea>
+          @if (relatoFatos().length > 1) {
+          <button type="button" (click)="removerRelatoFato(i)" class="edicao-btn-remove" title="Remover parágrafo"
+            [id]="'btn-remover-relato-' + i">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <button type="button" (click)="adicionarRelatoFato()" id="btn-add-relato" class="edicao-btn-add">
+        <span class="material-symbols-outlined text-[16px]">add</span>
+        Adicionar parágrafo
+      </button>
+    </app-panel>
+
+    <!-- ── II — FUNDAMENTAÇÃO -->
+    <app-panel title="II — Fundamentação"
+      description="Base jurídica e normativa. Cada parágrafo pode ser editado ou removido.">
+
+      <div class="edicao-paragrafos">
+        @for (paragrafo of fundamentacao(); track $index; let i = $index) {
+        <div class="edicao-paragrafo-row">
+          <span class="edicao-paragrafo-num">{{ i + 1 }}</span>
+          <textarea [id]="'fundamentacao-' + i" [value]="paragrafo"
+            (input)="atualizarFundamentacao(i, $any($event.target).value)" rows="4"
+            placeholder="Parágrafo de fundamentação…" class="edicao-textarea">
+              </textarea>
+          @if (fundamentacao().length > 1) {
+          <button type="button" (click)="removerFundamentacao(i)" class="edicao-btn-remove" title="Remover parágrafo"
+            [id]="'btn-remover-fund-' + i">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <button type="button" (click)="adicionarFundamentacao()" id="btn-add-fundamentacao" class="edicao-btn-add">
+        <span class="material-symbols-outlined text-[16px]">add</span>
+        Adicionar parágrafo
+      </button>
+    </app-panel>
+
+    <!-- ── III — CONCLUSÃO -->
+    <app-panel title="III — Conclusão" description="Síntese conclusiva do parecer.">
+      <textarea id="conclusao-textarea" [value]="conclusao()" (input)="conclusao.set($any($event.target).value)"
+        rows="5" placeholder="Digite a conclusão do parecer…" class="edicao-textarea edicao-textarea--full">
+        </textarea>
+    </app-panel>
+
+    <!-- ── IV — DECISÃO -->
+    <app-panel title="IV — Decisão"
+      description="Decisão registrada pela equipe responsável. Pode ser preenchida ou alterada antes da finalização.">
+      <textarea id="decisao-textarea" [value]="decisaoHumana()" (input)="decisaoHumana.set($any($event.target).value)"
+        rows="4" placeholder="Registre a decisão da equipe…"
+        class="edicao-textarea edicao-textarea--full edicao-textarea--decisao">
+        </textarea>
+      <p class="edicao-hint">
+        <span class="material-symbols-outlined text-[13px]">edit_note</span>
+        Este campo corresponde à decisão humana que será exibida na seção IV do documento final.
+      </p>
+    </app-panel>
+
+    <!-- ── Botão de salvar ao final da página -->
+    <div class="edicao-footer">
+      <button type="button" (click)="cancelar()" id="btn-cancelar-edicao-footer" class="edicao-btn edicao-btn--ghost">
+        Cancelar
+      </button>
+      <button type="button" (click)="salvar()" id="btn-salvar-edicao-footer" class="edicao-btn edicao-btn--primary"
+        [class.edicao-btn--saved]="salvo()">
+        @if (salvo()) {
+        <span class="material-symbols-outlined text-[18px]">check_circle</span>
+        Salvo! Retornando…
+        } @else {
+        <span class="material-symbols-outlined text-[18px]">save</span>
+        Salvar Alterações
+        }
+      </button>
+    </div>
+
+  </div>
+  } @else {
+  <!-- Estado vazio — sem parecer ativo -->
+  <div class="edicao-empty">
+    <span class="material-symbols-outlined text-[48px] text-muted-foreground">description</span>
+    <p class="text-muted-foreground text-sm">Nenhum parecer ativo. Gere um parecer primeiro.</p>
+  </div>
+  }
+
+</app-shell>

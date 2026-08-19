@@ -140,9 +140,7 @@
   }
 }
 
-/* ================================================================
-   MODAL DO PARECER
-   ================================================================ */
+/* MODAL DO PARECER */
 .parecer-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -260,6 +258,17 @@
   }
 }
 
+.parecer-modal-btn--secondary {
+  background: oklch(1 0 0 / 8%);
+  color: var(--sidebar-foreground);
+  border-color: oklch(1 0 0 / 18%);
+
+  &:hover {
+    background: oklch(1 0 0 / 16%);
+    border-color: oklch(1 0 0 / 30%);
+  }
+}
+
 .parecer-modal-btn--projudi {
   background: oklch(1 0 0 / 8%);
   color: oklch(0.82 0.1 175);
@@ -298,9 +307,7 @@
   overflow: hidden;
 }
 
-/* ================================================================
-   DOCUMENTO DO PARECER
-   ================================================================ */
+/* DOCUMENTO DO PARECER */
 .parecer-doc {
   font-family: 'Newsreader', Georgia, serif;
   color: #1a1a2e;
@@ -625,9 +632,7 @@
   margin: 0.125rem 0 0;
 }
 
-/* ================================================================
-   BADGES DE CATEGORIA DE ANOTAÇÃO
-   ================================================================ */
+/* BADGES DE CATEGORIA DE ANOTAÇÃO */
 @layer components {
   .anotacao-badge {
     display: inline-flex;
@@ -699,4 +704,3 @@
     display: none !important;
   }
 }
-
