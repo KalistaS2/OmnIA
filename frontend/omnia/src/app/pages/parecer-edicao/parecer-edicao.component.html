@@ -28,19 +28,19 @@
       <div class="edicao-toolbar-group">
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['bold']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('bold')" title="Negrito">
-          <lucide-icon [img]="BoldIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_bold</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['italic']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('italic')" title="Itálico">
-          <lucide-icon [img]="ItalicIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_italic</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['underline']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('underline')" title="Sublinhado">
-          <lucide-icon [img]="UnderlineIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_underlined</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['strikethrough']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('strikethrough')" title="Tachado">
-          <lucide-icon [img]="StrikethroughIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">strikethrough_s</span>
         </button>
       </div>
 
@@ -50,11 +50,11 @@
       <div class="edicao-toolbar-group">
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['subscript']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('subscript')" title="Subscrito">
-          <lucide-icon [img]="SubscriptIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">subscript</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['superscript']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('superscript')" title="Sobrescrito">
-          <lucide-icon [img]="SuperscriptIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">superscript</span>
         </button>
       </div>
 
@@ -64,19 +64,19 @@
       <div class="edicao-toolbar-group">
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyLeft']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('justifyLeft')" title="Alinhar à Esquerda">
-          <lucide-icon [img]="AlignLeftIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_align_left</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyCenter']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('justifyCenter')" title="Centralizar">
-          <lucide-icon [img]="AlignCenterIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_align_center</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyRight']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('justifyRight')" title="Alinhar à Direita">
-          <lucide-icon [img]="AlignRightIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_align_right</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyFull']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('justifyFull')" title="Justificar">
-          <lucide-icon [img]="AlignJustifyIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_align_justify</span>
         </button>
       </div>
 
@@ -86,11 +86,11 @@
       <div class="edicao-toolbar-group">
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['insertUnorderedList']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('insertUnorderedList')" title="Lista com Marcadores">
-          <lucide-icon [img]="ListIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_list_bulleted</span>
         </button>
         <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['insertOrderedList']"
           (mousedown)="$event.preventDefault(); execGlobalCommand('insertOrderedList')" title="Lista Numerada">
-          <lucide-icon [img]="ListOrderedIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_list_numbered</span>
         </button>
       </div>
 
@@ -100,7 +100,7 @@
       <div class="edicao-toolbar-group">
         <button type="button" class="edicao-toolbar-btn"
           (mousedown)="$event.preventDefault(); execGlobalCommand('removeFormat')" title="Limpar Formatação">
-          <lucide-icon [img]="RemoveFormattingIcon" size="16"></lucide-icon>
+          <span class="material-symbols-outlined" style="font-size:16px">format_clear</span>
         </button>
       </div>
     </div>
