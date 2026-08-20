@@ -1,7 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -26,7 +25,6 @@ import { Parecer, AnotacaoClassificada, AnotacaoCategoria } from '../../models/p
   imports: [
     CommonModule,
     RouterLink,
-    FormsModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
@@ -84,6 +82,17 @@ export class AprovacaoProcessoComponent implements OnInit {
       destaque: true,
       achado: 'RC-017 — Arquivamento com possível pendência',
     },
+  
+  linhas: ItemVeredito[] = (correicaoPorProcesso['padrao'] ?? []).map(l => ({ ...l }));
+
+  // Nova estrutura de dados focada nas tramitações judiciais reais
+  readonly tramitacoes = [
+    { data: '15/05/2026', texto: 'Distribuição por Sorteio' },
+    { data: '16/05/2026', texto: 'Conclusão ao Juiz' },
+    { data: '20/05/2026', texto: 'Despacho - Mero expediente' },
+    { data: '05/06/2026', texto: 'Juntada de Petição de Manifestação' },
+    { data: '08/07/2026', texto: 'Decisão determinou a expedição de ofício' },
+    { data: '14/07/2026', texto: 'Arquivamento definitivo' },
   ];
 
   readonly condicoes = [
