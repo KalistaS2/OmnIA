@@ -1,0 +1,81 @@
+<div class="rte-container">
+  @if (showToolbar) {
+  <div class="rte-toolbar">
+    <!-- Texto básico -->
+    <div class="rte-toolbar-group">
+      <button type="button" class="rte-btn" (click)="execCommand('bold')" title="Negrito">
+        <lucide-icon [img]="BoldIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('italic')" title="Itálico">
+        <lucide-icon [img]="ItalicIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('underline')" title="Sublinhado">
+        <lucide-icon [img]="UnderlineIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('strikethrough')" title="Tachado">
+        <lucide-icon [img]="StrikethroughIcon" size="16"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="rte-toolbar-divider"></div>
+
+    <!-- Script -->
+    <div class="rte-toolbar-group">
+      <button type="button" class="rte-btn" (click)="execCommand('subscript')" title="Subscrito">
+        <lucide-icon [img]="SubscriptIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('superscript')" title="Sobrescrito">
+        <lucide-icon [img]="SuperscriptIcon" size="16"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="rte-toolbar-divider"></div>
+
+    <!-- Alinhamento -->
+    <div class="rte-toolbar-group">
+      <button type="button" class="rte-btn" (click)="execCommand('justifyLeft')" title="Alinhar à Esquerda">
+        <lucide-icon [img]="AlignLeftIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('justifyCenter')" title="Centralizar">
+        <lucide-icon [img]="AlignCenterIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('justifyRight')" title="Alinhar à Direita">
+        <lucide-icon [img]="AlignRightIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('justifyFull')" title="Justificar">
+        <lucide-icon [img]="AlignJustifyIcon" size="16"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="rte-toolbar-divider"></div>
+
+    <!-- Listas -->
+    <div class="rte-toolbar-group">
+      <button type="button" class="rte-btn" (click)="execCommand('insertUnorderedList')" title="Lista com Marcadores">
+        <lucide-icon [img]="ListIcon" size="16"></lucide-icon>
+      </button>
+      <button type="button" class="rte-btn" (click)="execCommand('insertOrderedList')" title="Lista Numerada">
+        <lucide-icon [img]="ListOrderedIcon" size="16"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="rte-toolbar-divider"></div>
+
+    <!-- Limpar formatação -->
+    <div class="rte-toolbar-group">
+      <button type="button" class="rte-btn" (click)="execCommand('removeFormat')" title="Limpar Formatação">
+        <lucide-icon [img]="RemoveFormattingIcon" size="16"></lucide-icon>
+      </button>
+    </div>
+  </div>
+  }
+
+  <div #editor
+       class="rte-editor"
+       contenteditable="true"
+       [style.min-height]="minHeight"
+       [attr.data-placeholder]="placeholder"
+       (input)="onInput()"
+       (blur)="onBlur()">
+  </div>
+</div>

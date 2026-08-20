@@ -55,6 +55,5 @@ export interface Parecer {
   /** Anotações classificadas da equipe — cada uma carrega sua categoria semântica */
   anotacoesEquipe: AnotacaoClassificada[];
   conclusao: string;
-  /** Referências bibliográficas e jurisprudenciais citadas na fundamentação */
-  notasRodape: string[];
 }
+

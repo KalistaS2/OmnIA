@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import type { Parecer } from '../../models/parecer.model';
+
 import { ParecerDocumentoComponent } from '../parecer-documento/parecer-documento.component';
 import { ParecerService } from '../../services/parecer.service';
 
@@ -16,6 +18,8 @@ export class ParecerModalComponent {
   @Output() fechar = new EventEmitter<void>();
 
   private parecerService = inject(ParecerService);
+  private router = inject(Router);
+
 
   /** Feedback visual temporário após envio ao Projudi */
   projudiEnviado = signal(false);
@@ -27,6 +31,11 @@ export class ParecerModalComponent {
 
   onImprimir(): void {
     this.parecerService.imprimirParecer();
+  }
+
+  onEditar(): void {
+    this.onFechar();
+    this.router.navigate(['/parecer-edicao']);
   }
 
   /**

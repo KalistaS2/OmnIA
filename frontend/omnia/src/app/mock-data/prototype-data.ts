@@ -627,4 +627,43 @@ export const detalhesRegra: Record<string, DetalheRegraInfo> = {
     naoAtende: ['Três ou mais conclusões seguidas sem despacho intermediário.'],
     naoEncaixa: ['Processos com menos de 40 movimentos.'],
   },
+  'RC-017': {
+    passos: [
+      'Localizar decisões com determinação de expedição de ato (ofício, mandado, carta).',
+      'Verificar se há movimento ou documento posterior de expedição.',
+      'Identificar o evento de arquivamento definitivo.',
+      'Sinalizar quando o arquivamento ocorreu sem registro de cumprimento.',
+    ],
+    atende: [
+      'Certidão de expedição ou cumprimento juntada antes do arquivamento.',
+      'Certidão de objeto e pé confirmando a inexistência de pendência.',
+    ],
+    naoAtende: [
+      'Arquivamento definitivo sem movimento posterior à determinação.',
+      'Ofício redigido sem certidão de expedição registrada.',
+    ],
+    naoEncaixa: [
+      'Processos arquivados por desistência ou acordo sem determinação prévia pendente.',
+      'Arquivamentos provisórios ou de processos em segredo de justiça não autorizados.',
+    ],
+  },
 };
+
+// Linha de Tramitação
+
+export type TipoEventoTramitacao = 'decisao' | 'despacho' | 'movimento' | 'documento' | 'achado';
+
+export interface EventoTramitacao {
+  /** Data ou período do evento (ex.: '8/7/2026' ou '9 a 13/7/2026') */
+  data: string;
+  /** Descrição do evento processual */
+  texto: string;
+  /** Categoria semântica do ato — define ícone e paleta de cor */
+  tipo: TipoEventoTramitacao;
+  /** Classe CSS de cor mantida para retrocompatibilidade com ParecerService */
+  tone: string;
+  /** Marca o evento diretamente relacionado ao achado correicional */
+  destaque?: boolean;
+  /** Código e nome da regra violada; exibido quando tipo === 'achado' */
+  achado?: string;
+}

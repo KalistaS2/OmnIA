@@ -1,0 +1,180 @@
+<app-shell [title]="'Editar Parecer' + (parecer() ? ' Nº ' + parecer()!.numero : '')"
+  subtitle="Edite as seções do parecer antes de finalizar e enviar ao Projudi.">
+
+  <!-- Ações no cabeçalho -->
+  <div actions class="edicao-header-actions">
+    <button type="button" (click)="cancelar()" id="btn-cancelar-edicao" class="edicao-btn edicao-btn--ghost">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      Voltar ao Parecer
+    </button>
+    <button type="button" (click)="salvar()" id="btn-salvar-edicao" class="edicao-btn edicao-btn--primary"
+      [class.edicao-btn--saved]="salvo()">
+      @if (salvo()) {
+      <span class="material-symbols-outlined text-[18px]">check_circle</span>
+      Salvo!
+      } @else {
+      <span class="material-symbols-outlined text-[18px]">save</span>
+      Salvar Alterações
+      }
+    </button>
+  </div>
+
+  @if (parecer()) {
+  <div class="edicao-layout">
+
+    <!-- Barra de Ferramentas Global -->
+    <div class="edicao-global-toolbar">
+      <!-- Texto básico -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['bold']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('bold')" title="Negrito">
+          <lucide-icon [img]="BoldIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['italic']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('italic')" title="Itálico">
+          <lucide-icon [img]="ItalicIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['underline']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('underline')" title="Sublinhado">
+          <lucide-icon [img]="UnderlineIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['strikethrough']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('strikethrough')" title="Tachado">
+          <lucide-icon [img]="StrikethroughIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Script -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['subscript']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('subscript')" title="Subscrito">
+          <lucide-icon [img]="SubscriptIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['superscript']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('superscript')" title="Sobrescrito">
+          <lucide-icon [img]="SuperscriptIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Alinhamento -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyLeft']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyLeft')" title="Alinhar à Esquerda">
+          <lucide-icon [img]="AlignLeftIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyCenter']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyCenter')" title="Centralizar">
+          <lucide-icon [img]="AlignCenterIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyRight']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyRight')" title="Alinhar à Direita">
+          <lucide-icon [img]="AlignRightIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyFull']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyFull')" title="Justificar">
+          <lucide-icon [img]="AlignJustifyIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Listas -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['insertUnorderedList']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('insertUnorderedList')" title="Lista com Marcadores">
+          <lucide-icon [img]="ListIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['insertOrderedList']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('insertOrderedList')" title="Lista Numerada">
+          <lucide-icon [img]="ListOrderedIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Limpar formatação -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('removeFormat')" title="Limpar Formatação">
+          <lucide-icon [img]="RemoveFormattingIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Aviso informativo  -->
+    <div class="edicao-aviso">
+      <span class="material-symbols-outlined text-[16px]">info</span>
+      <p>
+        Somente as seções <strong>Relatório (I)</strong>, <strong>Fundamentação (II)</strong>,
+        <strong>Conclusão (III)</strong> e <strong>Decisão (IV)</strong> são editáveis.
+        A identificação do processo e a análise de regras são geradas automaticamente pelo OMinIA.
+      </p>
+    </div>
+
+    <!-- I — RELATÓRIO -->
+    <app-panel title="I — Relatório" description="Narrativa dos fatos processuais.">
+      <app-rich-text-editor id="relato-editor" [value]="relatoFatosHtml()" (valueChange)="atualizarRelatoHtml($event)"
+        placeholder="Digite o relatório aqui..." class="edicao-editor edicao-editor--full" [showToolbar]="false"
+        minHeight="200px">
+      </app-rich-text-editor>
+    </app-panel>
+
+    <!-- II — FUNDAMENTAÇÃO -->
+    <app-panel title="II — Fundamentação" description="Base jurídica e normativa.">
+      <app-rich-text-editor id="fundamentacao-editor" [value]="fundamentacaoHtml()"
+        (valueChange)="atualizarFundamentacaoHtml($event)" placeholder="Digite a fundamentação aqui..."
+        class="edicao-editor edicao-editor--full" [showToolbar]="false" minHeight="200px">
+      </app-rich-text-editor>
+    </app-panel>
+
+    <!-- III — CONCLUSÃO -->
+    <app-panel title="III — Conclusão" description="Síntese conclusiva do parecer.">
+      <app-rich-text-editor id="conclusao-editor" [value]="conclusao()" (valueChange)="conclusao.set($event)"
+        placeholder="Digite a conclusão do parecer…" class="edicao-editor edicao-editor--full" [showToolbar]="false">
+      </app-rich-text-editor>
+    </app-panel>
+
+    <!-- IV — DECISÃO -->
+    <app-panel title="IV — Decisão"
+      description="Decisão registrada pela equipe responsável. Pode ser preenchida ou alterada antes da finalização.">
+      <app-rich-text-editor id="decisao-editor" [value]="decisaoHumana()" (valueChange)="decisaoHumana.set($event)"
+        placeholder="Registre a decisão da equipe…" class="edicao-editor edicao-editor--full edicao-editor--decisao"
+        [showToolbar]="false">
+      </app-rich-text-editor>
+      <p class="edicao-hint">
+        <span class="material-symbols-outlined text-[13px]">edit_note</span>
+        Este campo corresponde à decisão humana que será exibida na seção IV do documento final.
+      </p>
+    </app-panel>
+
+    <!-- Botão de salvar ao final da página -->
+    <div class="edicao-footer">
+      <button type="button" (click)="cancelar()" id="btn-cancelar-edicao-footer" class="edicao-btn edicao-btn--ghost">
+        Cancelar
+      </button>
+      <button type="button" (click)="salvar()" id="btn-salvar-edicao-footer" class="edicao-btn edicao-btn--primary"
+        [class.edicao-btn--saved]="salvo()">
+        @if (salvo()) {
+        <span class="material-symbols-outlined text-[18px]">check_circle</span>
+        Salvo! Retornando…
+        } @else {
+        <span class="material-symbols-outlined text-[18px]">save</span>
+        Salvar Alterações
+        }
+      </button>
+    </div>
+
+  </div>
+  } @else {
+  <!-- Estado vazio — sem parecer ativo -->
+  <div class="edicao-empty">
+    <span class="material-symbols-outlined text-[48px] text-muted-foreground">description</span>
+    <p class="text-muted-foreground text-sm">Nenhum parecer ativo. Gere um parecer primeiro.</p>
+  </div>
+  }
+
+</app-shell>

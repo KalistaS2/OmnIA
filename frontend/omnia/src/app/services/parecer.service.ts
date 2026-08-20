@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import type { Parecer, ItemAnalise, Veredito, AnotacaoCategoria, AnotacaoClassificada } from '../models/parecer.model';
 import { ItemVeredito } from '../mock-data/prototype-data';
 
@@ -11,13 +11,11 @@ export interface GerarParecerParams {
   relator: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Dicionário de palavras-chave por categoria semântica.
 //
 // EXTENSÃO FUTURA: substituir esta lógica de palavras-chave por uma chamada
 // a um LLM (ex: Gemini) que retorna a categoria com base no contexto completo
 // da anotação, permitindo classificação muito mais precisa e nuançada.
-// ─────────────────────────────────────────────────────────────────────────────
 const PALAVRAS_CHAVE: Record<Exclude<AnotacaoCategoria, 'livre'>, string[]> = {
   contexto: [
     'contexto', 'histórico', 'antecedente', 'anteriormente',
@@ -152,18 +150,6 @@ const PARECER_PRINT_CSS = `
   .parecer-assinatura-data  { font-family: 'IBM Plex Sans', sans-serif; font-size: 7.5pt;
     color: #5a6a80; margin-top: 0.1rem; }
 
-  /* ── Notas de Rodapé ───────────────────────────────────────── */
-  .parecer-notas-rodape { margin-top: 2rem; padding-top: 0.75rem;
-    border-top: 1px solid #c8d0df; }
-  .parecer-notas-titulo { font-family: 'IBM Plex Sans', sans-serif; font-size: 7pt;
-    font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
-    color: #5a6a80; margin-bottom: 0.5rem; }
-  .parecer-notas-lista { list-style: none; display: flex; flex-direction: column;
-    gap: 0.3rem; }
-  .parecer-nota-item { display: flex; gap: 0.5rem; font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 7.5pt; color: #5a6a80; line-height: 1.5; }
-  .parecer-nota-num { flex-shrink: 0; font-weight: 600; color: #1e3a5f; }
-
   @page { size: A4; margin: 0; }
 `;
 
@@ -171,9 +157,18 @@ const PARECER_PRINT_CSS = `
 export class ParecerService {
   private parecerCounter = 42;
 
-  // ─────────────────────────────────────────────────────────────
-  // Classificação semântica de anotações
-  // ─────────────────────────────────────────────────────────────
+  /**
+   * Signal que armazena o parecer ativo em memória.
+   * Compartilhado entre a página de aprovação, o modal de pré-visualização
+   * e a página de edição. Substituir por chamada à API quando disponível.
+   */
+  readonly parecerAtivo = signal<Parecer | null>(null);
+
+  /** Persiste um parecer (gerado ou editado) no signal em memória. */
+  atualizarParecer(parecer: Parecer): void {
+    this.parecerAtivo.set(parecer);
+  }
+
 
   /**
    * Classifica uma anotação de texto livre em uma categoria semântica.
@@ -215,16 +210,15 @@ export class ParecerService {
     const por = (cat: AnotacaoCategoria) =>
       anotacoes.filter((a) => a.categoria === cat).map((a) => a.texto);
 
-    const anotContexto      = por('contexto');
+    const anotContexto = por('contexto');
     const anotJustificativa = por('justificativa');
-    const anotAtenuante     = por('atenuante');
-    const anotAgravante     = por('agravante');
-    const anotProvidencia   = por('providencia');
+    const anotAtenuante = por('atenuante');
+    const anotAgravante = por('agravante');
+    const anotProvidencia = por('providencia');
 
-    const ementa        = this.buildEmenta(linhas, naoAtende.length, anotAtenuante);
-    const relatoFatos   = this.buildRelatoFatos(timeline, processo, anotContexto);
+    const ementa = this.buildEmenta(linhas, naoAtende.length, anotAtenuante);
+    const relatoFatos = this.buildRelatoFatos(timeline, processo, anotContexto);
     const fundamentacao = this.buildFundamentacao(linhas, naoAtende.length, anotJustificativa);
-    const notasRodape   = this.buildNotasRodape();
     const analiseRegras: ItemAnalise[] = linhas.map((l) => ({
       regra: l.regra,
       veredito: l.veredito as Veredito,
@@ -240,7 +234,7 @@ export class ParecerService {
       day: 'numeric', month: 'long', year: 'numeric',
     }).format(new Date());
 
-    return {
+    const parecer: Parecer = {
       numero, processo,
       solicitante: `${relator} — Corregedoria-Geral da Justiça`,
       unidade: '1ª Vara Cível',
@@ -249,8 +243,12 @@ export class ParecerService {
       relator, dataEmissao, ementa, relatoFatos,
       fundamentacao, analiseRegras,
       decisaoHumana, anotacoesEquipe: anotacoes,
-      conclusao, notasRodape,
+      conclusao,
     };
+
+    // Persiste no signal compartilhado para uso na página de edição
+    this.parecerAtivo.set(parecer);
+    return parecer;
   }
 
   /**
@@ -289,9 +287,7 @@ export class ParecerService {
     janela.document.close();
   }
 
-  // ─────────────────────────────────────────────────────────────
   // Builders privados
-  // ─────────────────────────────────────────────────────────────
 
   private buildEmenta(
     linhas: ItemVeredito[],
@@ -351,15 +347,6 @@ export class ParecerService {
     );
 
     return [intro, baseNormativa, naoAtendeResumo, ...paragrafosJustificativa];
-  }
-
-  private buildNotasRodape(): string[] {
-    return [
-      'BRASIL. Lei nº 13.105, de 16 de março de 2015. Código de Processo Civil. Diário Oficial da União, Brasília, DF, 17 mar. 2015. Disponível em: <https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm>.',
-      'CONSELHO NACIONAL DE JUSTIÇA. Resolução nº 70, de 18 de março de 2009. Dispõe sobre o Planejamento e a Gestão Estratégica no âmbito do Poder Judiciário e dá outras providências. Brasília: CNJ, 2009.',
-      'CORREGEDORIA-GERAL DA JUSTIÇA. Portaria que estabelece os critérios e parâmetros para a análise correicional automatizada pelo Sistema OmnIA. [Referência interna à normativa vigente].',
-      'STJ. AgInt no AREsp 1.234.567/SP, Rel. Ministro Benedito Gonçalves, Primeira Turma, DJe 10/10/2023. — Omissão processual. Descumprimento de determinação judicial. Responsabilidade funcional. Cabimento de apuração correicional.',
-    ];
   }
 
   private buildConclusao(
