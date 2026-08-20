@@ -66,7 +66,7 @@
   <section class="parecer-secao">
     <h2 class="parecer-secao-titulo"><span class="parecer-numeral">I</span> — RELATÓRIO</h2>
     @for (paragrafo of parecer.relatoFatos; track $index) {
-    <p class="parecer-paragrafo" [class.parecer-paragrafo--indent]="$index > 0">{{ paragrafo }}</p>
+    <p class="parecer-paragrafo" [class.parecer-paragrafo--indent]="$index > 0" [innerHTML]="paragrafo"></p>
     }
   </section>
 
@@ -76,7 +76,7 @@
 
     <!-- Parágrafos narrativos de fundamentação jurídica -->
     @for (paragrafo of parecer.fundamentacao; track $index) {
-    <p class="parecer-paragrafo" [class.parecer-paragrafo--indent]="$index > 0">{{ paragrafo }}</p>
+    <p class="parecer-paragrafo" [class.parecer-paragrafo--indent]="$index > 0" [innerHTML]="paragrafo"></p>
     }
 
     <!-- Análise regra a regra -->
@@ -107,7 +107,7 @@
   <!-- III — CONCLUSÃO -->
   <section class="parecer-secao">
     <h2 class="parecer-secao-titulo"><span class="parecer-numeral">III</span> — CONCLUSÃO</h2>
-    <p class="parecer-paragrafo">{{ parecer.conclusao }}</p>
+    <div class="parecer-paragrafo" [innerHTML]="parecer.conclusao"></div>
   </section>
 
   <!-- IV — DECISÃO -->
@@ -115,10 +115,10 @@
     <h2 class="parecer-secao-titulo"><span class="parecer-numeral">IV</span> — DECISÃO</h2>
 
     <div class="parecer-decisao-box">
-      <p class="parecer-paragrafo">
+      <div class="parecer-paragrafo">
         Decisão registrada pela equipe responsável:
-        <strong>{{ parecer.decisaoHumana ?? 'Pendente de registro.' }}</strong>
-      </p>
+        <strong [innerHTML]="parecer.decisaoHumana ?? 'Pendente de registro.'"></strong>
+      </div>
     </div>
 
     @if (parecer.anotacoesEquipe.length > 0) {

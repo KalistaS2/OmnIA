@@ -22,7 +22,90 @@
   @if (parecer()) {
   <div class="edicao-layout">
 
-    <!-- ── Aviso informativo  -->
+    <!-- Barra de Ferramentas Global -->
+    <div class="edicao-global-toolbar">
+      <!-- Texto básico -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['bold']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('bold')" title="Negrito">
+          <lucide-icon [img]="BoldIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['italic']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('italic')" title="Itálico">
+          <lucide-icon [img]="ItalicIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['underline']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('underline')" title="Sublinhado">
+          <lucide-icon [img]="UnderlineIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['strikethrough']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('strikethrough')" title="Tachado">
+          <lucide-icon [img]="StrikethroughIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Script -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['subscript']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('subscript')" title="Subscrito">
+          <lucide-icon [img]="SubscriptIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['superscript']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('superscript')" title="Sobrescrito">
+          <lucide-icon [img]="SuperscriptIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Alinhamento -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyLeft']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyLeft')" title="Alinhar à Esquerda">
+          <lucide-icon [img]="AlignLeftIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyCenter']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyCenter')" title="Centralizar">
+          <lucide-icon [img]="AlignCenterIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyRight']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyRight')" title="Alinhar à Direita">
+          <lucide-icon [img]="AlignRightIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['justifyFull']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('justifyFull')" title="Justificar">
+          <lucide-icon [img]="AlignJustifyIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Listas -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['insertUnorderedList']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('insertUnorderedList')" title="Lista com Marcadores">
+          <lucide-icon [img]="ListIcon" size="16"></lucide-icon>
+        </button>
+        <button type="button" class="edicao-toolbar-btn" [class.active]="activeCommands()['insertOrderedList']"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('insertOrderedList')" title="Lista Numerada">
+          <lucide-icon [img]="ListOrderedIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="edicao-toolbar-divider"></div>
+
+      <!-- Limpar formatação -->
+      <div class="edicao-toolbar-group">
+        <button type="button" class="edicao-toolbar-btn"
+          (mousedown)="$event.preventDefault(); execGlobalCommand('removeFormat')" title="Limpar Formatação">
+          <lucide-icon [img]="RemoveFormattingIcon" size="16"></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Aviso informativo  -->
     <div class="edicao-aviso">
       <span class="material-symbols-outlined text-[16px]">info</span>
       <p>
@@ -32,83 +115,43 @@
       </p>
     </div>
 
-    <!-- ── I — RELATÓRIO -->
-    <app-panel title="I — Relatório"
-      description="Narrativa dos fatos processuais. Cada parágrafo pode ser editado individualmente.">
-
-      <div class="edicao-paragrafos">
-        @for (paragrafo of relatoFatos(); track $index; let i = $index) {
-        <div class="edicao-paragrafo-row">
-          <span class="edicao-paragrafo-num">{{ i + 1 }}</span>
-          <textarea [id]="'relato-fato-' + i" [value]="paragrafo"
-            (input)="atualizarRelatoFato(i, $any($event.target).value)" rows="3" placeholder="Parágrafo do relatório…"
-            class="edicao-textarea">
-              </textarea>
-          @if (relatoFatos().length > 1) {
-          <button type="button" (click)="removerRelatoFato(i)" class="edicao-btn-remove" title="Remover parágrafo"
-            [id]="'btn-remover-relato-' + i">
-            <span class="material-symbols-outlined text-[16px]">delete</span>
-          </button>
-          }
-        </div>
-        }
-      </div>
-
-      <button type="button" (click)="adicionarRelatoFato()" id="btn-add-relato" class="edicao-btn-add">
-        <span class="material-symbols-outlined text-[16px]">add</span>
-        Adicionar parágrafo
-      </button>
+    <!-- I — RELATÓRIO -->
+    <app-panel title="I — Relatório" description="Narrativa dos fatos processuais.">
+      <app-rich-text-editor id="relato-editor" [value]="relatoFatosHtml()" (valueChange)="atualizarRelatoHtml($event)"
+        placeholder="Digite o relatório aqui..." class="edicao-editor edicao-editor--full" [showToolbar]="false"
+        minHeight="200px">
+      </app-rich-text-editor>
     </app-panel>
 
-    <!-- ── II — FUNDAMENTAÇÃO -->
-    <app-panel title="II — Fundamentação"
-      description="Base jurídica e normativa. Cada parágrafo pode ser editado ou removido.">
-
-      <div class="edicao-paragrafos">
-        @for (paragrafo of fundamentacao(); track $index; let i = $index) {
-        <div class="edicao-paragrafo-row">
-          <span class="edicao-paragrafo-num">{{ i + 1 }}</span>
-          <textarea [id]="'fundamentacao-' + i" [value]="paragrafo"
-            (input)="atualizarFundamentacao(i, $any($event.target).value)" rows="4"
-            placeholder="Parágrafo de fundamentação…" class="edicao-textarea">
-              </textarea>
-          @if (fundamentacao().length > 1) {
-          <button type="button" (click)="removerFundamentacao(i)" class="edicao-btn-remove" title="Remover parágrafo"
-            [id]="'btn-remover-fund-' + i">
-            <span class="material-symbols-outlined text-[16px]">delete</span>
-          </button>
-          }
-        </div>
-        }
-      </div>
-
-      <button type="button" (click)="adicionarFundamentacao()" id="btn-add-fundamentacao" class="edicao-btn-add">
-        <span class="material-symbols-outlined text-[16px]">add</span>
-        Adicionar parágrafo
-      </button>
+    <!-- II — FUNDAMENTAÇÃO -->
+    <app-panel title="II — Fundamentação" description="Base jurídica e normativa.">
+      <app-rich-text-editor id="fundamentacao-editor" [value]="fundamentacaoHtml()"
+        (valueChange)="atualizarFundamentacaoHtml($event)" placeholder="Digite a fundamentação aqui..."
+        class="edicao-editor edicao-editor--full" [showToolbar]="false" minHeight="200px">
+      </app-rich-text-editor>
     </app-panel>
 
-    <!-- ── III — CONCLUSÃO -->
+    <!-- III — CONCLUSÃO -->
     <app-panel title="III — Conclusão" description="Síntese conclusiva do parecer.">
-      <textarea id="conclusao-textarea" [value]="conclusao()" (input)="conclusao.set($any($event.target).value)"
-        rows="5" placeholder="Digite a conclusão do parecer…" class="edicao-textarea edicao-textarea--full">
-        </textarea>
+      <app-rich-text-editor id="conclusao-editor" [value]="conclusao()" (valueChange)="conclusao.set($event)"
+        placeholder="Digite a conclusão do parecer…" class="edicao-editor edicao-editor--full" [showToolbar]="false">
+      </app-rich-text-editor>
     </app-panel>
 
-    <!-- ── IV — DECISÃO -->
+    <!-- IV — DECISÃO -->
     <app-panel title="IV — Decisão"
       description="Decisão registrada pela equipe responsável. Pode ser preenchida ou alterada antes da finalização.">
-      <textarea id="decisao-textarea" [value]="decisaoHumana()" (input)="decisaoHumana.set($any($event.target).value)"
-        rows="4" placeholder="Registre a decisão da equipe…"
-        class="edicao-textarea edicao-textarea--full edicao-textarea--decisao">
-        </textarea>
+      <app-rich-text-editor id="decisao-editor" [value]="decisaoHumana()" (valueChange)="decisaoHumana.set($event)"
+        placeholder="Registre a decisão da equipe…" class="edicao-editor edicao-editor--full edicao-editor--decisao"
+        [showToolbar]="false">
+      </app-rich-text-editor>
       <p class="edicao-hint">
         <span class="material-symbols-outlined text-[13px]">edit_note</span>
         Este campo corresponde à decisão humana que será exibida na seção IV do documento final.
       </p>
     </app-panel>
 
-    <!-- ── Botão de salvar ao final da página -->
+    <!-- Botão de salvar ao final da página -->
     <div class="edicao-footer">
       <button type="button" (click)="cancelar()" id="btn-cancelar-edicao-footer" class="edicao-btn edicao-btn--ghost">
         Cancelar
