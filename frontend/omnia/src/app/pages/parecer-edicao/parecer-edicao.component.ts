@@ -9,19 +9,10 @@ import { RichTextEditorComponent } from '../../components/ui/rich-text-editor/ri
 import { ParecerService } from '../../services/parecer.service';
 import type { Parecer } from '../../models/parecer.model';
 
-// Ícones para a toolbar global
-import {
-  LucideAngularModule,
-  Bold, Italic, Underline, Strikethrough,
-  Subscript, Superscript, AlignLeft, AlignCenter,
-  AlignRight, AlignJustify, List, ListOrdered,
-  RemoveFormatting
-} from 'lucide-angular';
-
 @Component({
   selector: 'app-parecer-edicao',
   standalone: true,
-  imports: [CommonModule, FormsModule, AppShellComponent, PanelComponent, RichTextEditorComponent, LucideAngularModule],
+  imports: [CommonModule, FormsModule, AppShellComponent, PanelComponent, RichTextEditorComponent],
   templateUrl: './parecer-edicao.component.html',
   styleUrl: './parecer-edicao.component.scss',
 })
@@ -43,21 +34,6 @@ export class ParecerEdicaoComponent implements OnInit {
 
   /** Controle de estado dos botões da toolbar */
   activeCommands = signal<Record<string, boolean>>({});
-
-  // Ícones da biblioteca Lucide para a toolbar global
-  readonly BoldIcon = Bold;
-  readonly ItalicIcon = Italic;
-  readonly UnderlineIcon = Underline;
-  readonly StrikethroughIcon = Strikethrough;
-  readonly SubscriptIcon = Subscript;
-  readonly SuperscriptIcon = Superscript;
-  readonly AlignLeftIcon = AlignLeft;
-  readonly AlignCenterIcon = AlignCenter;
-  readonly AlignRightIcon = AlignRight;
-  readonly AlignJustifyIcon = AlignJustify;
-  readonly ListIcon = List;
-  readonly ListOrderedIcon = ListOrdered;
-  readonly RemoveFormattingIcon = RemoveFormatting;
 
   execGlobalCommand(command: string, value: string | undefined = undefined): void {
     document.execCommand(command, false, value);

@@ -1,18 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, forwardRef, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import {
-  LucideAngularModule,
-  Bold, Italic, Underline, Strikethrough,
-  Subscript, Superscript, AlignLeft, AlignCenter,
-  AlignRight, AlignJustify, List, ListOrdered,
-  RemoveFormatting
-} from 'lucide-angular';
 
 @Component({
   selector: 'app-rich-text-editor',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule],
   templateUrl: './rich-text-editor.component.html',
   styleUrl: './rich-text-editor.component.scss',
   providers: [
@@ -31,21 +24,6 @@ export class RichTextEditorComponent implements ControlValueAccessor, OnChanges 
   @Input() minHeight = '80px';
   @Input() showToolbar = true;
   @Output() valueChange = new EventEmitter<string>();
-
-  // Ícones da biblioteca Lucide
-  readonly BoldIcon = Bold;
-  readonly ItalicIcon = Italic;
-  readonly UnderlineIcon = Underline;
-  readonly StrikethroughIcon = Strikethrough;
-  readonly SubscriptIcon = Subscript;
-  readonly SuperscriptIcon = Superscript;
-  readonly AlignLeftIcon = AlignLeft;
-  readonly AlignCenterIcon = AlignCenter;
-  readonly AlignRightIcon = AlignRight;
-  readonly AlignJustifyIcon = AlignJustify;
-  readonly ListIcon = List;
-  readonly ListOrderedIcon = ListOrdered;
-  readonly RemoveFormattingIcon = RemoveFormatting;
 
   // ControlValueAccessor callbacks
   onChange = (value: string) => {};
