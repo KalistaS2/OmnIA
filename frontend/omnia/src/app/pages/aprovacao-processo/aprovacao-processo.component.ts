@@ -1,7 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -23,7 +22,6 @@ import { Parecer, AnotacaoClassificada, AnotacaoCategoria } from '../../models/p
   imports: [
     CommonModule,
     RouterLink,
-    FormsModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
@@ -37,16 +35,17 @@ export class AprovacaoProcessoComponent implements OnInit {
   private parecerService = inject(ParecerService);
 
   processo = signal<string>('0801234-00.2026.8.23.0001');
-  readonly linhas: ItemVeredito[] = correicaoPorProcesso['padrao'] ?? [];
+  
+  linhas: ItemVeredito[] = (correicaoPorProcesso['padrao'] ?? []).map(l => ({ ...l }));
 
-  readonly timeline = [
-    { data: '8/7/2026', texto: 'Decisão determinou a expedição de ofício', tone: 'bg-info-soft' },
-    {
-      data: '9 a 13/7/2026',
-      texto: 'Cumprimento não localizado nos movimentos e documentos',
-      tone: 'bg-risk-medium-soft',
-    },
-    { data: '14/7/2026', texto: 'Arquivamento definitivo', tone: 'bg-risk-high-soft' },
+  // Nova estrutura de dados focada nas tramitações judiciais reais
+  readonly tramitacoes = [
+    { data: '15/05/2026', texto: 'Distribuição por Sorteio' },
+    { data: '16/05/2026', texto: 'Conclusão ao Juiz' },
+    { data: '20/05/2026', texto: 'Despacho - Mero expediente' },
+    { data: '05/06/2026', texto: 'Juntada de Petição de Manifestação' },
+    { data: '08/07/2026', texto: 'Decisão determinou a expedição de ofício' },
+    { data: '14/07/2026', texto: 'Arquivamento definitivo' },
   ];
 
   readonly condicoes = [
