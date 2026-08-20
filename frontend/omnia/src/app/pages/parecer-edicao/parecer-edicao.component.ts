@@ -9,8 +9,6 @@ import { RichTextEditorComponent } from '../../components/ui/rich-text-editor/ri
 import { ParecerService } from '../../services/parecer.service';
 import type { Parecer } from '../../models/parecer.model';
 
-
-
 @Component({
   selector: 'app-parecer-edicao',
   standalone: true,

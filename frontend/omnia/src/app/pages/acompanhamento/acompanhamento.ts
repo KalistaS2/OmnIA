@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
-import { TagComponent } from '../../components/tag/tag.component';
 
 export interface RegraAvaliada {
   id: string;
@@ -89,7 +88,6 @@ export interface UnidadeAguardando {
     FormsModule,
     AppShellComponent,
     PanelComponent,
-    TagComponent,
   ],
   templateUrl: './acompanhamento.html',
   styleUrl: './acompanhamento.scss',

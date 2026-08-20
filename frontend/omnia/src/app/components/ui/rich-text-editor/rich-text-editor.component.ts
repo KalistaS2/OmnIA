@@ -2,7 +2,6 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, forwardR
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-
 @Component({
   selector: 'app-rich-text-editor',
   standalone: true,
@@ -25,8 +24,6 @@ export class RichTextEditorComponent implements ControlValueAccessor, OnChanges 
   @Input() minHeight = '80px';
   @Input() showToolbar = true;
   @Output() valueChange = new EventEmitter<string>();
-
-
 
   // ControlValueAccessor callbacks
   onChange = (value: string) => {};

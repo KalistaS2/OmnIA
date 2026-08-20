@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -25,6 +26,7 @@ import { Parecer, AnotacaoClassificada, AnotacaoCategoria } from '../../models/p
   imports: [
     CommonModule,
     RouterLink,
+    FormsModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
@@ -38,7 +40,7 @@ export class AprovacaoProcessoComponent implements OnInit {
   private parecerService = inject(ParecerService);
 
   processo = signal<string>('0801234-00.2026.8.23.0001');
-  readonly linhas: ItemVeredito[] = correicaoPorProcesso['padrao'] ?? [];
+  linhas: ItemVeredito[] = (correicaoPorProcesso['padrao'] ?? []).map(l => ({ ...l }));
 
   readonly timeline: EventoTramitacao[] = [
     {
@@ -82,8 +84,9 @@ export class AprovacaoProcessoComponent implements OnInit {
       destaque: true,
       achado: 'RC-017 — Arquivamento com possível pendência',
     },
-  
-  linhas: ItemVeredito[] = (correicaoPorProcesso['padrao'] ?? []).map(l => ({ ...l }));
+  ];
+
+  expandirTramitacoes = signal<boolean>(true);
 
   // Nova estrutura de dados focada nas tramitações judiciais reais
   readonly tramitacoes = [
@@ -108,10 +111,18 @@ export class AprovacaoProcessoComponent implements OnInit {
     'Termo de arquivamento',
   ];
 
+  readonly decisoes = [
+    { label: 'Aprovar correição', icon: 'check_circle' },
+    { label: 'Descartar achado', icon: 'cancel' },
+    { label: 'Solicitar revisão', icon: 'replay' },
+    { label: 'Encaminhar à unidade', icon: 'send' },
+  ];
+
   // Regra expandida no accordion inline
   regraExpandida = signal<string | null>(null);
 
   // Estados reativos (Signals)
+  decisao = signal<string | null>(null);
   anotacao = signal<string>('');
   anotacoes = signal<AnotacaoClassificada[]>([]);
 
@@ -172,12 +183,12 @@ export class AprovacaoProcessoComponent implements OnInit {
    */
   badgeCategoria(cat: AnotacaoCategoria): { label: string; css: string } {
     const map: Record<AnotacaoCategoria, { label: string; css: string }> = {
-      contexto:      { label: 'Contexto',      css: 'badge-contexto' },
+      contexto: { label: 'Contexto', css: 'badge-contexto' },
       justificativa: { label: 'Justificativa', css: 'badge-justificativa' },
-      atenuante:     { label: 'Atenuante',     css: 'badge-atenuante' },
-      agravante:     { label: 'Agravante',     css: 'badge-agravante' },
-      providencia:   { label: 'Providência',   css: 'badge-providencia' },
-      livre:         { label: 'Livre',         css: 'badge-livre' },
+      atenuante: { label: 'Atenuante', css: 'badge-atenuante' },
+      agravante: { label: 'Agravante', css: 'badge-agravante' },
+      providencia: { label: 'Providência', css: 'badge-providencia' },
+      livre: { label: 'Livre', css: 'badge-livre' },
     };
     return map[cat];
   }
@@ -186,7 +197,7 @@ export class AprovacaoProcessoComponent implements OnInit {
     const novoParecer = this.parecerService.gerarParecer({
       processo: this.processo(),
       linhas: this.linhas,
-      decisaoHumana: null,
+      decisaoHumana: this.decisao(),
       anotacoes: this.anotacoes(),
       timeline: this.timeline,
       relator: 'Dra. Helena Moreira',
