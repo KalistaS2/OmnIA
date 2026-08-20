@@ -79,7 +79,7 @@ O sistema segue um fluxo linear de 5 etapas acessíveis pelo menu lateral:
 | Framework | Angular 22 (com SSR via `@angular/ssr`) |
 | Linguagem | TypeScript 6 |
 | Estilização | TailwindCSS 3 + CSS Variables (design tokens) |
-| Ícones | Lucide Angular |
+| Ícones | Google Material Symbols Outlined |
 | Fonte | IBM Plex Sans (interface) · Newsreader (display) |
 | Testes unitários | Vitest |
 | Formatador | Prettier |

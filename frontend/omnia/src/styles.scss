@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --app-zoom: 0.9;
   --radius: 0.5rem;
   --background: oklch(0.981 0.006 95);
   --foreground: oklch(0.24 0.033 250);
@@ -85,7 +86,13 @@
     border-color: var(--border);
   }
 
+  html {
+    zoom: var(--app-zoom, 0.9);
+    min-height: 100%;
+  }
+
   body {
+    min-height: 100%;
     background-color: var(--background);
     color: var(--foreground);
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
@@ -699,4 +706,3 @@
     display: none !important;
   }
 }
-

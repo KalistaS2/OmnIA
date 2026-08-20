@@ -1,7 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject, signal, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { REFERENCE_PERIOD } from '../../mock-data/prototype-data';
+import { NotificationService } from '../../services/notification.service';
+import { Notificacao } from '../../models/notificacao.model';
 
 @Component({
   selector: 'app-shell',
@@ -11,11 +13,21 @@ import { REFERENCE_PERIOD } from '../../mock-data/prototype-data';
   styleUrl: './app-shell.component.scss',
   host: {
     class: 'block min-h-screen',
+    '[attr.title]': 'null',
   },
 })
-export class AppShellComponent {
+export class AppShellComponent implements OnInit {
+  private readonly el = inject(ElementRef);
+
   @Input() title: string = '';
   @Input() subtitle?: string;
+
+  ngOnInit(): void {
+    this.el.nativeElement.removeAttribute('title');
+  }
+
+  readonly notifService = inject(NotificationService);
+  readonly notificacoesAbertas = signal<boolean>(false);
 
   readonly referencePeriod = REFERENCE_PERIOD;
 
@@ -27,4 +39,17 @@ export class AppShellComponent {
     { to: '/aprovacao', label: 'Aprovação e execução', step: '05', icon: 'verified_user' },
     { to: '/resultados', label: 'Resultados e riscos', step: '06', icon: 'bar_chart' },
   ];
+
+  toggleNotificacoes(): void {
+    this.notificacoesAbertas.update((v) => !v);
+  }
+
+  fecharNotificacoes(): void {
+    this.notificacoesAbertas.set(false);
+  }
+
+  aoClicarNotificacao(notif: Notificacao): void {
+    this.notifService.marcarComoLida(notif.id);
+    this.fecharNotificacoes();
+  }
 }

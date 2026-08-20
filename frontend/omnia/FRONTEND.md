@@ -111,7 +111,6 @@ O projeto usa **TailwindCSS 3** combinado com **CSS Variables** definidas em `sr
 | `@angular/core` | ^22.1.0 | Framework principal |
 | `@angular/ssr` | ^22.1.3 | Server-Side Rendering |
 | `@angular/router` | ^22.1.0 | Roteamento |
-| `lucide-angular` | ^1.0.0 | Ícones SVG |
 | `tailwindcss` | ^3.4.19 | Utilitários CSS |
 | `express` | ^5.1.0 | Servidor Node.js para SSR |
 | `vitest` | ^4.0.8 | Testes unitários |

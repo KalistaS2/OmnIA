@@ -1,72 +1,184 @@
 <div class="min-h-screen bg-background md:flex">
   <!-- Sidebar lateral -->
-  <aside class="bg-sidebar text-sidebar-foreground md:sticky md:top-0 md:h-screen md:w-72 md:shrink-0">
-    <div class="border-b border-sidebar-border px-5 py-5">
-      <div class="flex items-center gap-3">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-white/30">
-          <img src="/favicon.png" alt="OMinIA" class="h-9 w-9 object-contain" />
+  <aside
+    class="flex flex-col justify-between overflow-y-auto bg-sidebar text-sidebar-foreground md:sticky md:top-0 md:h-screen md:w-72 md:shrink-0">
+    <div>
+      <div class="border-b border-sidebar-border px-5 py-5">
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-white/30">
+            <img src="/omnia-logo.jpg" alt="OMinIA" class="h-9 w-9 object-contain" />
+          </div>
+          <span class="text-xl font-semibold tracking-tight">
+            OMin<span class="text-accent">IA</span>
+          </span>
         </div>
-        <span class="text-xl font-semibold tracking-tight">
-          OMin<span class="text-accent">IA</span>
-        </span>
+
+        <p class="mt-2 text-[11px] tracking-widest uppercase opacity-70">
+          Corregedoria · Inteligência correicional
+        </p>
       </div>
 
-      <p class="mt-2 text-[11px] tracking-widest uppercase opacity-70">
-        Corregedoria · Inteligência correicional
-      </p>
-    </div>
-
-    <nav class="flex gap-1 overflow-x-auto p-3 md:flex-col md:overflow-visible">
-      @for (item of nav; track item.to) {
-        <a
-          [routerLink]="item.to"
-          routerLinkActive="bg-sidebar-accent text-sidebar-accent-foreground"
-          [routerLinkActiveOptions]="{ exact: item.to === '/' }"
-          #rla="routerLinkActive"
-          class="flex min-w-max items-center gap-3 rounded-md px-3 py-2.5 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
-        >
+      <nav class="flex gap-1 overflow-x-auto p-3 md:flex-col md:overflow-visible">
+        @for (item of nav; track item.to) {
+        <a [routerLink]="item.to" routerLinkActive="bg-sidebar-accent text-sidebar-accent-foreground"
+          [routerLinkActiveOptions]="{ exact: item.to === '/' }" #rla="routerLinkActive"
+          class="flex min-w-max items-center gap-3 rounded-md px-3 py-2.5 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground">
           <span
-            [class]="'material-symbols-outlined text-[18px] ' + (rla.isActive ? 'text-sidebar-primary' : 'opacity-70')"
-          >{{ item.icon }}</span>
+            [class]="'material-symbols-outlined text-[18px] ' + (rla.isActive ? 'text-sidebar-primary' : 'opacity-70')">{{
+            item.icon }}</span>
           <span class="flex-1">{{ item.label }}</span>
           <span class="num text-[11px] opacity-50">{{ item.step }}</span>
         </a>
-      }
-    </nav>
+        }
+      </nav>
+    </div>
 
-    <p class="hidden px-5 pt-4 text-[11px] leading-relaxed text-sidebar-foreground/50 md:block">
-      Protótipo demonstrativo. Todos os números são simulados e as bases são de leitura.
-    </p>
+    <div class="border-t border-sidebar-border p-4">
+      <div class="space-y-2.5">
+        <p class="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70">
+          Fonte e segurança
+        </p>
+        <ul class="space-y-2 text-xs text-sidebar-foreground/80">
+          <li class="flex items-start gap-2">
+            <span
+              class="material-symbols-outlined text-[16px] text-sidebar-foreground/60 shrink-0 mt-0.5">database</span>
+            <span>Fonte: CodeX, DataJud ou réplica autorizada</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span
+              class="material-symbols-outlined text-[16px] text-sidebar-foreground/60 shrink-0 mt-0.5">verified_user</span>
+            <span>Ambiente: controlado pela STI</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span
+              class="material-symbols-outlined text-[16px] text-sidebar-foreground/60 shrink-0 mt-0.5">verified_user</span>
+            <span>Perfil de acesso: equipe correicional</span>
+          </li>
+        </ul>
+      </div>
+
+      <p class="mt-3 text-[11px] leading-relaxed text-sidebar-foreground/50">
+        Protótipo demonstrativo. Todos os números são simulados e as bases são de leitura.
+      </p>
+    </div>
   </aside>
 
   <!-- Conteúdo Principal -->
   <div class="min-w-0 flex-1">
-    <header class="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur">
+    <header class="sticky top-0 z-20 border-b border-border bg-background">
       <div class="flex flex-wrap items-center gap-4 px-6 py-4">
         <div class="min-w-0 flex-1">
           <p class="eyebrow">OMinIA · Central de Correições</p>
           <h1 class="mt-1 truncate text-2xl text-foreground">{{ title }}</h1>
           @if (subtitle) {
-            <p class="mt-1 text-sm text-muted-foreground">{{ subtitle }}</p>
+          <p class="mt-1 text-sm text-muted-foreground">{{ subtitle }}</p>
           }
         </div>
 
         <div class="flex items-center gap-2">
-          <div class="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground lg:flex">
-            <span class="material-symbols-outlined text-[18px]">search</span>
-            <span>Buscar unidade, regra ou processo</span>
+
+          <!-- Botão de Notificações / Atenção Necessária -->
+          <div class="relative">
+            <button type="button" (click)="toggleNotificacoes()"
+              class="relative flex size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              aria-label="Notificações e Atenção Necessária" [attr.aria-expanded]="notificacoesAbertas()">
+              <span class="material-symbols-outlined text-[18px]">notifications</span>
+              @if (notifService.totalNaoLidas() > 0) {
+              <span
+                class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm">
+                {{ notifService.totalNaoLidas() }}
+              </span>
+              }
+            </button>
+
+            <!-- Dropdown / Popover de Notificações -->
+            @if (notificacoesAbertas()) {
+            <!-- Backdrop invisível para fechar ao clicar fora -->
+            <div class="fixed inset-0 z-40" (click)="fecharNotificacoes()"></div>
+
+            <div
+              class="absolute right-0 top-full z-50 mt-2 w-80 sm:w-96 rounded-lg border border-border bg-card shadow-2xl animate-in fade-in-0 duration-150">
+
+              <!-- Cabeçalho do Popover -->
+              <div
+                class="flex items-center justify-between border-b border-border px-4 py-3 bg-surface/50 rounded-t-lg">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px] text-accent">warning</span>
+                  <span class="text-sm font-semibold text-foreground">Atenção Necessária</span>
+                  @if (notifService.totalNaoLidas() > 0) {
+                  <span class="rounded-full bg-accent/20 px-2 py-0.5 text-[11px] font-medium text-accent-foreground">
+                    {{ notifService.totalNaoLidas() }} pendentes
+                  </span>
+                  }
+                </div>
+                @if (notifService.totalNaoLidas() > 0) {
+                <button type="button" (click)="notifService.marcarTodasComoLidas()"
+                  class="text-[11px] font-medium text-primary hover:underline">
+                  Marcar todas lidas
+                </button>
+                }
+              </div>
+
+              <!-- Lista de Notificações -->
+              <div class="max-h-[380px] overflow-y-auto divide-y divide-border/60">
+                @for (n of notifService.notificacoes(); track n.id) {
+                <div class="group relative flex gap-3 p-3.5 transition-colors hover:bg-secondary/60"
+                  [ngClass]="{ 'bg-accent/5': !n.lida }">
+
+                  <!-- Ícone de Atenção / Alerta -->
+                  <div class="flex size-8 shrink-0 items-center justify-center rounded-md" [ngClass]="{
+                      'bg-risk-medium-soft text-risk-medium': n.tipo === 'atencao',
+                      'bg-risk-high-soft text-risk-high': n.tipo === 'alerta',
+                      'bg-info-soft text-info': n.tipo === 'info'
+                    }">
+                    <span class="material-symbols-outlined text-[18px]">{{ n.icone }}</span>
+                  </div>
+
+                  <!-- Conteúdo -->
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between gap-1">
+                      <p class="text-xs font-semibold text-foreground truncate">{{ n.titulo }}</p>
+                      @if (!n.lida) {
+                      <span class="size-2 rounded-full bg-accent shrink-0" title="Não lida"></span>
+                      }
+                    </div>
+
+                    @if (n.unidade) {
+                    <p class="text-[11px] font-medium text-primary mt-0.5">{{ n.unidade }}</p>
+                    }
+
+                    <p class="text-xs text-muted-foreground mt-1 leading-relaxed">{{ n.descricao }}</p>
+
+                    <div class="mt-2 flex items-center justify-between">
+                      <span class="text-[10px] text-muted-foreground/70">{{ n.tempo }}</span>
+
+                      @if (n.rota) {
+                      <a [routerLink]="n.rota" [queryParams]="n.queryParams" (click)="aoClicarNotificacao(n)"
+                        class="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+                        <span>{{ n.acaoTexto || 'Acessar' }}</span>
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                      </a>
+                      }
+                    </div>
+                  </div>
+                </div>
+                } @empty {
+                <div class="p-6 text-center text-muted-foreground">
+                  <span class="material-symbols-outlined text-[28px] text-muted-foreground/50 mb-1">check_circle</span>
+                  <p class="text-xs font-medium text-foreground">Tudo em dia</p>
+                  <p class="text-[11px] mt-0.5">Nenhuma atenção necessária pendente no momento.</p>
+                </div>
+                }
+              </div>
+
+            </div>
+            }
           </div>
 
-          <button
-            class="relative rounded-md border border-border bg-card p-2 text-muted-foreground"
-            aria-label="Notificações"
-          >
-            <span class="material-symbols-outlined text-[18px]">notifications</span>
-            <span class="absolute right-1 top-1 size-2 rounded-full bg-accent"></span>
-          </button>
-
           <div class="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5">
-            <span class="grid size-7 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+            <span
+              class="grid size-7 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
               HM
             </span>
             <div class="hidden sm:block">
