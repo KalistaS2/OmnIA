@@ -1,0 +1,176 @@
+<!-- ============================================================
+     PARECER CORREICIONAL — Template alinhado ao modelo .docx
+     Ordem: Título · Identificação · Ementa · I.Relatório ·
+            II.Fundamentação · III.Conclusão · IV.Decisão ·
+            Assinatura · Notas de Rodapé
+     ============================================================ -->
+<article class="parecer-doc" id="parecer-documento">
+
+  <!-- ── CABEÇALHO INSTITUCIONAL ─────────────────────────────── -->
+  <header class="parecer-header">
+    <div class="parecer-logo-wrap">
+      <!-- Logo OmnIA -->
+      <svg class="parecer-logo-svg" viewBox="0 0 48 48" fill="none" aria-label="OmnIA">
+        <rect width="48" height="48" rx="10" fill="#1e3a5f"/>
+        <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle"
+              font-family="'IBM Plex Sans', sans-serif" font-size="13" font-weight="700"
+              letter-spacing="1" fill="#e8f4f8">OmIA</text>
+        <circle cx="24" cy="24" r="21" stroke="#4aa8c8" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/>
+      </svg>
+      <div class="parecer-logo-text">
+        <span class="parecer-tribunal">Corregedoria-Geral da Justiça</span>
+        <span class="parecer-sistema">Sistema OmnIA — Análise Correicional Automatizada</span>
+      </div>
+    </div>
+
+    <div class="parecer-id-block">
+      <span class="parecer-tipo">PARECER CORREICIONAL</span>
+      <span class="parecer-numero">Nº {{ parecer.numero }}</span>
+    </div>
+  </header>
+
+  <div class="parecer-divider"></div>
+
+  <!-- ── IDENTIFICAÇÃO ─────────────────────────────────────────── -->
+  <section class="parecer-identificacao">
+    <table class="parecer-id-table">
+      <tbody>
+        <tr>
+          <th>Processo</th>
+          <td class="parecer-processo-num">{{ parecer.processo }}</td>
+        </tr>
+        <tr>
+          <th>Solicitante</th>
+          <td>{{ parecer.solicitante }}</td>
+        </tr>
+        <tr>
+          <th>Unidade Judiciária</th>
+          <td>{{ parecer.unidade }}</td>
+        </tr>
+        <tr>
+          <th>Classe / Assunto</th>
+          <td>{{ parecer.classe }} — {{ parecer.assunto }}</td>
+        </tr>
+        <tr>
+          <th>Relator</th>
+          <td>{{ parecer.relator }}</td>
+        </tr>
+        <tr>
+          <th>Data de emissão</th>
+          <td>{{ parecer.dataEmissao }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── EMENTA ────────────────────────────────────────────────── -->
+  <section class="parecer-secao parecer-ementa-box">
+    <h2 class="parecer-secao-label">EMENTA</h2>
+    <p class="parecer-ementa-texto">{{ parecer.ementa }}</p>
+  </section>
+
+  <!-- ── I — RELATÓRIO ─────────────────────────────────────────── -->
+  <section class="parecer-secao">
+    <h2 class="parecer-secao-titulo"><span class="parecer-numeral">I</span> — RELATÓRIO</h2>
+    @for (paragrafo of parecer.relatoFatos; track $index) {
+      <p class="parecer-paragrafo" [class.parecer-paragrafo--indent]="$index > 0">{{ paragrafo }}</p>
+    }
+  </section>
+
+  <!-- ── II — FUNDAMENTAÇÃO ────────────────────────────────────── -->
+  <section class="parecer-secao">
+    <h2 class="parecer-secao-titulo"><span class="parecer-numeral">II</span> — FUNDAMENTAÇÃO</h2>
+
+    <!-- Parágrafos narrativos de fundamentação jurídica -->
+    @for (paragrafo of parecer.fundamentacao; track $index) {
+      <p class="parecer-paragrafo" [class.parecer-paragrafo--indent]="$index > 0">{{ paragrafo }}</p>
+    }
+
+    <!-- Análise regra a regra -->
+    <ol class="parecer-regras-lista">
+      @for (item of parecer.analiseRegras; track $index) {
+        <li class="parecer-regra-item">
+          <div class="parecer-regra-header">
+            <span class="parecer-regra-nome">{{ item.regra }}</span>
+            <span [class]="'parecer-veredito ' + getVereditoClass(item.veredito)">
+              {{ item.veredito }}
+            </span>
+          </div>
+          <blockquote class="parecer-regra-trecho">
+            {{ item.fundamentacao }}
+          </blockquote>
+        </li>
+      }
+    </ol>
+
+    <p class="parecer-sumario-regras">
+      Resultado sumário: <strong>{{ naoAtendeCount }}</strong>
+      regra{{ naoAtendeCount !== 1 ? 's' : '' }} não atendida{{ naoAtendeCount !== 1 ? 's' : '' }}
+      @if (naoAtendeCount > 0) {, indicando necessidade de providências.}
+      @else {. Processo em conformidade.}
+    </p>
+  </section>
+
+  <!-- ── III — CONCLUSÃO ──────────────────────────────────────── -->
+  <section class="parecer-secao">
+    <h2 class="parecer-secao-titulo"><span class="parecer-numeral">III</span> — CONCLUSÃO</h2>
+    <p class="parecer-paragrafo">{{ parecer.conclusao }}</p>
+  </section>
+
+  <!-- ── IV — DECISÃO ─────────────────────────────────────────── -->
+  <section class="parecer-secao">
+    <h2 class="parecer-secao-titulo"><span class="parecer-numeral">IV</span> — DECISÃO</h2>
+
+    <div class="parecer-decisao-box">
+      <p class="parecer-paragrafo">
+        Decisão registrada pela equipe responsável:
+        <strong>{{ parecer.decisaoHumana ?? 'Pendente de registro.' }}</strong>
+      </p>
+    </div>
+
+    @if (parecer.anotacoesEquipe.length > 0) {
+      <div class="parecer-anotacoes">
+        <p class="parecer-anotacoes-titulo">Anotações da equipe:</p>
+        <ol class="parecer-anotacoes-lista">
+          @for (a of parecer.anotacoesEquipe; track $index) {
+            <li class="parecer-anotacao-linha">
+              {{ a.texto }}
+              <!-- Badge visível somente na tela, oculto na impressão -->
+              <span class="parecer-anotacao-cat no-print anotacao-badge"
+                [class]="'anotacao-badge badge-' + a.categoria">
+                {{ a.categoria }}
+              </span>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+
+  </section>
+
+  <div class="parecer-divider"></div>
+
+  <!-- ── ASSINATURA ───────────────────────────────────────────── -->
+  <footer class="parecer-assinatura">
+    <div class="parecer-assinatura-linha"></div>
+    <p class="parecer-assinatura-nome">{{ parecer.relator }}</p>
+    <p class="parecer-assinatura-cargo">Corregedoria-Geral da Justiça · Sistema OmnIA</p>
+    <p class="parecer-assinatura-data">Emitido em: {{ parecer.dataEmissao }}</p>
+  </footer>
+
+  <!-- ── NOTAS DE RODAPÉ ──────────────────────────────────────── -->
+  @if (parecer.notasRodape.length > 0) {
+    <aside class="parecer-notas-rodape" aria-label="Notas de rodapé">
+      <p class="parecer-notas-titulo">Referências</p>
+      <ol class="parecer-notas-lista">
+        @for (nota of parecer.notasRodape; track $index) {
+          <li class="parecer-nota-item">
+            <span class="parecer-nota-num">{{ $index + 1 }}.</span>
+            <span>{{ nota }}</span>
+          </li>
+        }
+      </ol>
+    </aside>
+  }
+
+</article>

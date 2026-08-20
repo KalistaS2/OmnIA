@@ -48,12 +48,6 @@ export class DashboardComponent {
   readonly busca = signal<string>('');
   readonly mostrarSugestoes = signal<boolean>(false);
 
-  readonly alertasSemPrazo = [
-    '1ª Vara Cível: 48 processos correicionados aguardando validação',
-    'Vara da Fazenda Pública: 29 achados com revisão pendente',
-    '8 novas regras aguardando homologação da Corregedoria',
-  ];
-
   // Sugestões no dropdown de pesquisa conforme digitação
   readonly sugestoes = computed<Unidade[]>(() => {
     const termo = this.busca().trim().toLowerCase();

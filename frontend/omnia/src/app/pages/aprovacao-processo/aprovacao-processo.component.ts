@@ -5,12 +5,16 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
 import { TagComponent } from '../../components/tag/tag.component';
+import { ParecerModalComponent } from '../../components/parecer-modal/parecer-modal.component';
 
 import {
   correicaoPorProcesso,
   ItemVeredito,
   Veredito,
 } from '../../mock-data/prototype-data';
+
+import { ParecerService } from '../../services/parecer.service';
+import { Parecer, AnotacaoClassificada, AnotacaoCategoria } from '../../models/parecer.model';
 
 @Component({
   selector: 'app-aprovacao-processo',
@@ -21,12 +25,14 @@ import {
     AppShellComponent,
     PanelComponent,
     TagComponent,
+    ParecerModalComponent,
   ],
   templateUrl: './aprovacao-processo.component.html',
   styleUrl: './aprovacao-processo.component.scss',
 })
 export class AprovacaoProcessoComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private parecerService = inject(ParecerService);
 
   processo = signal<string>('0801234-00.2026.8.23.0001');
   
@@ -55,9 +61,22 @@ export class AprovacaoProcessoComponent implements OnInit {
     'Termo de arquivamento',
   ];
 
-  // Controles de estado
-  relatorio = signal<string | null>(null);
-  expandirTramitacoes = signal<boolean>(false); // Controla o dropdown da linha do tempo
+  readonly decisoes = [
+    { label: 'Aprovar correição', icon: 'check_circle' },
+    { label: 'Descartar achado', icon: 'cancel' },
+    { label: 'Solicitar revisão', icon: 'replay' },
+    { label: 'Encaminhar à unidade', icon: 'send' },
+  ];
+
+  // Estados reativos (Signals)
+  decisao = signal<string | null>(null);
+  anotacao = signal<string>('');
+  anotacoes = signal<AnotacaoClassificada[]>([]);
+
+  // Parecer
+  parecer = signal<Parecer | null>(null);
+  parecerAberto = signal<boolean>(false);
+  parecerGerado = signal<boolean>(false);
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -67,28 +86,56 @@ export class AprovacaoProcessoComponent implements OnInit {
     });
   }
 
-  toggleVeredito(linha: ItemVeredito): void {
-    const estadosPermitidos: Veredito[] = ['Atende', 'Não atende', 'Não se encaixa'];
-    const indiceAtual = estadosPermitidos.indexOf(linha.veredito);
-    const proximoIndice = (indiceAtual + 1) % estadosPermitidos.length;
-    
-    linha.veredito = estadosPermitidos[proximoIndice];
+  adicionarAnotacao(): void {
+    const texto = this.anotacao().trim();
+    if (!texto) return;
+    const categoria = this.parecerService.classificarAnotacao(texto);
+    this.anotacoes.update((a) => [...a, { texto, categoria }]);
+    this.anotacao.set('');
+  }
+
+  /**
+   * Retorna o label e a classe CSS do badge para cada categoria de anotação.
+   * PONTO DE EXTENSÃO FUTURA: quando a classificação migrar para LLM,
+   * este método permanece inalterado — apenas o retorno de `classificarAnotacao()`
+   * passará a vir de uma chamada assíncrona.
+   */
+  badgeCategoria(cat: AnotacaoCategoria): { label: string; css: string } {
+    const map: Record<AnotacaoCategoria, { label: string; css: string }> = {
+      contexto:      { label: 'Contexto',      css: 'badge-contexto' },
+      justificativa: { label: 'Justificativa', css: 'badge-justificativa' },
+      atenuante:     { label: 'Atenuante',     css: 'badge-atenuante' },
+      agravante:     { label: 'Agravante',     css: 'badge-agravante' },
+      providencia:   { label: 'Providência',   css: 'badge-providencia' },
+      livre:         { label: 'Livre',         css: 'badge-livre' },
+    };
+    return map[cat];
   }
 
   gerarRelatorio(): void {
-    const naoAtende = this.linhas.filter((l) => l.veredito === 'Não atende');
-    const relatorioTexto = [
-      `Relatório correicional — Processo ${this.processo()}`,
-      '',
-      'Achados da correição automatizada (com revisão manual):',
-      ...this.linhas.map((l) => `· ${l.regra} — ${l.veredito}: ${l.trecho}`),
-      '',
-      `Regras não atendidas: ${naoAtende.length}.`,
-      '',
-      'Conclusão provisória: há indício de arquivamento sem confirmação do cumprimento da determinação judicial; a conclusão depende de validação humana.',
-    ].join('\n');
+    const novoParecer = this.parecerService.gerarParecer({
+      processo: this.processo(),
+      linhas: this.linhas,
+      decisaoHumana: this.decisao(),
+      anotacoes: this.anotacoes(),
+      timeline: this.timeline,
+      relator: 'Dra. Helena',
+    });
 
-    this.relatorio.set(relatorioTexto);
+    this.parecer.set(novoParecer);
+    this.parecerGerado.set(true);
+    this.parecerAberto.set(true);
+
+    // Remove a mensagem de sucesso após 5 segundos
+    setTimeout(() => this.parecerGerado.set(false), 5000);
+  }
+
+  removerAnotacao(index: number): void {
+    this.anotacoes.update((a) => a.filter((_, i) => i !== index));
+  }
+
+  fecharParecer(): void {
+    this.parecerAberto.set(false);
   }
 
   getVereditoClass(v: Veredito): string {
