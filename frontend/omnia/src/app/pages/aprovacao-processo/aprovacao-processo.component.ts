@@ -1,7 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 
 import { AppShellComponent } from '../../components/app-shell/app-shell.component';
 import { PanelComponent } from '../../components/panel/panel.component';
@@ -19,7 +18,6 @@ import {
   imports: [
     CommonModule,
     RouterLink,
-    FormsModule,
     AppShellComponent,
     PanelComponent,
     TagComponent,
@@ -31,16 +29,17 @@ export class AprovacaoProcessoComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   processo = signal<string>('0801234-00.2026.8.23.0001');
-  readonly linhas: ItemVeredito[] = correicaoPorProcesso['padrao'] ?? [];
+  
+  linhas: ItemVeredito[] = (correicaoPorProcesso['padrao'] ?? []).map(l => ({ ...l }));
 
-  readonly timeline = [
-    { data: '8/7/2026', texto: 'Decisão determinou a expedição de ofício', tone: 'bg-info-soft' },
-    {
-      data: '9 a 13/7/2026',
-      texto: 'Cumprimento não localizado nos movimentos e documentos',
-      tone: 'bg-risk-medium-soft',
-    },
-    { data: '14/7/2026', texto: 'Arquivamento definitivo', tone: 'bg-risk-high-soft' },
+  // Nova estrutura de dados focada nas tramitações judiciais reais
+  readonly tramitacoes = [
+    { data: '15/05/2026', texto: 'Distribuição por Sorteio' },
+    { data: '16/05/2026', texto: 'Conclusão ao Juiz' },
+    { data: '20/05/2026', texto: 'Despacho - Mero expediente' },
+    { data: '05/06/2026', texto: 'Juntada de Petição de Manifestação' },
+    { data: '08/07/2026', texto: 'Decisão determinou a expedição de ofício' },
+    { data: '14/07/2026', texto: 'Arquivamento definitivo' },
   ];
 
   readonly condicoes = [
@@ -56,18 +55,9 @@ export class AprovacaoProcessoComponent implements OnInit {
     'Termo de arquivamento',
   ];
 
-  readonly decisoes = [
-    { label: 'Aprovar correição', icon: 'check_circle' },
-    { label: 'Descartar achado', icon: 'cancel' },
-    { label: 'Solicitar revisão', icon: 'replay' },
-    { label: 'Encaminhar à unidade', icon: 'send' },
-  ];
-
-  // Estados reativos (Signals)
-  decisao = signal<string | null>(null);
-  anotacao = signal<string>('');
-  anotacoes = signal<string[]>([]);
+  // Controles de estado
   relatorio = signal<string | null>(null);
+  expandirTramitacoes = signal<boolean>(false); // Controla o dropdown da linha do tempo
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -77,26 +67,23 @@ export class AprovacaoProcessoComponent implements OnInit {
     });
   }
 
-  adicionarAnotacao(): void {
-    const texto = this.anotacao().trim();
-    if (!texto) return;
-    this.anotacoes.update((a) => [...a, texto]);
-    this.anotacao.set('');
+  toggleVeredito(linha: ItemVeredito): void {
+    const estadosPermitidos: Veredito[] = ['Atende', 'Não atende', 'Não se encaixa'];
+    const indiceAtual = estadosPermitidos.indexOf(linha.veredito);
+    const proximoIndice = (indiceAtual + 1) % estadosPermitidos.length;
+    
+    linha.veredito = estadosPermitidos[proximoIndice];
   }
 
   gerarRelatorio(): void {
     const naoAtende = this.linhas.filter((l) => l.veredito === 'Não atende');
     const relatorioTexto = [
       `Relatório correicional — Processo ${this.processo()}`,
-      `Decisão da equipe: ${this.decisao() ?? 'pendente de registro'}.`,
       '',
-      'Achados da correição automatizada:',
+      'Achados da correição automatizada (com revisão manual):',
       ...this.linhas.map((l) => `· ${l.regra} — ${l.veredito}: ${l.trecho}`),
       '',
       `Regras não atendidas: ${naoAtende.length}.`,
-      '',
-      this.anotacoes().length ? 'Anotações da equipe:' : 'Sem anotações registradas.',
-      ...this.anotacoes().map((a, i) => `${i + 1}. ${a}`),
       '',
       'Conclusão provisória: há indício de arquivamento sem confirmação do cumprimento da determinação judicial; a conclusão depende de validação humana.',
     ].join('\n');

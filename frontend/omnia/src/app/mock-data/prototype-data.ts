@@ -9,7 +9,7 @@ export interface KPI {
 export const kpis: KPI[] = [
   { label: 'Unidades monitoradas', value: '6', hint: 'com acompanhamento ativo' },
   { label: 'Processos no acervo', value: '17.710', hint: 'nas bases analíticas autorizadas' },
-  { label: 'Processos pendentes', value: '412', hint: 'com providências da unidade' },
+  { label: 'Processos aguardando validação', value: '412', hint: 'com providências da unidade' },
   { label: 'Correicionados em validação', value: '124', hint: 'aguardando homologação da equipe' },
   { label: 'Conformidade média', value: '89.8%', hint: 'índice geral apurado' },
 ];

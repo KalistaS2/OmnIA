@@ -316,7 +316,7 @@
                 class="inline-flex items-center gap-1.5 rounded-md bg-secondary border border-border px-3 py-1.5 font-medium text-foreground hover:bg-secondary/80 transition-colors"
                 title="Simular a conclusão da análise para transferir para a próxima unidade">
                 <span class="material-symbols-outlined text-[16px] text-risk-low">check_circle</span>
-                <span>Concluir correição desta unidade</span>
+                <span>Interromper correição desta unidade</span>
               </button>
             </div>
           </div>
@@ -329,118 +329,16 @@
     <!-- ======================================================== -->
     <!-- BARRA DE FILTRO DE BUSCA DE UNIDADES NA FILA -->
     <!-- ======================================================== -->
-    <div
-      class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-card p-4 shadow-sm">
-      <div class="relative flex-1 max-w-md">
-        <span
-          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-muted-foreground">search</span>
-        <input type="text" [ngModel]="busca()" (ngModelChange)="busca.set($event)"
-          placeholder="Buscar unidades na fila por nome, vara ou competência..."
-          class="w-full rounded-md border border-border bg-background py-1.5 pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
-        @if (busca()) {
-        <button type="button" (click)="limparFiltros()"
-          class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          title="Limpar busca">
-          <span class="material-symbols-outlined text-[16px]">close</span>
-        </button>
-        }
-      </div>
 
       <div class="flex items-center gap-2 text-xs text-muted-foreground">
         <span>Exibindo <strong>{{ filaFiltrada().length }}</strong> de <strong>{{ filaAguardando().length }}</strong>
           unidades na fila</span>
       </div>
-    </div>
+
 
     <!-- ======================================================== -->
     <!-- SEÇÃO 2: FILA DE UNIDADES "AGUARDANDO CORREIÇÃO" -->
     <!-- ======================================================== -->
-    <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[20px] text-muted-foreground">queue</span>
-          <h2 class="text-base font-bold text-foreground">Fila de Unidades — Aguardando Correição</h2>
-        </div>
-        <span class="text-xs text-muted-foreground">
-          {{ filaFiltrada().length }} unidade(s) programada(s)
-        </span>
-      </div>
-
-      <app-panel title="Fila de espera de auditoria"
-        description="Unidades judiciárias planejadas que aguardam o término da correição anterior para início automático.">
-        <div class="space-y-3">
-          @for (u of filaFiltrada(); track u.id) {
-          <div
-            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:bg-secondary/20">
-
-            <!-- Posição e Identificação da Unidade -->
-            <div class="flex items-start gap-3.5 min-w-0">
-              <div
-                class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary font-display text-sm font-bold text-foreground border border-border">
-                #{{ u.posicao }}
-              </div>
-              <div class="min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-bold text-foreground text-sm">{{ u.unidade }}</h3>
-                  <app-tag tone="neutral">Aguardando correição</app-tag>
-                </div>
-                <p class="text-xs text-muted-foreground mt-0.5">
-                  {{ u.competencia }} · {{ u.comarca }}
-                </p>
-                <p class="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]">schedule</span>
-                  <span>{{ u.previsaoInicio }}</span>
-                </p>
-              </div>
-            </div>
-
-            <!-- Métricas e Ações da Fila -->
-            <div
-              class="flex flex-wrap items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 border-border/70 pt-2.5 sm:pt-0">
-              <div class="text-right text-xs">
-                <p class="font-semibold text-foreground">
-                  {{ u.amostraProcessos | number:'1.0-0' }} processos na amostra
-                </p>
-                <p class="text-muted-foreground text-[11px]">
-                  {{ u.percentualAmostra }}% do acervo ({{ u.totalProcessos | number:'1.0-0' }}) · {{
-                  u.regrasSelecionadas }} regras
-                </p>
-              </div>
-
-              <div class="flex items-center gap-2">
-                @if (u.posicao > 1) {
-                <button type="button" (click)="priorizarNaFila(u.id)"
-                  class="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
-                  title="Mover para a primeira posição da fila">
-                  <span class="material-symbols-outlined text-[14px]">vertical_align_top</span>
-                  <span>Priorizar</span>
-                </button>
-                }
-              </div>
-            </div>
-
-          </div>
-          } @empty {
-          <div class="py-8 text-center text-muted-foreground">
-            <span class="material-symbols-outlined text-[36px] text-muted-foreground/60 mb-2">inbox</span>
-            <p class="font-medium text-foreground">Nenhuma unidade aguardando na fila.</p>
-            @if (busca()) {
-            <p class="text-xs mt-1">Nenhum resultado para "{{ busca() }}".</p>
-            <button type="button" (click)="limparFiltros()" class="mt-2 text-xs text-primary underline">
-              Limpar busca
-            </button>
-            } @else {
-            <p class="text-xs mt-1">Planeje uma nova correição para adicionar unidades à fila.</p>
-            <a routerLink="/planejamento"
-              class="mt-3 inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90">
-              Planejar nova correição
-            </a>
-            }
-          </div>
-          }
-        </div>
-      </app-panel>
-    </div>
 
   </div>
 </app-shell>

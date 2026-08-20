@@ -20,5 +20,8 @@ describe('AcompanhamentoComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    
+    // Limpa o ciclo de vida do componente e mata o setInterval da simulação no teste
+    fixture.destroy();
   });
 });
