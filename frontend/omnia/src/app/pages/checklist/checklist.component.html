@@ -3,59 +3,156 @@
   subtitle="1ª Vara Cível · O que deverá ser verificado nesta unidade?"
 >
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-    <!-- Painel Principal: Biblioteca de Regras -->
-    <app-panel
-      title="Biblioteca de regras"
-      description="Versões aprovadas e histórico de uso em correições anteriores."
-    >
-      <div right>
-        <app-tag tone="info">{{ biblioteca.length }} regras</app-tag>
-      </div>
+    
+    <!-- COLUNA ESQUERDA: Biblioteca e Grupos -->
+    <div class="space-y-6">
+      <!-- Painel Principal: Biblioteca de Regras -->
+      <app-panel
+        title="Biblioteca de regras"
+        description="Versões aprovadas e histórico de uso em correições anteriores."
+      >
+        <div right>
+          <app-tag tone="info">{{ biblioteca.length }} regras</app-tag>
+        </div>
 
-      <div class="space-y-4">
-        @for (r of biblioteca; track r.id) {
-          <article class="rounded-md border border-border p-4">
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div class="min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="num text-xs text-muted-foreground">{{ r.id }}</span>
-                  <h3 class="text-base font-medium">{{ r.nome }}</h3>
-                  <app-tag>v{{ r.versao }}</app-tag>
+        <div class="space-y-4">
+          @for (r of bibliotecaPaginada(); track r.id) {
+            <article class="rounded-md border border-border p-4">
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="num text-xs text-muted-foreground">{{ r.id }}</span>
+                    <h3 class="text-base font-medium">{{ r.nome }}</h3>
+                    <app-tag>v{{ r.versao }}</app-tag>
+                  </div>
+                  <p class="mt-1 text-sm text-muted-foreground">{{ r.descricao }}</p>
                 </div>
-                <p class="mt-1 text-sm text-muted-foreground">{{ r.descricao }}</p>
+
+                <button
+                  type="button"
+                  (click)="abrirDetalhes(r.id)"
+                  class="inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-secondary"
+                >
+                  <span class="material-symbols-outlined text-[18px]">visibility</span>
+                  Ver detalhes
+                </button>
               </div>
 
+              <dl class="mt-4 grid gap-x-6 gap-y-1.5 text-xs text-muted-foreground sm:grid-cols-3">
+                <div>Competência: {{ r.competencia }}</div>
+                <div>Fontes: {{ r.fontes }}</div>
+                <div>Uso anterior: {{ r.uso }}</div>
+                <div>Autor: {{ r.autor }}</div>
+                <div>Aprovador: {{ r.aprovador }}</div>
+                <div>Taxa de confirmação: {{ r.confirmacao }}</div>
+              </dl>
+            </article>
+          }
+        </div>
+        @if (totalPaginasBiblioteca() > 1) {
+          <div class="mt-6 flex items-center justify-between border-t border-border pt-4 text-xs text-muted-foreground">
+            <span>Página {{ paginaBiblioteca() }} de {{ totalPaginasBiblioteca() }}</span>
+            <div class="flex items-center gap-2">
               <button
                 type="button"
-                (click)="abrirDetalhes(r.id)"
-                class="inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-secondary"
+                [disabled]="paginaBiblioteca() === 1"
+                (click)="mudarPaginaBiblioteca(paginaBiblioteca() - 1)"
+                class="rounded-md border border-border px-3 py-1.5 font-medium hover:bg-secondary disabled:opacity-40"
               >
-                <span class="material-symbols-outlined text-[18px]">visibility</span>
-                Ver detalhes
+                Anterior
+              </button>
+              <button
+                type="button"
+                [disabled]="paginaBiblioteca() === totalPaginasBiblioteca()"
+                (click)="mudarPaginaBiblioteca(paginaBiblioteca() + 1)"
+                class="rounded-md border border-border px-3 py-1.5 font-medium hover:bg-secondary disabled:opacity-40"
+              >
+                Próxima
               </button>
             </div>
-
-            <dl class="mt-4 grid gap-x-6 gap-y-1.5 text-xs text-muted-foreground sm:grid-cols-3">
-              <div>Competência: {{ r.competencia }}</div>
-              <div>Fontes: {{ r.fontes }}</div>
-              <div>Uso anterior: {{ r.uso }}</div>
-              <div>Autor: {{ r.autor }}</div>
-              <div>Aprovador: {{ r.aprovador }}</div>
-              <div>Taxa de confirmação: {{ r.confirmacao }}</div>
-            </dl>
-          </article>
+          </div>
         }
-      </div>
-    </app-panel>
+      </app-panel>
 
-    <!-- Barra Lateral: Nova Necessidade -->
+      <!-- Painel: Grupos de regras -->
+      <app-panel 
+        title="Grupos de regras" 
+        description="Pacotes de regras frequentemente utilizadas em conjunto para contextos específicos."
+      >
+        <div class="grid gap-4 sm:grid-cols-2">
+          @for (grupo of gruposDeRegras(); track grupo.id) {
+            <article class="flex flex-col justify-between overflow-hidden rounded-md border border-border transition-colors hover:border-accent">
+              
+              <!-- Cabeçalho (Área clicável que abre/fecha) -->
+              <div 
+                class="cursor-pointer p-4 hover:bg-secondary/20"
+                (click)="toggleGrupo(grupo.id)"
+              >
+              <div class="flex items-start justify-between gap-2">
+                  <h3 class="text-base font-medium leading-tight">{{ grupo.nome }}</h3>
+                  <app-tag tone="info" class="shrink-0">{{ grupo.regras.length }} regras</app-tag>
+              </div>
+              <p class="mt-2 text-sm text-muted-foreground">{{ grupo.descricao }}</p>
+            </div>
+
+              <!-- Drop-down com as Regras do Grupo -->
+              @if (grupoExpandidoId() === grupo.id) {
+              <div class="border-t border-border bg-secondary/10 px-4 py-3">
+                <p class="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Regras incluídas:</p>
+                <ul class="space-y-1.5 text-sm">
+                  @for (regra of grupo.regras; track regra.id) {
+                    <li class="flex items-start gap-2">
+                      <span class="material-symbols-outlined shrink-0 text-[16px] text-accent">check_circle</span>
+                      <span class="text-muted-foreground">
+                        <strong class="font-medium text-foreground">{{ regra.id }}</strong> · {{ regra.nome }}
+                      </span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+              <!-- Rodapé com os Botões de Ação -->
+              <div class="flex items-center justify-between border-t border-border bg-secondary/30 px-4 py-3">
+                
+                <!-- Botão de Ver/Ocultar -->
+                <button
+                  type="button"
+                  (click)="toggleGrupo(grupo.id)"
+                  class="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
+                >
+                  <span class="material-symbols-outlined text-[18px]">
+                    {{ grupoExpandidoId() === grupo.id ? 'expand_less' : 'expand_more' }}
+                  </span>
+                  {{ grupoExpandidoId() === grupo.id ? 'Ocultar regras' : 'Ver regras do pacote' }}
+                </button>
+
+                <!-- Botão de Editar -->
+                <button
+                  type="button"
+                  (click)="editarGrupo(grupo.id, $event)"
+                  class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <span class="material-symbols-outlined text-[16px]">edit</span>
+                  Editar grupo
+                </button>
+
+              </div>
+            </article>
+          }
+        </div>
+      </app-panel>
+    </div> <!-- /Fim da coluna esquerda -->
+
+    <!-- COLUNA DIREITA (Barra Lateral) -->
     <aside class="space-y-6">
+      <!-- Nova Necessidade -->
       <app-panel
         title="Nova necessidade"
         description="Identificar verificações que ainda não existem na biblioteca de regras."
       >
         <p class="flex items-center gap-2.5 text-sm text-muted-foreground">
-          <span class="material-symbols-outlined text-[18px] text-accent shrink-0">auto_fix_high</span>
+          <span class="material-symbols-outlined shrink-0 text-[18px] text-accent">auto_fix_high</span>
           O Construtor Inteligente traduz a necessidade descrita em linguagem natural para uma sequência auditável de passos.
         </p>
         <a
@@ -65,6 +162,90 @@
           <span class="material-symbols-outlined text-[18px]">add</span>
           Criar nova regra
         </a>
+      </app-panel>
+
+      <!-- Aguardando Autorização -->
+      <app-panel
+        title="Aguardando autorização"
+        description="Regras submetidas que precisam da sua análise e aprovação."
+      >
+        <div class="flex items-center justify-between">
+          <p class="flex items-center gap-2 text-sm text-muted-foreground">
+            <span class="material-symbols-outlined shrink-0 text-[18px] text-amber-500">pending_actions</span>
+            @if (regrasPendentes().length > 0) {
+              <strong>{{ regrasPendentes().length }}</strong> pendência(s).
+            } @else {
+              Nenhuma regra pendente.
+            }
+          </p>
+
+          <!-- Botão que abre/fecha o drop-down -->
+          @if (regrasPendentes().length > 0) {
+            <button
+              type="button"
+              (click)="togglePendencias()"
+              class="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+            >
+              <span class="material-symbols-outlined text-[16px]">
+                {{ pendenciasAberto() ? 'expand_less' : 'expand_more' }}
+              </span>
+              {{ pendenciasAberto() ? 'Recolher' : 'Ver lista' }}
+            </button>
+          }
+        </div>
+        
+        <!-- Lista suspensa de Pendências -->
+        @if (pendenciasAberto() && regrasPendentes().length > 0) {
+          <div class="mt-4 space-y-3 border-t border-border pt-4">
+            
+            <!-- Usando a lista paginada -->
+            @for (regra of regrasPendentesPaginadas(); track regra.id) {
+              <div class="rounded-md border border-border bg-secondary/30 p-3 transition-colors hover:border-amber-500/50">
+                <div class="flex items-start justify-between gap-2">
+                  <h4 class="text-sm font-medium leading-tight">{{ regra.nome }}</h4>
+                  <span class="num shrink-0 text-[10px] text-muted-foreground">{{ regra.dataEnvio }}</span>
+                </div>
+                
+                <div class="mt-3 flex items-center justify-between">
+                  <span class="text-xs text-muted-foreground">Por {{ regra.autor }}</span>
+                  <button
+                    type="button"
+                    (click)="abrirDetalhesPendente(regra.id)"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                  >
+                    Analisar
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- Paginação das Pendências -->
+            @if (totalPaginasPendentes() > 1) {
+              <div class="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+                <span>Pág. {{ paginaPendentes() }} / {{ totalPaginasPendentes() }}</span>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    [disabled]="paginaPendentes() === 1"
+                    (click)="mudarPaginaPendentes(paginaPendentes() - 1)"
+                    class="rounded-md border border-border px-2 py-1 font-medium hover:bg-secondary disabled:opacity-40"
+                  >
+                    Ant.
+                  </button>
+                  <button
+                    type="button"
+                    [disabled]="paginaPendentes() === totalPaginasPendentes()"
+                    (click)="mudarPaginaPendentes(paginaPendentes() + 1)"
+                    class="rounded-md border border-border px-2 py-1 font-medium hover:bg-secondary disabled:opacity-40"
+                  >
+                    Próx.
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </app-panel>
     </aside>
   </div>
@@ -141,4 +322,247 @@
       </div>
     </div>
   }
-</app-shell>
+  <!-- Modal de Detalhes da Regra Pendente -->
+  @if (regraPendenteSelecionada(); as rp) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4">
+      <div class="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-lg border border-border bg-card p-6 shadow-xl">
+        
+        <!-- Cabeçalho do modal -->
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-amber-500">pending_actions</span>
+              <p class="num eyebrow">Aguardando Avaliação</p>
+            </div>
+            <h2 class="mt-2 font-display text-2xl">{{ rp.nome }}</h2>
+            <p class="mt-1 text-sm text-muted-foreground">Enviada por <strong>{{ rp.autor }}</strong> em {{ rp.dataEnvio }}</p>
+          </div>
+          <button
+            type="button"
+            (click)="fecharDetalhesPendente()"
+            aria-label="Fechar"
+            class="rounded-md border border-border p-1.5 text-muted-foreground hover:bg-secondary"
+          >
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+
+        <!-- Descrição -->
+        <div class="mt-6 rounded-md bg-secondary/50 p-4 border border-border">
+          <p class="text-sm">{{ rp.descricao }}</p>
+        </div>
+
+        <!-- Passos sugeridos -->
+        <section class="mt-6">
+          <p class="eyebrow mb-3">Passos de verificação sugeridos</p>
+          <ol class="space-y-2 text-sm">
+            @for (passo of rp.passos; track passo; let i = $index) {
+              <li class="flex items-start gap-3 rounded-md bg-secondary px-3 py-2">
+                <span class="num flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-border text-xs font-medium text-foreground">
+                  {{ i + 1 }}
+                </span>
+                <span class="pt-0.5">{{ passo }}</span>
+              </li>
+            }
+          </ol>
+        </section>
+
+        <!-- Área de Revisão e Rodapé com botões de ação -->
+        <div class="mt-8 border-t border-border pt-5">
+          
+          @if (modoRevisao()) {
+            <!-- UI para digitar a observação -->
+            <div class="mb-4">
+              <label for="observacao" class="mb-2 block text-sm font-medium">
+                Observações para o autor
+              </label>
+              <textarea
+                id="observacao"
+                rows="3"
+                class="w-full rounded-md border border-border bg-secondary/30 p-3 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                placeholder="Explique o que precisa ser ajustado nesta regra..."
+                (input)="atualizarObservacao($event)"
+              ></textarea>
+            </div>
+            
+            <div class="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                (click)="cancelarRevisao()"
+                class="rounded-md px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                (click)="enviarParaRevisao(rp.id)"
+                class="inline-flex items-center gap-2 rounded-md bg-amber-500 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-600"
+              >
+                <span class="material-symbols-outlined text-[18px]">send</span>
+                Devolver ao Autor
+              </button>
+            </div>
+
+          } @else {
+            <!-- Botões Padrão -->
+            <div class="flex items-center justify-between">
+              
+              <!-- Botão de solicitar revisão (Fica alinhado à esquerda) -->
+              <button
+                type="button"
+                (click)="iniciarRevisao()"
+                class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-blue-500 hover:bg-amber-500/10 transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">edit_note</span>
+                Solicitar Ajuste
+              </button>
+
+              <div class="flex items-center gap-3">
+                <button
+                  type="button"
+                  (click)="removerRegra(rp.id)"
+                  class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[18px]">delete</span>
+                  Remover
+                </button>
+                
+                <button
+                  type="button"
+                  (click)="autorizarRegra(rp.id)"
+                  class="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:brightness-110"
+                >
+                  <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                  Autorizar
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+  <!-- Modal de Edição de Grupo -->
+  @if (grupoEmEdicao(); as grupo) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4">
+      <div class="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-lg border border-border bg-card p-6 shadow-xl">
+        
+        <!-- Cabeçalho -->
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-accent">folder_open</span>
+              <p class="num eyebrow">Editando Grupo de Regras</p>
+            </div>
+            <h2 class="mt-2 font-display text-2xl">{{ grupo.nome }}</h2>
+          </div>
+          <button
+            type="button"
+            (click)="fecharEdicaoGrupo()"
+            class="rounded-md border border-border p-1.5 text-muted-foreground hover:bg-secondary cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+
+        <!-- Lista de Regras para Edição -->
+        <div class="mt-6">
+          <p class="mb-3 text-sm font-medium">Regras contidas neste grupo:</p>
+          
+          <div class="space-y-2">
+            @for (regra of grupo.regras; track regra.id) {
+              <div class="flex items-center justify-between rounded-md border border-border bg-secondary/30 p-2.5 transition-colors hover:border-red-500/50">
+                <div class="flex flex-col min-w-0">
+                  <span class="text-xs font-semibold text-muted-foreground">{{ regra.id }}</span>
+                  <span class="text-sm truncate">{{ regra.nome }}</span>
+                </div>
+                
+                <button 
+                  type="button" 
+                  (click)="removerRegraDoGrupo(grupo.id, regra.id)"
+                  title="Remover regra do grupo"
+                  class="ml-3 shrink-0 rounded-md p-1.5 text-red-500 hover:bg-red-500/10 cursor-pointer"
+                >
+                  <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
+              </div>
+            }
+
+            @if (grupo.regras.length === 0) {
+              <div class="rounded-md border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+                Este grupo está vazio.
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Área Dinâmica de Adição de Regra -->
+        <div class="mt-4">
+          @if (adicionandoRegra()) {
+            <div class="rounded-md border border-border bg-secondary/20 p-3">
+              <div class="mb-2 flex items-center justify-between">
+                <p class="text-sm font-medium">Selecione uma regra para adicionar:</p>
+                <button 
+                  type="button" 
+                  (click)="cancelarAdicaoRegra()"
+                  class="text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  Cancelar
+                </button>
+              </div>
+
+              @if (regrasDisponiveisParaGrupo().length > 0) {
+                <ul class="max-h-40 overflow-y-auto rounded-md border border-border bg-card">
+                  @for (regra of regrasDisponiveisParaGrupo(); track regra.id) {
+                    <li>
+                      <button
+                        type="button"
+                        (click)="confirmarAdicaoRegra(regra)"
+                        class="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-secondary transition-colors cursor-pointer border-b border-border last:border-0"
+                      >
+                        <span class="truncate pr-4"><strong class="font-medium">{{ regra.id }}</strong> · {{ regra.nome }}</span>
+                        <span class="material-symbols-outlined shrink-0 text-[16px] text-accent">add_circle</span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="text-sm text-muted-foreground italic mt-2">Todas as regras da biblioteca já estão neste grupo.</p>
+              }
+            </div>
+          } @else {
+            <button 
+              type="button" 
+              (click)="iniciarAdicaoRegra()"
+              class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-border py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-[18px]">add</span>
+              Adicionar nova regra da biblioteca
+            </button>
+          }
+        </div>
+
+        <!-- Rodapé com Botões -->
+        <div class="mt-8 flex items-center justify-end gap-3 border-t border-border pt-5">
+          <button
+            type="button"
+            (click)="fecharEdicaoGrupo()"
+            class="rounded-md px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition-colors cursor-pointer"
+          >
+            Cancelar
+          </button>
+          
+          <button
+            type="button"
+            (click)="salvarEdicaoGrupo()"
+            class="rounded-md bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:brightness-110 cursor-pointer"
+          >
+            Salvar Alterações
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+</app-shell>  

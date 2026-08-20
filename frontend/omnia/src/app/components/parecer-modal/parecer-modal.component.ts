@@ -2,21 +2,14 @@ import { Component, Input, Output, EventEmitter, inject, signal } from '@angular
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import type { Parecer } from '../../models/parecer.model';
-import {
-  LucideAngularModule,
-  X,
-  Printer,
-  FileSignature,
-  Upload,
-  Pencil,
-} from 'lucide-angular';
+
 import { ParecerDocumentoComponent } from '../parecer-documento/parecer-documento.component';
 import { ParecerService } from '../../services/parecer.service';
 
 @Component({
   selector: 'app-parecer-modal',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, ParecerDocumentoComponent],
+  imports: [CommonModule, ParecerDocumentoComponent],
   templateUrl: './parecer-modal.component.html',
 })
 export class ParecerModalComponent {
@@ -27,11 +20,6 @@ export class ParecerModalComponent {
   private parecerService = inject(ParecerService);
   private router = inject(Router);
 
-  readonly XIcon = X;
-  readonly PrinterIcon = Printer;
-  readonly FileSignatureIcon = FileSignature;
-  readonly UploadIcon = Upload;
-  readonly PencilIcon = Pencil;
 
   /** Feedback visual temporário após envio ao Projudi */
   projudiEnviado = signal(false);

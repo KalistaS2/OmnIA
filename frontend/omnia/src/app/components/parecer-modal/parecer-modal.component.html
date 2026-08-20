@@ -13,7 +13,7 @@
       <!-- ── Barra de controle ──────────────────────────────── -->
       <div class="parecer-modal-toolbar">
         <div class="parecer-modal-toolbar-left">
-          <lucide-icon [img]="FileSignatureIcon" class="size-4 text-accent"></lucide-icon>
+          <span class="material-symbols-outlined text-[18px] text-accent">history_edu</span>
           <span id="parecer-modal-titulo" class="parecer-modal-titulo-text">
             Parecer Nº {{ parecer.numero }}
           </span>
@@ -40,7 +40,7 @@
               </svg>
               Adicionado ao Projudi
             } @else {
-              <lucide-icon [img]="UploadIcon" class="size-4"></lucide-icon>
+              <span class="material-symbols-outlined text-[18px]">upload</span>
               Adicionar ao Projudi
             }
           </button>
@@ -60,7 +60,7 @@
             id="btn-imprimir-parecer"
             (click)="onImprimir()"
             class="parecer-modal-btn parecer-modal-btn--primary">
-            <lucide-icon [img]="PrinterIcon" class="size-4"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px]">print</span>
             Imprimir / Salvar PDF
           </button>
           <button
@@ -69,7 +69,7 @@
             (click)="onFechar()"
             class="parecer-modal-btn parecer-modal-btn--ghost"
             aria-label="Fechar parecer">
-            <lucide-icon [img]="XIcon" class="size-4"></lucide-icon>
+            <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
 

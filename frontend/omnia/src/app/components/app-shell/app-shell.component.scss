@@ -1,1 +1,6 @@
-
+@media (min-width: 768px) {
+  aside {
+    height: calc(100vh / var(--app-zoom, 0.9));
+    height: calc(100dvh / var(--app-zoom, 0.9));
+  }
+}

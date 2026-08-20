@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --app-zoom: 0.9;
   --radius: 0.5rem;
   --background: oklch(0.981 0.006 95);
   --foreground: oklch(0.24 0.033 250);
@@ -85,7 +86,13 @@
     border-color: var(--border);
   }
 
+  html {
+    zoom: var(--app-zoom, 0.9);
+    min-height: 100%;
+  }
+
   body {
+    min-height: 100%;
     background-color: var(--background);
     color: var(--foreground);
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
@@ -140,7 +147,9 @@
   }
 }
 
-/* MODAL DO PARECER */
+/* ================================================================
+   MODAL DO PARECER
+   ================================================================ */
 .parecer-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -258,16 +267,6 @@
   }
 }
 
-.parecer-modal-btn--secondary {
-  background: oklch(1 0 0 / 8%);
-  color: var(--sidebar-foreground);
-  border-color: oklch(1 0 0 / 18%);
-
-  &:hover {
-    background: oklch(1 0 0 / 16%);
-    border-color: oklch(1 0 0 / 30%);
-  }
-}
 
 .parecer-modal-btn--projudi {
   background: oklch(1 0 0 / 8%);
@@ -307,7 +306,9 @@
   overflow: hidden;
 }
 
-/* DOCUMENTO DO PARECER */
+/* ================================================================
+   DOCUMENTO DO PARECER
+   ================================================================ */
 .parecer-doc {
   font-family: 'Newsreader', Georgia, serif;
   color: #1a1a2e;
@@ -491,22 +492,6 @@
   hyphens: auto;
   color: #1a1a2e;
 
-  /* Formatação de texto rico */
-  b, strong { font-weight: 600; }
-  i, em { font-style: italic; }
-  u { text-decoration: underline; }
-  s, strike, del { text-decoration: line-through; }
-  sub { vertical-align: sub; font-size: 0.8em; }
-  sup { vertical-align: super; font-size: 0.8em; }
-  
-  ul { list-style-type: disc; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
-  ol { list-style-type: decimal; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
-  li { margin-bottom: 0.25rem; }
-  
-  span[style*="background-color"] {
-    border-radius: 0.125rem;
-    padding: 0 0.125rem;
-  }
 }
 
 .parecer-paragrafo--indent {
@@ -649,7 +634,9 @@
   margin: 0.125rem 0 0;
 }
 
-/* BADGES DE CATEGORIA DE ANOTAÇÃO */
+/* ================================================================
+   BADGES DE CATEGORIA DE ANOTAÇÃO
+   ================================================================ */
 @layer components {
   .anotacao-badge {
     display: inline-flex;

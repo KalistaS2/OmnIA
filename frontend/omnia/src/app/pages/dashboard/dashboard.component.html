@@ -102,86 +102,66 @@
         <div class="overflow-x-auto">
           <table class="w-full min-w-[920px] text-sm">
             <thead>
-              <tr class="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th class="whitespace-nowrap px-3 pb-3 font-semibold">Unidade judiciária</th>
-                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-right">Acervo</th>
-                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-right">Processos pendentes</th>
-                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Correicionados em validação</th>
-                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-right">Críticos</th>
+              <tr class="border-b border-border text-center text-xs uppercase tracking-wide text-muted-foreground">
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Unidade judiciária</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Acervo</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Processos pendentes</th>
                 <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center min-w-[130px]">Conformidade</th>
-                <th class="whitespace-nowrap px-3 pb-3 font-semibold">Última correição</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Última correição</th>
                 <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Ações</th>
               </tr>
             </thead>
             <tbody>
               @for (u of unidadesFiltradas(); track u.nome) {
               <!-- Linha da Unidade -->
-              <tr class="border-b border-border/70 transition-colors hover:bg-secondary/40"
+              <tr class="border-b border-border/70 text-center transition-colors hover:bg-secondary/40"
                 [ngClass]="{ 'bg-risk-high-soft/40': u.destaque }">
 
                 <!-- Unidade / Identificação -->
-                <td class="px-3 py-3.5">
-                  <div class="flex items-center gap-2">
+                <td class="px-3 py-3.5 text-center">
+                  <div class="flex items-center justify-center gap-2">
                     <span class="font-medium text-foreground">{{ u.nome }}</span>
-                    @if (u.destaque) {
-                    <app-tag tone="accent">foco da correição</app-tag>
-                    }
                   </div>
-                  <p class="text-xs text-muted-foreground">{{ u.competencia }} · {{ u.comarca }}</p>
+                  <p class="text-xs text-muted-foreground text-center">{{ u.competencia }} · {{ u.comarca }}</p>
                 </td>
 
                 <!-- Acervo Total -->
-                <td class="num px-3 py-3.5 text-right font-medium text-muted-foreground">
+                <td class="num px-3 py-3.5 text-center font-medium text-muted-foreground">
                   {{ u.totalProcessos | number:'1.0-0' }}
                 </td>
 
                 <!-- Processos Pendentes da Unidade -->
-                <td class="num px-3 py-3.5 text-right">
-                  <span class="inline-flex items-center justify-end gap-1 font-semibold text-foreground">
+                <td class="num px-3 py-3.5 text-center">
+                  <span class="inline-flex items-center justify-center gap-1 font-semibold text-foreground">
                     {{ u.processosPendentes | number:'1.0-0' }}
                   </span>
-                  <p class="text-[11px] text-muted-foreground">com providência</p>
-                </td>
-
-                <!-- Processos Correicionados Pendentes de Validação -->
-                <td class="num px-3 py-3.5 text-center">
-                  <span class="font-semibold text-foreground">
-                    {{ u.pendentesValidacao | number:'1.0-0' }}
-                  </span>
-                  <p class="text-[11px] text-muted-foreground">aguardando</p>
-                </td>
-
-                <!-- Ocorrências Críticas -->
-                <td class="num px-3 py-3.5 text-right">
-                  <span [class]="u.achadosCriticos > 0 ? 'font-semibold text-risk-high' : 'text-muted-foreground'">
-                    {{ u.achadosCriticos }}
-                  </span>
+                  <p class="text-[11px] text-muted-foreground text-center">com providência</p>
                 </td>
 
                 <!-- Taxa de Conformidade -->
-                <td class="px-3 py-3.5">
+                <td class="px-3 py-3.5 text-center">
                   <div class="flex items-center gap-2.5 justify-center">
                     <div class="w-16 h-2 overflow-hidden rounded-full bg-secondary">
                       <div class="h-full rounded-full transition-all duration-300"
                         [class]="getConformidadeBarColor(u.conformidade)" [style.width.%]="u.conformidade"></div>
                     </div>
-                    <span class="num text-xs font-semibold w-9 text-right">{{ u.conformidade }}%</span>
+                    <span class="num text-xs font-semibold w-9 text-left">{{ u.conformidade }}%</span>
                   </div>
                 </td>
 
                 <!-- Última Correição -->
-                <td class="px-3 py-3.5">
-                  <div class="text-xs">
+                <td class="px-3 py-3.5 text-center">
+                  <div class="text-xs flex items-center justify-center">
                     @if (u.statusCorreicao === 'Em andamento' || u.statusCorreicao === 'Em validação') {
-                      <app-tag tone="info">Em andamento</app-tag>
+                    <app-tag tone="info">Em andamento</app-tag>
                     } @else {
-                      <p class="num text-foreground font-medium">{{ u.ultimaCorreicao }}</p>
+                    <p class="num text-foreground font-medium">{{ u.ultimaCorreicao }}</p>
                     }
                   </div>
                 </td>
 
                 <!-- Ações Rápidas por Unidade -->
-                <td class="px-3 py-3.5">
+                <td class="px-3 py-3.5 text-center">
                   <div class="flex items-center justify-center gap-2">
                     <!-- Botão de Ver Processos / Validação -->
                     <a routerLink="/aprovacao" [queryParams]="{ unidade: u.nome }"
@@ -202,7 +182,7 @@
               </tr>
               } @empty {
               <tr>
-                <td colspan="8" class="p-8 text-center text-muted-foreground">
+                <td colspan="6" class="p-8 text-center text-muted-foreground">
                   <span class="material-symbols-outlined text-[32px] text-muted-foreground/60 mb-2">search_off</span>
                   <p class="font-medium text-foreground">Nenhuma unidade encontrada com os filtros selecionados.</p>
                   <p class="text-xs mt-1">Tente ajustar o termo de busca.</p>
@@ -297,17 +277,6 @@
 
     <!-- Barra Lateral de Alertas e Destaques -->
     <aside class="space-y-6">
-      <app-panel title="Atenção necessária">
-        <ul class="space-y-3">
-          @for (a of alertasSemPrazo; track a) {
-          <li class="flex items-start gap-2.5 rounded-md bg-risk-medium-soft/70 p-3 text-sm">
-            <span class="material-symbols-outlined text-[18px] text-risk-medium shrink-0">warning</span>
-            <span class="text-foreground">{{ a }}</span>
-          </li>
-          }
-        </ul>
-      </app-panel>
-
       <app-panel title="Relatório da última correição">
         <dl class="space-y-2.5 text-sm">
           @for (item of relatorioUltimaCorreicao.resumo; track item[0]) {

@@ -6,6 +6,18 @@ module.exports = {
   ],
   theme: {
     extend: {
+      height: {
+        screen: "calc(100vh / var(--app-zoom, 0.9))",
+        dvh: "calc(100dvh / var(--app-zoom, 0.9))",
+      },
+      minHeight: {
+        screen: "calc(100vh / var(--app-zoom, 0.9))",
+        dvh: "calc(100dvh / var(--app-zoom, 0.9))",
+      },
+      maxHeight: {
+        screen: "calc(100vh / var(--app-zoom, 0.9))",
+        dvh: "calc(100dvh / var(--app-zoom, 0.9))",
+      },
       colors: {
         border: "var(--border)",
         input: "var(--input)",
