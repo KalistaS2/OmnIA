@@ -1,0 +1,300 @@
+<app-shell title="Central de Correições" [subtitle]="'Visão geral por unidades judiciárias · ' + referencePeriod">
+  <!-- Ações no cabeçalho -->
+  <div actions class="flex items-center gap-2">
+    <a routerLink="/aprovacao"
+      class="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
+      <span class="material-symbols-outlined text-[18px]">verified_user</span>
+      Validar pendências
+    </a>
+    <a routerLink="/planejamento"
+      class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+      Nova correição
+    </a>
+  </div>
+
+  <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="space-y-6">
+      <!-- Cards de KPIs Consolidados -->
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        @for (k of kpis; track k.label) {
+        <div class="panel p-4 transition-all hover:border-border/80">
+          <p class="eyebrow">{{ k.label }}</p>
+          <p class="num mt-2 font-display text-3xl text-foreground">{{ k.value }}</p>
+          <p class="mt-1 text-xs text-muted-foreground">{{ k.hint }}</p>
+        </div>
+        }
+      </div>
+
+      <!-- Painel Principal: Tabela de Unidades Judiciárias -->
+      <app-panel title="Unidades judiciárias e situação correicional"
+        description="Acompanhamento consolidado por vara: processos pendentes no acervo e processos correicionados aguardando validação.">
+
+        <!-- Barra de Busca com Opções Conforme Digitação -->
+        <div
+          class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
+          <!-- Campo de Busca com Dropdown de Sugestões -->
+          <div class="relative flex-1 max-w-md">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-muted-foreground">search</span>
+            <input type="text" [ngModel]="busca()" (ngModelChange)="onBuscaChange($event)" (focus)="onBuscaFocus()"
+              (blur)="onBuscaBlur()" (keydown.escape)="mostrarSugestoes.set(false)"
+              placeholder="Buscar unidade, comarca ou competência..."
+              class="w-full rounded-md border border-border bg-background py-1.5 pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+            @if (busca()) {
+            <button type="button" (click)="limparFiltros()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              title="Limpar busca" aria-label="Limpar busca">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+            }
+
+            <!-- Dropdown de Opções Conforme Digitação -->
+            @if (mostrarSugestoes() && sugestoes().length > 0) {
+            <div
+              class="absolute left-0 right-0 top-full z-30 mt-1 max-h-64 overflow-y-auto rounded-lg border border-border bg-card p-1.5 shadow-xl animate-in fade-in-0 duration-150">
+              <div
+                class="flex items-center justify-between px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border/60 mb-1">
+                <span>Opções de unidades ({{ sugestoes().length }})</span>
+              </div>
+              <div class="space-y-0.5">
+                @for (s of sugestoes(); track s.nome) {
+                <button type="button" (mousedown)="selecionarSugestao(s.nome)"
+                  class="flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-sm transition-colors hover:bg-secondary group">
+                  <div class="min-w-0 flex-1 pr-3">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="material-symbols-outlined text-[16px] text-muted-foreground group-hover:text-primary transition-colors">account_balance</span>
+                      <span class="font-medium text-foreground truncate">{{ s.nome }}</span>
+                      @if (s.destaque) {
+                      <app-tag tone="accent">foco</app-tag>
+                      }
+                    </div>
+                    <p class="text-xs text-muted-foreground mt-0.5 truncate pl-6">
+                      {{ s.competencia }} · {{ s.comarca }}
+                    </p>
+                  </div>
+                  <div class="text-right text-xs shrink-0">
+                    <span class="num font-semibold text-foreground">{{ s.totalProcessos | number:'1.0-0' }}</span>
+                    <span class="text-muted-foreground ml-1">proc.</span>
+                    <div class="text-[11px] text-muted-foreground">
+                      {{ s.pendentesValidacao }} em validação
+                    </div>
+                  </div>
+                </button>
+                }
+              </div>
+            </div>
+            } @else if (mostrarSugestoes() && busca().trim().length > 0 && sugestoes().length === 0) {
+            <div
+              class="absolute left-0 right-0 top-full z-30 mt-1 rounded-lg border border-border bg-card p-3 shadow-xl text-xs text-center text-muted-foreground animate-in fade-in-0 duration-150">
+              Nenhuma unidade encontrada para "{{ busca() }}"
+            </div>
+            }
+          </div>
+
+          <span class="text-xs text-muted-foreground">
+            Exibindo {{ unidadesFiltradas().length }} de {{ unidades.length }} unidades judiciárias
+          </span>
+        </div>
+
+        <!-- Tabela Responsiva de Unidades -->
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[920px] text-sm">
+            <thead>
+              <tr class="border-b border-border text-center text-xs uppercase tracking-wide text-muted-foreground">
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Unidade judiciária</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Acervo</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Processos pendentes</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center min-w-[130px]">Conformidade</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Última correição</th>
+                <th class="whitespace-nowrap px-3 pb-3 font-semibold text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of unidadesFiltradas(); track u.nome) {
+              <!-- Linha da Unidade -->
+              <tr class="border-b border-border/70 text-center transition-colors hover:bg-secondary/40"
+                [ngClass]="{ 'bg-risk-high-soft/40': u.destaque }">
+
+                <!-- Unidade / Identificação -->
+                <td class="px-3 py-3.5 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="font-medium text-foreground">{{ u.nome }}</span>
+                  </div>
+                  <p class="text-xs text-muted-foreground text-center">{{ u.competencia }} · {{ u.comarca }}</p>
+                </td>
+
+                <!-- Acervo Total -->
+                <td class="num px-3 py-3.5 text-center font-medium text-muted-foreground">
+                  {{ u.totalProcessos | number:'1.0-0' }}
+                </td>
+
+                <!-- Processos Pendentes da Unidade -->
+                <td class="num px-3 py-3.5 text-center">
+                  <span class="inline-flex items-center justify-center gap-1 font-semibold text-foreground">
+                    {{ u.processosPendentes | number:'1.0-0' }}
+                  </span>
+                  <p class="text-[11px] text-muted-foreground text-center">com providência</p>
+                </td>
+
+                <!-- Taxa de Conformidade -->
+                <td class="px-3 py-3.5 text-center">
+                  <div class="flex items-center gap-2.5 justify-center">
+                    <div class="w-16 h-2 overflow-hidden rounded-full bg-secondary">
+                      <div class="h-full rounded-full transition-all duration-300"
+                        [class]="getConformidadeBarColor(u.conformidade)" [style.width.%]="u.conformidade"></div>
+                    </div>
+                    <span class="num text-xs font-semibold w-9 text-left">{{ u.conformidade }}%</span>
+                  </div>
+                </td>
+
+                <!-- Última Correição -->
+                <td class="px-3 py-3.5 text-center">
+                  <div class="text-xs flex items-center justify-center">
+                    @if (u.statusCorreicao === 'Em andamento' || u.statusCorreicao === 'Em validação') {
+                    <app-tag tone="info">Em andamento</app-tag>
+                    } @else {
+                    <p class="num text-foreground font-medium">{{ u.ultimaCorreicao }}</p>
+                    }
+                  </div>
+                </td>
+
+                <!-- Ações Rápidas por Unidade -->
+                <td class="px-3 py-3.5 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <!-- Botão de Ver Processos / Validação -->
+                    <a routerLink="/aprovacao" [queryParams]="{ unidade: u.nome }"
+                      class="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                      title="Ver processos em validação" aria-label="Ver processos em validação">
+                      <span class="material-symbols-outlined text-[16px] text-accent">verified_user</span>
+                      <span>Ver processos</span>
+                    </a>
+
+                    <!-- Botão de Planejar Nova Correição para esta Unidade -->
+                    <a routerLink="/planejamento" [queryParams]="{ unidade: u.nome }"
+                      class="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                      title="Planejar nova correição" aria-label="Planejar nova correição">
+                      <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              } @empty {
+              <tr>
+                <td colspan="6" class="p-8 text-center text-muted-foreground">
+                  <span class="material-symbols-outlined text-[32px] text-muted-foreground/60 mb-2">search_off</span>
+                  <p class="font-medium text-foreground">Nenhuma unidade encontrada com os filtros selecionados.</p>
+                  <p class="text-xs mt-1">Tente ajustar o termo de busca.</p>
+                  <button type="button" (click)="limparFiltros()"
+                    class="mt-3 inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground hover:bg-secondary/80">
+                    Limpar busca
+                  </button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-panel>
+
+      <!-- Regras com maior recorrência -->
+      <app-panel title="Regras com maior recorrência de ocorrências"
+        description="Ocorrências dependem de validação humana antes de qualquer conclusão.">
+        <ul class="divide-y divide-border">
+          @for (r of regrasCriticas; track r.regra) {
+          <li class="flex flex-wrap items-center gap-4 py-3">
+            <div class="min-w-[220px] flex-1">
+              <p class="font-medium text-foreground">{{ r.regra }}</p>
+              <p class="text-xs text-muted-foreground">{{ r.unidades }} unidades judiciárias afetadas</p>
+            </div>
+            <div class="w-40">
+              <div class="h-2 overflow-hidden rounded-full bg-secondary">
+                <div class="h-full rounded-full bg-chart-2" [style.width.%]="(r.ocorrencias / 286) * 100"></div>
+              </div>
+            </div>
+            <p class="num w-16 text-right font-display text-lg text-foreground">{{ r.ocorrencias }}</p>
+            <div class="w-32 text-right">
+              <span [class]="'inline-flex items-center gap-1.5 text-sm ' + getTrendColor(r.tendencia)">
+                <span class="material-symbols-outlined text-[18px]">{{ getTrendIcon(r.tendencia) }}</span>
+                {{ r.tendencia }}
+              </span>
+            </div>
+          </li>
+          }
+        </ul>
+      </app-panel>
+
+      <!-- Universo da Auditoria -->
+      <app-panel title="Universo da auditoria" description="Escopo estimado a partir das bases autorizadas.">
+        <div class="grid gap-4 sm:grid-cols-2">
+          @for (item of universoAuditoria; track item[0]) {
+          <div class="flex items-center justify-between rounded-md border border-border px-3 py-2.5">
+            <span class="text-sm text-muted-foreground">{{ item[0] }}</span>
+            <span class="num text-sm font-medium text-foreground">{{ item[1] }}</span>
+          </div>
+          }
+        </div>
+        <div class="mt-5 rounded-md bg-surface-strong px-4 py-3">
+          <span class="eyebrow">Total estimado nas unidades</span>
+          <p class="num font-display text-3xl text-foreground">17.710 processos</p>
+        </div>
+      </app-panel>
+
+      <!-- Evolução e Correições Recentes -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <app-panel title="Evolução da conformidade" description="Resultado acompanhado após as providências.">
+          <div class="flex h-48 items-end gap-6 px-2">
+            @for (e of evolucaoConformidade; track e.etapa) {
+            <div class="flex flex-1 flex-col items-center gap-2">
+              <span class="num font-display text-xl text-foreground">{{ e.valor }}%</span>
+              <div class="w-full rounded-t-md bg-chart-1/85" [style.height.px]="e.valor * 1.4"></div>
+              <span class="text-center text-xs text-muted-foreground">{{ e.etapa }}</span>
+            </div>
+            }
+          </div>
+        </app-panel>
+
+        <app-panel title="Correições por unidade">
+          <div class="space-y-3">
+            @for (c of correicoesRecentes; track c.unidade) {
+            <div class="rounded-md border border-border p-3">
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-medium text-foreground">{{ c.unidade }}</p>
+                <app-tag tone="info">{{ c.status }}</app-tag>
+              </div>
+              <ul class="mt-2 space-y-1 text-sm text-muted-foreground">
+                @for (l of c.linhas; track l) {
+                <li>· {{ l }}</li>
+                }
+              </ul>
+            </div>
+            }
+          </div>
+        </app-panel>
+      </div>
+    </div>
+
+    <!-- Barra Lateral de Alertas e Destaques -->
+    <aside class="space-y-6">
+      <app-panel title="Relatório da última correição">
+        <dl class="space-y-2.5 text-sm">
+          @for (item of relatorioUltimaCorreicao.resumo; track item[0]) {
+          <div class="flex justify-between border-b border-border/70 pb-2 last:border-0">
+            <dt class="text-muted-foreground">{{ item[0] }}</dt>
+            <dd class="num font-medium text-foreground">{{ item[1] }}</dd>
+          </div>
+          }
+        </dl>
+        <p class="eyebrow mt-5">Regras com maior recorrência na unidade em foco</p>
+        <ul class="mt-3 space-y-2 text-sm">
+          @for (r of relatorioUltimaCorreicao.regras; track r) {
+          <li class="rounded-md bg-secondary px-3 py-2 text-secondary-foreground">
+            {{ r }}
+          </li>
+          }
+        </ul>
+      </app-panel>
+    </aside>
+  </div>
+</app-shell>

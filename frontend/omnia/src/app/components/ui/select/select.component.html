@@ -1,0 +1,38 @@
+<div class="relative w-full">
+  <!-- Trigger (Botão seletor) -->
+  <button
+    type="button"
+    [disabled]="disabled()"
+    (click)="toggleOpen()"
+    [class]="triggerClass()"
+  >
+    <span class="truncate">
+      {{ selectedLabel() || placeholder }}
+    </span>
+    <span class="material-symbols-outlined text-[18px] opacity-50 shrink-0">expand_more</span>
+  </button>
+
+  <!-- Dropdown Content -->
+  @if (isOpen()) {
+    <div
+      class="absolute z-50 mt-1 max-h-60 w-full min-w-[8rem] overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95"
+    >
+      @for (option of options; track option.value) {
+        <div
+          (click)="selectOption(option)"
+          [class]="
+            'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground ' +
+            (option.disabled ? 'pointer-events-none opacity-50' : '')
+          "
+        >
+          <span class="truncate">{{ option.label }}</span>
+          @if (selectedValue() === option.value) {
+            <span class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+              <span class="material-symbols-outlined text-[16px]">check</span>
+            </span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
