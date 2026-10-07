@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+
+# Google Cloud credentials
+*.json
+!app/questionarios/*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Storage local
+storage/
+
+# PDFs de teste reais (nunca commitar)
+tests/fixtures/*.pdf
+!tests/fixtures/.gitkeep

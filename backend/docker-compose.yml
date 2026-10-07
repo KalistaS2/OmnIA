@@ -1,0 +1,33 @@
+services:
+  # ── Aplicação FastAPI ──────────────────────────────
+  app:
+    build: .
+    container_name: omnia-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017
+      - STORAGE_BACKEND=local
+      - LOCAL_STORAGE_PATH=/app/storage
+    volumes:
+      - app-storage:/app/storage
+    depends_on:
+      mongo:
+        condition: service_started
+    restart: unless-stopped
+
+  # ── MongoDB ────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    container_name: omnia-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+  app-storage:
