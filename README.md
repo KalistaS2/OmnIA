@@ -14,11 +14,11 @@ O **OmnIA** foi criado para modernizar o fluxo de correição de varas judiciais
 
 ```
 OmnIA/
-└── frontend/
-    └── omnia/          # Aplicação Angular (SSR) — interface principal do sistema
+├── frontend/
+│   └── omnia/          # Aplicação Angular (SSR) — interface principal do sistema
+└── backend/            # API FastAPI / Python — serviço de inteligência e triagem
 ```
 
-> **Nota:** O backend (API) ainda não está neste repositório. A versão atual utiliza dados mockados (`mock-data/prototype-data.ts`) que simulam respostas da futura API.
 
 ---
 

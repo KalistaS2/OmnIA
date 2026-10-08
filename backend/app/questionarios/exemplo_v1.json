@@ -1,0 +1,31 @@
+{
+  "id": "questionario-exemplo-v1",
+  "versao": "1.0",
+  "titulo": "Regularidade do Processo",
+  "perguntas": [
+    {
+      "id": "determinacoes_cumpridas",
+      "texto": "As determinações do Magistrado foram cumpridas?"
+    },
+    {
+      "id": "paralisacao_cartorio_30d",
+      "texto": "Está sem paralisação no cartório há mais de 30 dias?"
+    },
+    {
+      "id": "conclusao_120d",
+      "texto": "Está sem conclusão há mais de 120 dias?"
+    },
+    {
+      "id": "citacao_realizada",
+      "texto": "A citação do réu foi realizada?"
+    },
+    {
+      "id": "intimacao_mp",
+      "texto": "O Ministério Público foi intimado quando necessário?"
+    },
+    {
+      "id": "pedido_danos_morais",
+      "texto": "Há pedido de indenização por danos morais?"
+    }
+  ]
+}
