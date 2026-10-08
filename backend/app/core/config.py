@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     # ── Gemini ───────────────────────────────────
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.0-flash"
+    gemini_model: str = "gemini-3.8-flash"
 
     # ── Google Cloud ─────────────────────────────
     google_cloud_project: str = ""
@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     # ── Document AI ──────────────────────────────
     document_ai_location: str = "us"
     document_ai_processor_id: str = ""
+    document_ai_online_page_limit: int = 15
 
     # ── Google Cloud Storage ─────────────────────
     gcs_bucket_processos: str = ""

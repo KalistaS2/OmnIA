@@ -11,10 +11,11 @@ __pycache__/
 .coverage
 htmlcov/
 
-# Local env files
+# Local env files & credentials
 .env
 .env.*
 !.env.example
+*.json
 
 # IDE & OS
 .vscode/
